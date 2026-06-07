@@ -1,0 +1,256 @@
+"use client";
+
+import {
+  calculateCurrent,
+  DEFAULT_RESISTANCE,
+  DEFAULT_VOLTAGE,
+  getCurrentLevel,
+  getVoltageLevel,
+} from "./logic";
+import { QuizAccordion, type QuizAccordionItem } from "../shared/quiz_accordion";
+
+function ValueCard({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "red" | "blue" | "cyan";
+}) {
+  const toneClass =
+    tone === "red"
+      ? "border-red-200 bg-red-50 text-red-700"
+      : tone === "blue"
+        ? "border-blue-200 bg-blue-50 text-blue-700"
+        : "border-cyan-200 bg-cyan-50 text-cyan-700";
+
+  return (
+    <div className={`rounded-2xl border p-5 ${toneClass}`}>
+      <p className="text-sm font-medium opacity-80">{label}</p>
+      <p className="mt-2 text-3xl font-semibold">{value}</p>
+    </div>
+  );
+}
+
+function SectionCard({
+  title,
+  eyebrow = "Course Module",
+  children,
+}: {
+  title: string;
+  eyebrow?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_14px_34px_rgba(15,23,42,0.06)]">
+      <div className="h-1.5 bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400" />
+      <div className="p-5 md:p-6">
+        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          {eyebrow}
+        </div>
+        <h2 className="mt-4 text-[1.4rem] font-bold tracking-tight text-slate-950 md:text-[1.55rem]">
+          {title}
+        </h2>
+        <div className="mt-4 space-y-3 text-[15px] leading-8 text-slate-700 md:text-[16px]">
+          {children}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function LogicTheorySection() {
+  const current = calculateCurrent(DEFAULT_VOLTAGE, DEFAULT_RESISTANCE);
+  const voltageLevel = getVoltageLevel(DEFAULT_VOLTAGE);
+  const currentLevel = getCurrentLevel(current);
+
+  const quizItems: QuizAccordionItem[] = [
+    {
+      question: "What is the main job of voltage in a circuit?",
+      answer:
+        "Voltage provides the electrical push that moves charge through the circuit.",
+    },
+    {
+      question: "What is the main job of current in a circuit?",
+      answer:
+        "Current shows how much charge is actually flowing through the circuit.",
+    },
+    {
+      question: "Can a circuit have voltage without a large current?",
+      answer:
+        "Yes. A circuit can have voltage available, but current may stay small if resistance is high or the path is incomplete.",
+    },
+    {
+      question: "Why do beginners often confuse voltage and current?",
+      answer:
+        "Because both are related, but one is the push and the other is the actual flow.",
+    },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <section className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Logic &amp; Theory
+            </div>
+            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 md:text-5xl">
+              Voltage vs Current Comparison
+            </h1>
+            <p className="mt-3 max-w-3xl text-lg font-medium leading-7 text-slate-800">
+              This lesson helps you separate two ideas that beginners often mix together.
+            </p>
+            <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">
+              We will compare voltage and current step by step, so you can clearly
+              see the difference between electrical push and electrical flow.
+            </p>
+            <p className="mt-2 max-w-3xl text-base leading-7 text-slate-600">
+              Keep one picture in mind. Voltage pushes. Current moves.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:min-w-[420px]">
+            <ValueCard label="Voltage" value={`${DEFAULT_VOLTAGE.toFixed(1)} V`} tone="red" />
+            <ValueCard label="Current" value={`${current.toFixed(2)} A`} tone="blue" />
+            <ValueCard label="Levels" value={`${voltageLevel} / ${currentLevel}`} tone="cyan" />
+          </div>
+        </div>
+      </section>
+
+      <SectionCard title="What is it?" eyebrow="Core Concept">
+        <p>
+          This topic compares voltage and current in one simple circuit.
+        </p>
+        <p>
+          Voltage is the electrical push that tries to move charge.
+        </p>
+        <p>
+          Current is the actual flow of charge through the circuit.
+        </p>
+        <p>
+          These two ideas are related, but they are not the same thing.
+        </p>
+        <p>
+          <strong>
+            Checkpoint Question: What is the simplest difference between voltage and current?
+          </strong>
+        </p>
+      </SectionCard>
+
+      <SectionCard title="Why is it important?" eyebrow="Why It Matters">
+        <p>
+          This topic is important because many beginners confuse voltage and current.
+        </p>
+        <p>
+          If you mix them up, circuit reading, testing, and calculation become much harder.
+        </p>
+        <p>
+          Electricians, technicians, and students need to know whether they are talking about the push or the flow.
+        </p>
+        <p>
+          <strong>Main point:</strong> Voltage and current work together, but they describe different things.
+        </p>
+        <p>
+          <strong>What to notice:</strong> Voltage can be present even when current is small or zero.
+        </p>
+        <p>
+          <strong>
+            Checkpoint Question: Why is it useful to separate the idea of push from the idea of flow?
+          </strong>
+        </p>
+      </SectionCard>
+
+      <SectionCard title="How does it work?" eyebrow="How It Works">
+        <p>
+          Let us use one simple circuit with a battery and a resistor.
+        </p>
+        <p>
+          In this lesson, the voltage is <strong>{DEFAULT_VOLTAGE.toFixed(1)} V</strong> and the resistance is <strong>{DEFAULT_RESISTANCE.toFixed(1)} Ohm</strong>.
+        </p>
+        <p>
+          That gives a current of <strong>{current.toFixed(2)} A</strong>.
+        </p>
+        <p>
+          Simple calculation:{" "}
+          <strong>
+            I = V / R = {DEFAULT_VOLTAGE.toFixed(1)} / {DEFAULT_RESISTANCE.toFixed(1)} = {current.toFixed(2)} A
+          </strong>
+        </p>
+        <p>
+          Here is the key comparison. Voltage is the reason the charge wants to move, but current is the result we observe after resistance affects that motion.
+        </p>
+        <p>
+          A common beginner mistake is to say voltage and current are the same because both appear in the same circuit.
+        </p>
+        <p>
+          <strong>Main point:</strong> Voltage is the push.
+        </p>
+        <p>
+          <strong>Main point:</strong> Current is the actual flow created by that push through a path.
+        </p>
+        <p>
+          <strong>
+            Checkpoint Question: In the formula, which value represents the push and which value represents the flow?
+          </strong>
+        </p>
+      </SectionCard>
+
+      <section className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_14px_34px_rgba(15,23,42,0.06)]">
+        <div className="h-1.5 bg-gradient-to-r from-amber-300 via-cyan-300 to-sky-400" />
+        <div className="p-5 md:p-6">
+          <div className="flex flex-col gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                Real Device Example
+              </div>
+              <h2 className="text-[1.4rem] font-bold tracking-tight text-slate-950 md:text-[1.55rem]">
+                Real-world example
+              </h2>
+              <div className="mt-4 space-y-3 text-[15px] leading-8 text-slate-700 md:text-[16px]">
+                <p>Think about a water pump and the water moving through a pipe.</p>
+                <p>
+                  The pump pressure is like voltage, because it pushes the water.
+                </p>
+                <p>
+                  The amount of water actually moving is like current.
+                </p>
+                <p>
+                  If the path is narrow or blocked, the flow changes even if the push still exists.
+                </p>
+                <p>
+                  This comparison helps in real troubleshooting, because you learn to ask whether the problem is weak push or weak flow.
+                </p>
+                <p>
+                  <strong>
+                    Checkpoint Question: In the water example, what matches voltage and what matches current?
+                  </strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <SectionCard title="Quick recap" eyebrow="Review">
+        <ul className="list-disc space-y-2 pl-5">
+          <li>Voltage is the electrical push.</li>
+          <li>Current is the actual flow of charge.</li>
+          <li>These two ideas are related, but they are not the same.</li>
+          <li>Resistance affects how much current the voltage can produce.</li>
+          <li>A circuit can have push available even when flow is small.</li>
+          <li>Clear thinking becomes easier when you separate push from flow.</li>
+        </ul>
+      </SectionCard>
+
+      <SectionCard title="Knowledge check quiz" eyebrow="Check Yourself">
+        <p>Open each question to check the answer.</p>
+        <QuizAccordion items={quizItems} />
+      </SectionCard>
+    </div>
+  );
+}
