@@ -7,7 +7,7 @@ import {
   formatNumber,
 } from "./logic";
 import { ChargeBar } from "./ChargeBar";
-import type { CapacitorComputedState } from "./types";
+import type { CapacitorSnapshot } from "./types";
 
 export function KnowledgeSection({
   capacitance,
@@ -16,7 +16,7 @@ export function KnowledgeSection({
 }: {
   capacitance: number;
   supplyVoltage: number;
-  computed: CapacitorComputedState;
+  computed: CapacitorSnapshot;
 }) {
   return (
     <div className="grid gap-6 lg:grid-cols-3">

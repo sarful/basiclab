@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { clamp, formatNumber } from "./logic";
 import { FlowDots } from "./FlowDots";
 import { FuseSymbol } from "./FuseSymbol";

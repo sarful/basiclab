@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 
-import DOLStarterPowerDiagram from "../src/library/dol-project/DOLStarterPowerDiagram";
+import DOLStarterPowerDiagram from "../src/dol-project/DOLStarterPowerDiagram";
 
 type DiagramMode = "power";
 

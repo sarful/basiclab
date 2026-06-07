@@ -9,7 +9,10 @@ import {
   validateMultimeterLeadSetup,
 } from "./multimeterModes";
 import type { MultimeterDialStopId } from "./DigitalMultimeterRotaryDial";
-import { multimeterDialStopsClockwise } from "./DigitalMultimeterRotaryDial";
+import {
+  multimeterDialStops,
+  multimeterDialStopsClockwise,
+} from "./DigitalMultimeterRotaryDial";
 
 type UseMultimeterDialOptions = {
   initialBlackLeadJack?: MultimeterJackId;

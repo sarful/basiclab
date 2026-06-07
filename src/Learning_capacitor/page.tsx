@@ -1,4 +1,4 @@
-import { PrimaryLinkButton } from "@/components/ui/PrimaryButton";
+import Link from "next/link";
 
 const topics = [
   "Capacitor",
@@ -27,12 +27,18 @@ export default function IndustrialAutomationCapacitorChapterPage() {
             common capacitor types are grouped in this chapter.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <PrimaryLinkButton href="/books/industrial-automation">
+            <Link
+              href="/books/industrial-automation"
+              className="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+            >
               Back to Book
-            </PrimaryLinkButton>
-            <PrimaryLinkButton href="/books/industrial-automation/chapter-03-diode">
+            </Link>
+            <Link
+              href="/books/industrial-automation/chapter-03-diode"
+              className="inline-flex items-center rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50"
+            >
               Next Chapter
-            </PrimaryLinkButton>
+            </Link>
           </div>
         </header>
 

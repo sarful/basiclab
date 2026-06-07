@@ -144,7 +144,7 @@ export function CapacitorStructureVisual({
           ))}
 
           <text x="270" y="150" fill="#2563eb" fontSize="12" fontWeight="800">
-            Electron collects on negative plate ->
+            {"Electron collects on negative plate ->"}
           </text>
           <text x="585" y="150" fill="#dc2626" fontSize="12" fontWeight="800">
             Positive plate lacks electrons

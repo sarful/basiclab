@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "./motion";
+import { motion } from "framer-motion";
 
 type BandMode = 4 | 5 | 6;
 

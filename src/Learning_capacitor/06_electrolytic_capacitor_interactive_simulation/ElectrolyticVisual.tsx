@@ -120,7 +120,7 @@ export function ElectrolyticVisual({
           <text x="420" y="222" textAnchor="middle" fill="#334155" fontSize="12" fontWeight="800">Aluminum electrolytic</text>
           <text x="420" y="244" textAnchor="middle" fill="#7c3aed" fontSize="12" fontWeight="800">ESR = {esr} Ohm</text>
 
-          <text x="220" y="145" textAnchor="middle" fill="#f97316" fontSize="12" fontWeight="800">Positive supply -> + lead</text>
+          <text x="220" y="145" textAnchor="middle" fill="#f97316" fontSize="12" fontWeight="800">{"Positive supply -> + lead"}</text>
           <text x="645" y="145" textAnchor="middle" fill="#0284c7" fontSize="12" fontWeight="800">Negative stripe marks - side</text>
 
           {Array.from({ length: electronCount }).map((_, index) => (

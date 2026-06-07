@@ -97,7 +97,7 @@ export const multimeterFaceMajorLabelsV2: MultimeterFaceMajorLabelV2[] = [
 
 const globalStopAngles = buildAngleSeries(-165, 177, 19);
 
-export const multimeterFaceStopsV2: MultimeterFaceStopV2[] = [
+const multimeterFaceStopDefinitionsV2: MultimeterFaceStopV2[] = [
   {
     id: "dcv_1000",
     angle: globalStopAngles[3],
@@ -245,11 +245,14 @@ export const multimeterFaceStopsV2: MultimeterFaceStopV2[] = [
     tone: "green",
   },
   { id: "diode", angle: globalStopAngles[12], tone: "red" },
-].map((stop) => ({
+];
+
+export const multimeterFaceStopsV2: MultimeterFaceStopV2[] =
+  multimeterFaceStopDefinitionsV2.map((stop): MultimeterFaceStopV2 => ({
   tickInnerRadius: multimeterGeometry.dial.outerRadius * 1.015,
   tickOuterRadius: multimeterGeometry.dial.outerRadius * 1.105,
   ...stop,
-}));
+  }));
 
 export const multimeterFaceDiodeV2 = {
   angle: globalStopAngles[12],

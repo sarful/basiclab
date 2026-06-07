@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "./motion";
+import { motion } from "framer-motion";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);

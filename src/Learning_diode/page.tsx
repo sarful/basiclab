@@ -1,4 +1,4 @@
-import { PrimaryLinkButton } from "@/components/ui/PrimaryButton";
+import Link from "next/link";
 
 const topics = [
   {
@@ -97,12 +97,18 @@ export default function IndustrialAutomationDiodeChapterPage() {
             purpose diodes are grouped in this chapter.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <PrimaryLinkButton href="/books/industrial-automation">
+            <Link
+              href="/books/industrial-automation"
+              className="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+            >
               Back to Book
-            </PrimaryLinkButton>
-            <PrimaryLinkButton href="/books/industrial-automation/chapter-04-transformer">
+            </Link>
+            <Link
+              href="/books/industrial-automation/chapter-04-transformer"
+              className="inline-flex items-center rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50"
+            >
               Next Chapter
-            </PrimaryLinkButton>
+            </Link>
           </div>
         </header>
 
@@ -120,7 +126,12 @@ export default function IndustrialAutomationDiodeChapterPage() {
                 </h3>
                 <div className="mt-4">
                   {topic.available && topic.href ? (
-                    <PrimaryLinkButton href={topic.href}>Open Topic</PrimaryLinkButton>
+                    <Link
+                      href={topic.href}
+                      className="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                    >
+                      Open Topic
+                    </Link>
                   ) : (
                     <span className="inline-flex items-center justify-center rounded-xl border border-text/15 bg-bg px-4 py-2.5 text-sm font-semibold text-text/50">
                       In Progress

@@ -211,3 +211,5 @@ export const multimeterDialStops = multimeterStopLayout.map((stop) => ({
 export const multimeterDialStopsClockwise = [...multimeterDialStops].sort(
   (left, right) => left.angle - right.angle,
 );
+
+export type { MultimeterDialStopId } from "./multimeterStopLayout";

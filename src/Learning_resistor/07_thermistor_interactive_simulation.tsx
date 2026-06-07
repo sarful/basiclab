@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "./motion";
+import { motion } from "framer-motion";
 
 type ThermistorMode = "ntc" | "ptc";
 
