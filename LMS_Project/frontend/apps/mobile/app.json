@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Electrical Training Platform Mobile",
+    "slug": "electrical-training-platform-mobile",
+    "scheme": "electrical-training-platform-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

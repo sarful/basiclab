@@ -1,0 +1,42 @@
+{
+  "name": "electrical_training_platform",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "dev:web": "next dev",
+    "dev:mobile": "npm run start --workspace @electrical-training/mobile",
+    "build": "next build",
+    "build:web": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:web": "eslint ."
+  },
+  "dependencies": {
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^1.17.0",
+    "motion": "^12.42.0",
+    "next": "^16.0.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.6.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.59.2"
+  }
+}

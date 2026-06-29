@@ -1,0 +1,11 @@
+export const ACCESS_TOKEN_COOKIE = "bl_access_token";
+export const REFRESH_TOKEN_COOKIE = "bl_refresh_token";
+export const CSRF_TOKEN_COOKIE = "bl_csrf_token";
+export const CSRF_TOKEN_HEADER = "x-csrf-token";
+export const ACCESS_TOKEN_TTL_SECONDS = 60 * 60 * 24;
+export const ACCESS_TOKEN_TTL_JWT = "24h";
+export const REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
+export const REFRESH_TOKEN_TTL_JWT = "7d";
+export const VERIFICATION_TOKEN_TTL_MS = 1000 * 60 * 60 * 24;
+export const OTP_TTL_MS = 1000 * 60 * 10;
+export const PASSWORD_RESET_TTL_MS = 1000 * 60 * 30;

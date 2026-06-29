@@ -1,0 +1,75 @@
+"use client";
+
+import React from "react";
+
+export interface OutputCoilProps {
+  width?: number;
+  height?: number;
+  label?: string;
+  energized?: boolean;
+}
+
+export default function OutputCoil({
+  width = 140,
+  height = 60,
+  label = "OUT",
+  energized = false,
+}: OutputCoilProps) {
+  const centerY = height / 2;
+  const strokeColor = energized ? "#22c55e" : "#000";
+
+  return (
+    <div className="inline-flex flex-col items-center">
+      <svg
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Left Wire */}
+        <line
+          x1="0"
+          y1={centerY}
+          x2="40"
+          y2={centerY}
+          stroke={strokeColor}
+          strokeWidth="3"
+        />
+
+        {/* Left Parenthesis */}
+        <path
+          d="M60 12 Q40 30 60 48"
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+
+        {/* Right Parenthesis */}
+        <path
+          d="M80 12 Q100 30 80 48"
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+
+        {/* Right Wire */}
+        <line
+          x1="100"
+          y1={centerY}
+          x2={width}
+          y2={centerY}
+          stroke={strokeColor}
+          strokeWidth="3"
+        />
+      </svg>
+
+      {label && (
+        <span className="mt-1 text-xs font-medium text-center">
+          {label}
+        </span>
+      )}
+    </div>
+  );
+}
