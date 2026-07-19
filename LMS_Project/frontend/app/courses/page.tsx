@@ -3,25 +3,44 @@
 import Link from "next/link";
 
 import { useBasicsCourseAccess } from "../../src/auth/useBasicsCourseAccess";
+import { useIndustrialSensorCourseAccess } from "../../src/auth/useIndustrialSensorCourseAccess";
 import {
   basicsCourseModules,
   basicsCourseProjects,
 } from "../../src/courses/basics-electronics-and-electrical/courseCatalog";
+import {
+  industrialSensorCourseHref,
+  industrialSensorCourseModules,
+  industrialSensorCourseTitle,
+  industrialSensorFirstLessonHref,
+} from "../../src/courses/Industrial_Sensor/courseCatalog";
 
 const courseTitle = "Basics Electronics and Electrical";
 const courseHref = "/courses/basics-electronics-and-electrical";
 const projectHref = "/courses/basics-electronics-and-electrical/projects";
 const firstLessonHref = "/current-voltage-learning/1";
-
 export default function CoursesIndexPage() {
-  const { loading, error, isAdmin, isLoggedIn, hasAccess, enrollment, course } =
+  const { loading, error, isAdmin, isLoggedIn, hasAccess, user, course } =
     useBasicsCourseAccess();
+  const industrialSensorAccess = useIndustrialSensorCourseAccess();
+  const showBasicsCourse = isAdmin || Boolean(course);
+  const showIndustrialSensorCourse = industrialSensorAccess.isAdmin || Boolean(industrialSensorAccess.course);
+  const totalCourseCount = Number(showBasicsCourse) + Number(showIndustrialSensorCourse);
+  const totalLessonCount =
+    (showBasicsCourse ? basicsCourseModules.length : 0) +
+    (showIndustrialSensorCourse ? industrialSensorCourseModules.length : 0);
 
   const accessLabel = loading
     ? "Checking access"
     : isAdmin
       ? `Admin view${course ? ` • ${course.status}` : ""}`
-      : enrollment?.status ?? (isLoggedIn ? "Not enrolled yet" : "Guest view");
+      : hasAccess
+        ? "Access unlocked"
+        : user?.accountState === "FREE"
+          ? "Upgrade required"
+          : isLoggedIn
+            ? "Account access ready"
+            : "Guest view";
 
   return (
     <main className="dashboard-page">
@@ -42,19 +61,20 @@ export default function CoursesIndexPage() {
 
             <h1>Courses</h1>
             <p className="dashboard-copy">
-              This LMS currently uses one main training track. Open the course workspace, review
-              lessons, projects, and continue from the correct access state.
+              This LMS now includes the core electrical basics track and the Industrial Sensor
+              simulator course. Open a course workspace, review lessons, and continue from the
+              correct access state.
             </p>
           </div>
 
           <aside className="course-directory-summary">
             <div className="course-sidebar-item">
-              <span>Active course</span>
-              <strong>1 live course workspace</strong>
+              <span>Active courses</span>
+              <strong>{totalCourseCount} live course workspaces</strong>
             </div>
             <div className="course-sidebar-item">
               <span>Lesson coverage</span>
-              <strong>{basicsCourseModules.length} lessons</strong>
+              <strong>{totalLessonCount} lessons</strong>
             </div>
             <div className="course-sidebar-item">
               <span>Project coverage</span>
@@ -64,7 +84,7 @@ export default function CoursesIndexPage() {
         </header>
 
         <section className="course-directory-grid">
-          <article className="course-directory-card">
+          {showBasicsCourse ? <article className="course-directory-card">
             <div className="course-page-title-row">
               <div>
                 <p className="dashboard-section-kicker">Featured Course</p>
@@ -78,7 +98,7 @@ export default function CoursesIndexPage() {
 
             <p className="dashboard-copy">
               The single industrial learning path for current, measurement, resistor,
-              capacitor, diode, transformer, fuse, optocoupler, pushbutton, relay,
+              capacitor, diode, transformer, fuse, magnetic contactor, optocoupler, pushbutton, relay,
               transistor, regulator, and water-flow analogy fundamentals.
             </p>
 
@@ -116,7 +136,60 @@ export default function CoursesIndexPage() {
                 </Link>
               )}
             </div>
-          </article>
+          </article> : null}
+
+          {showIndustrialSensorCourse ? <article className="course-directory-card">
+            <div className="course-page-title-row">
+              <div>
+                <p className="dashboard-section-kicker">New Course</p>
+                <h2>{industrialSensorCourseTitle}</h2>
+              </div>
+              <div className={`course-status-pill ${industrialSensorAccess.hasAccess || industrialSensorAccess.isAdmin ? "is-approved" : "is-neutral"}`}>
+                <span className="course-status-dot" />
+                {industrialSensorAccess.isAdmin
+                  ? `Admin view${industrialSensorAccess.course ? ` | ${industrialSensorAccess.course.status}` : ""}`
+                  : industrialSensorAccess.hasAccess
+                    ? "Access unlocked"
+                    : "Upgrade required"}
+              </div>
+            </div>
+
+            <p className="dashboard-copy">
+              A complete industrial sensor learning path with interactive labs for proximity,
+              photoelectric, ultrasonic, pressure, level, flow, load cell, electrical sensors,
+              temperature sensors, and motor feedback topics.
+            </p>
+
+            <div className="course-directory-metrics">
+              <article className="course-page-overview-card">
+                <span>Course path</span>
+                <strong>Industrial sensor simulator track</strong>
+              </article>
+              <article className="course-page-overview-card">
+                <span>Lessons</span>
+                <strong>{industrialSensorCourseModules.length} lab routes</strong>
+              </article>
+              <article className="course-page-overview-card">
+                <span>Practice</span>
+                <strong>Simulator, theory, wiring, quiz</strong>
+              </article>
+            </div>
+
+            <div className="dashboard-actions">
+              <Link href={industrialSensorCourseHref} className="dashboard-primary-link">
+                Open Course Page
+              </Link>
+              {industrialSensorAccess.hasAccess || industrialSensorAccess.isAdmin ? (
+                <Link href={industrialSensorFirstLessonHref} className="dashboard-secondary-link">
+                  Start Lesson 1
+                </Link>
+              ) : (
+                <Link href="/courses/industrial-sensor/invoice" className="dashboard-secondary-link">
+                  Upgrade required
+                </Link>
+              )}
+            </div>
+          </article> : null}
 
           <article className="course-directory-panel">
             <p className="dashboard-section-kicker">Course Access</p>
@@ -127,12 +200,12 @@ export default function CoursesIndexPage() {
                 <strong>Can open the course, projects, lessons, and manage publishing.</strong>
               </div>
               <div className="course-sidebar-item">
-                <span>Approved learner</span>
-                <strong>Can open the course page and unlock the full lesson path.</strong>
+                <span>Trial or paid learner</span>
+                <strong>Can open the course page and unlock the full lesson path directly.</strong>
               </div>
               <div className="course-sidebar-item">
-                <span>Guest or not enrolled</span>
-                <strong>Should register or enroll first before lesson access is granted.</strong>
+                <span>Guest or free learner</span>
+                <strong>Should login or upgrade before protected lesson access is granted.</strong>
               </div>
             </div>
           </article>

@@ -27,7 +27,7 @@ export function getAllowedLessonTabIds(role: UserRole | null) {
 }
 
 export function filterLessonTabsByRole<T extends string>(
-  tabs: LessonTabOption<T>[],
+  tabs: readonly LessonTabOption<T>[],
   role: UserRole | null,
 ) {
   const allowedTabIds = new Set<string>(getAllowedLessonTabIds(role));
@@ -35,7 +35,7 @@ export function filterLessonTabsByRole<T extends string>(
 }
 
 export function useAuthorizedLessonTabs<T extends string>(
-  allTabs: LessonTabOption<T>[],
+  allTabs: readonly LessonTabOption<T>[],
   preferredTab: T,
 ) {
   const [role, setRole] = useState<UserRole | null>(null);
@@ -82,7 +82,7 @@ export function useAuthorizedLessonTabs<T extends string>(
 
   return {
     activeTab,
-    setActiveTab,
+    setActiveTab: (tab: T) => setActiveTab(tab),
     tabs,
     role,
   };

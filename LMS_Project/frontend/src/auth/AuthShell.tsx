@@ -26,7 +26,7 @@ export default function AuthShell({
             <span className="auth-brand-badge">ET</span>
             <span>
               <strong>Electrical Training Platform</strong>
-              <small>Training portal + LMS access</small>
+              <small>Electrical learning platform</small>
             </span>
           </Link>
 
@@ -41,7 +41,7 @@ export default function AuthShell({
             <Link href="/register" className="auth-ghost-link">
               Register
             </Link>
-            <Link href="/dashboard" className="auth-ghost-link">
+            <Link href="/User/dashboard" className="auth-ghost-link">
               Dashboard
             </Link>
           </div>

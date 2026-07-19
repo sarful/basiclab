@@ -6,19 +6,17 @@ import { basicsCourseProjects } from "../../../../src/courses/basics-electronics
 import { useBasicsCourseAccess } from "../../../../src/auth/useBasicsCourseAccess";
 
 export default function BasicsElectronicsAndElectricalProjectsPage() {
-  const { loading, error, hasAccess, isAdmin, isLoggedIn, enrollment } = useBasicsCourseAccess();
+  const { loading, error, hasAccess, isAdmin, isLoggedIn } = useBasicsCourseAccess();
 
   const accessLabel = loading
     ? "Checking access"
     : isAdmin
       ? "Admin project access"
       : hasAccess
-        ? "Approved project access"
-        : enrollment?.status === "PENDING"
-          ? "Pending enrollment approval"
-          : isLoggedIn
-            ? "Enroll first to unlock projects"
-            : "Login required";
+        ? "Project access unlocked"
+        : isLoggedIn
+          ? "Upgrade to unlock projects"
+          : "Login required";
 
   return (
     <main className="dashboard-page">
@@ -98,8 +96,8 @@ export default function BasicsElectronicsAndElectricalProjectsPage() {
           </div>
 
           <p className="dashboard-copy">
-            Follow the projects in order. Admin can open every ready project directly. Learners
-            should enroll in the course first so the project track matches the lesson flow.
+            Follow the projects in order. Admin, trial, and paid users can open ready project steps directly.
+            Free users should upgrade first.
           </p>
 
           <div className="course-module-grid">
@@ -126,7 +124,7 @@ export default function BasicsElectronicsAndElectricalProjectsPage() {
                   <span>
                     {project.status === "coming-soon"
                       ? project.description
-                      : "Enroll and get approval first to unlock this project step."}
+                      : "Upgrade to unlock this project step."}
                   </span>
                 </article>
               );

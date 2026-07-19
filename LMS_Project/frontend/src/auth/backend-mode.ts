@@ -2,17 +2,21 @@
 
 import { useEffect, useState } from "react";
 
-export type BackendMode = "connected" | "disconnected";
+import { isSupabaseConfigured } from "@/src/lib/supabase/config";
+
+export type BackendMode = "connected" | "disconnected" | "supabase";
 
 const STORAGE_KEY = "lms-backend-mode";
 const MODE_EVENT = "lms-backend-mode-change";
 const DEFAULT_MODE: BackendMode =
   process.env.NEXT_PUBLIC_LMS_BACKEND_MODE === "disconnected"
     ? "disconnected"
-    : "connected";
+    : process.env.NEXT_PUBLIC_LMS_BACKEND_MODE === "supabase"
+      ? "supabase"
+      : "connected";
 
 function isBackendMode(value: string | null): value is BackendMode {
-  return value === "connected" || value === "disconnected";
+  return value === "connected" || value === "disconnected" || value === "supabase";
 }
 
 export function getBackendMode(): BackendMode {
@@ -26,6 +30,14 @@ export function getBackendMode(): BackendMode {
 
 export function isBackendDisconnected() {
   return getBackendMode() === "disconnected";
+}
+
+export function isSupabaseMode() {
+  return getBackendMode() === "supabase";
+}
+
+export function shouldUseSupabase() {
+  return isSupabaseMode() && isSupabaseConfigured();
 }
 
 export function setBackendMode(mode: BackendMode) {
@@ -63,6 +75,8 @@ export function useBackendMode() {
   return {
     mode,
     isDisconnected: mode === "disconnected",
+    isSupabase: mode === "supabase",
+    isSupabaseConfigured: isSupabaseConfigured(),
     setMode: setBackendMode,
   };
 }

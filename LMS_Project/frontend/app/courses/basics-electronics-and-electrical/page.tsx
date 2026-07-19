@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -21,13 +22,18 @@ import {
 } from "../../../src/courses/basics-electronics-and-electrical/courseCatalog";
 
 export default function BasicsElectronicsAndElectricalCoursePage() {
+  const router = useRouter();
   const {
     loading,
     error,
     user,
     course,
-    enrollment,
     hasAccess,
+    isTrialPreview,
+    previewLessonLimit,
+    trialDaysRemaining,
+    canAccessLesson,
+    accessOutcome,
     isAdmin,
     isLoggedIn,
     refresh,
@@ -104,12 +110,26 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
 
   const learnerStatusLabel = loading
     ? "Checking access"
-    : enrollment?.status ?? (isLoggedIn ? "Not enrolled yet" : "Login required");
+    : accessOutcome === "LOCKED_COURSE_UNAVAILABLE"
+      ? "Course unavailable"
+      : isTrialPreview
+        ? `Trial preview | ${previewLessonLimit} lessons | ${trialDaysRemaining ?? 0} days left`
+      : hasAccess
+      ? "Access unlocked"
+      : accessOutcome === "LOCKED_PAYMENT_PENDING"
+        ? "Payment pending review"
+        : accessOutcome === "LOCKED_UPGRADE_REQUIRED"
+          ? "Upgrade required"
+        : accessOutcome === "LOCKED_TRIAL_EXPIRED"
+          ? "Trial expired"
+          : isLoggedIn
+            ? "Upgrade required"
+            : "Login required";
 
   const learnerStatusTone =
-    enrollment?.status === "APPROVED"
+    hasAccess
       ? "is-approved"
-      : enrollment?.status === "PENDING"
+      : accessOutcome === "LOCKED_PAYMENT_PENDING"
         ? "is-pending"
         : "is-neutral";
 
@@ -122,7 +142,7 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
     : [
         { label: "Course role", value: "Learner portal" },
         { label: "Managed lessons", value: `${basicsCourseModules.length} modules` },
-        { label: "Enrollment state", value: learnerStatusLabel },
+        { label: "Access state", value: learnerStatusLabel },
       ];
 
   const heroMetrics = isAdmin
@@ -134,26 +154,32 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
     : [
         { label: "Course lessons", value: String(basicsCourseModules.length) },
         { label: "Project steps", value: String(basicsCourseProjects.length) },
-        { label: "Unlocked now", value: hasAccess ? String(basicsCourseModules.length) : "0" },
+        { label: "Unlocked now", value: hasAccess ? String(isTrialPreview ? Math.min(previewLessonLimit, basicsCourseModules.length) : basicsCourseModules.length) : "0" },
       ];
 
   async function handleEnroll() {
+    if (user?.accountState === "FREE") {
+      router.push("/courses/basics-electronics-and-electrical/invoice");
+      return;
+    }
+
     if (!course) {
-      setNotice("The backend course is not published yet.");
+      setNotice("This course is not available for access.");
       return;
     }
 
     setSubmitting(true);
     setNotice(null);
-
     try {
       const response = await createEnrollmentRequest(course.id);
-      setNotice(`${response.data.status} enrollment created. Lesson modules are now unlocked for this account.`);
+      setNotice(
+        response.data.status === "APPROVED"
+          ? "Enrollment approved. Course lessons are ready."
+          : "Access request submitted.",
+      );
       refresh();
     } catch (requestError) {
-      setNotice(
-        requestError instanceof Error ? requestError.message : "Unable to create enrollment.",
-      );
+      setNotice(requestError instanceof Error ? requestError.message : "Unable to open course access.");
     } finally {
       setSubmitting(false);
     }
@@ -167,6 +193,7 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
       const createResponse = await createAdminCourse({
         title: "Basics Electronics and Electrical",
         slug: BASICS_COURSE_SLUG,
+        categoryId: "11111111-1111-4111-8111-111111111111",
         description:
           "Single frontend course that groups the core electronics and electrical learning modules.",
       });
@@ -272,8 +299,8 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
 
     if (!isLoggedIn) {
       return (
-        <Link href="/register" className="dashboard-primary-link">
-          Register To Enroll
+        <Link href="/login" className="dashboard-primary-link">
+          Login to Continue
         </Link>
       );
     }
@@ -304,6 +331,14 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
       );
     }
 
+    if (!course) {
+      return (
+        <span className="dashboard-primary-link" aria-disabled="true">
+          Course Unavailable
+        </span>
+      );
+    }
+
     if (hasAccess) {
       return (
         <Link href="/current-voltage-learning/1" className="dashboard-primary-link">
@@ -312,9 +347,36 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
       );
     }
 
+    if (accessOutcome === "LOCKED_PAYMENT_PENDING") {
+      return (
+        <Link href="/courses/basics-electronics-and-electrical/invoice" className="dashboard-primary-link">
+          Payment Pending
+        </Link>
+      );
+    }
+
+    if (accessOutcome === "LOCKED_TRIAL_EXPIRED") {
+      return (
+        <Link href="/courses/basics-electronics-and-electrical/invoice" className="dashboard-primary-link">
+          Trial Expired - Upgrade
+        </Link>
+      );
+    }
+
+    if (
+      user?.accountState === "FREE" ||
+      accessOutcome === "LOCKED_UPGRADE_REQUIRED"
+    ) {
+      return (
+        <Link href="/courses/basics-electronics-and-electrical/invoice" className="dashboard-primary-link">
+          Enroll to Unlock
+        </Link>
+      );
+    }
+
     return (
-      <button type="button" className="dashboard-primary-link dashboard-button" onClick={handleEnroll}>
-        {submitting ? "Enrolling..." : "Enroll In This Course"}
+      <button type="button" className="dashboard-primary-link dashboard-button" onClick={handleEnroll} disabled={submitting}>
+        {submitting ? "Submitting..." : "Open Course Access"}
       </button>
     );
   }
@@ -325,13 +387,13 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
         <header className="course-page-hero">
           <div className="course-page-copy">
             <div className="course-page-topline">
-              <p className="dashboard-kicker">Course Portfolio</p>
+              <p className="dashboard-kicker">Engineering Course</p>
               <div className="course-page-quicklinks">
                 <Link href="/" className="dashboard-secondary-link">
                   Home
                 </Link>
-                <Link href="/dashboard" className="dashboard-secondary-link">
-                  Dashboard
+                <Link href={isAdmin ? "/Admin/courses" : "/User/my-courses"} className="dashboard-secondary-link">
+                  {isAdmin ? "Manage Course" : "My Courses"}
                 </Link>
               </div>
             </div>
@@ -340,25 +402,22 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
               <div>
                 <h1>Basics Electronics and Electrical</h1>
                 <p className="dashboard-copy">
-                  A single professional course workspace for current, resistor, capacitor,
-                  diode, transformer, relay, transistor, regulation, and measurement training.
+                  Learn core electrical and electronics concepts through lessons and practical projects.
                 </p>
               </div>
 
               <div className={`course-status-pill ${learnerStatusTone}`}>
                 <span className="course-status-dot" />
-                {isAdmin ? `Admin View${course ? ` • ${course.status}` : ""}` : learnerStatusLabel}
+                {isAdmin ? `Admin View${course ? ` | ${course.status}` : ""}` : learnerStatusLabel}
               </div>
             </div>
 
             <div className="dashboard-actions">
-              <Link href="/" className="dashboard-secondary-link">
-                Back to homepage
-              </Link>
+              {!isLoggedIn ? <Link href="/register" className="dashboard-secondary-link">Create Account</Link> : null}
               {renderPrimaryAction()}
-              <Link href="/courses/basics-electronics-and-electrical/projects" className="dashboard-secondary-link">
-                Course projects
-              </Link>
+              {hasAccess || isAdmin ? (
+                <Link href="/courses/basics-electronics-and-electrical/projects" className="dashboard-secondary-link">Course Projects</Link>
+              ) : null}
             </div>
 
             {notice ? <p className="dashboard-copy">{notice}</p> : null}
@@ -376,7 +435,7 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
 
           <aside className="course-page-sidebar">
             <div className="course-sidebar-panel">
-              <p className="dashboard-section-kicker">Course Snapshot</p>
+                <p className="dashboard-section-kicker">Course Overview</p>
               <div className="course-page-metrics">
                 {heroMetrics.map((item) => (
                   <article key={item.label} className="course-page-metric-card">
@@ -559,18 +618,17 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
             <div className="dashboard-card-head">
               <div>
                 <p className="dashboard-section-kicker">Course Roadmap</p>
-                <h2>Lessons unlock after enrollment approval</h2>
+                <h2>{!course ? "Course unavailable" : hasAccess ? "Continue your lessons" : "Lessons require upgrade"}</h2>
               </div>
             </div>
 
             <p className="dashboard-copy">
-              Start with Lesson 1 Current and Voltage, then move through each numbered lesson in
-              order across the full basics electronics and electrical track.
+              Follow the lessons in order and complete each practical topic.
             </p>
 
             <div className="course-module-grid">
               {basicsCourseModules.map((module, index) =>
-                hasAccess ? (
+                canAccessLesson(index) ? (
                   <Link key={module.href} href={module.href} className="course-module-card">
                     <small>{`Lesson ${index + 1}`}</small>
                     <strong>{module.title.replace(/^Lesson \d+\s/, "")}</strong>
@@ -580,17 +638,25 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
                   <article key={module.href} className="course-module-card is-locked">
                     <small>{`Lesson ${index + 1}`}</small>
                     <strong>{module.title.replace(/^Lesson \d+\s/, "")}</strong>
-                    <span>Enroll to unlock this lesson</span>
+                    <span>
+                      {!course
+                        ? "This course is not published for learners."
+                        : isTrialPreview
+                        ? "Trial preview limit reached"
+                        : user?.accountState === "FREE"
+                        ? "Upgrade to unlock"
+                        : "Login with trial or paid access"}
+                    </span>
                   </article>
                 ),
               )}
             </div>
 
-            <div className="dashboard-actions" style={{ marginTop: 24 }}>
-              <Link href="/courses/basics-electronics-and-electrical/projects" className="dashboard-secondary-link">
-                Open project steps
-              </Link>
-            </div>
+            {hasAccess ? (
+              <div className="dashboard-actions" style={{ marginTop: 24 }}>
+                <Link href="/courses/basics-electronics-and-electrical/projects" className="dashboard-secondary-link">Open Project Steps</Link>
+              </div>
+            ) : null}
           </section>
         )}
       </section>
