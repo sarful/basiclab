@@ -1,0 +1,47 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - "LMS_Project/backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    paths:
+      - "LMS_Project/backend/**"
+      - ".github/workflows/backend-ci.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "mongodb://placeholder:27017/basicslearn"
+      DATABASE_NAME: "basicslearn"
+      JWT_ACCESS_SECRET: "1234567890abcdef"
+      JWT_REFRESH_SECRET: "abcdef1234567890"
+      TOKEN_ISSUER: "basicslearn-lms"
+      STORAGE_DRIVER: "local"
+      UPLOAD_DIR: "./uploads"
+      MAX_FILE_SIZE_MB: "25"
+    defaults:
+      run:
+        working-directory: LMS_Project/backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: LMS_Project/backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint

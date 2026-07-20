@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms and Conditions | Electrical Training Platform",
-  description: "Terms and conditions for using the Electrical Training Platform.",
+  title: "Terms and Conditions | MechatronicsLAB",
+  description: "Terms and conditions for using MechatronicsLAB.",
 };
 
 const sections = [
@@ -29,7 +29,7 @@ const sections = [
   },
   {
     title: "Learning content",
-    body: "Lessons, simulations, projects, downloads, and other course materials are provided for personal learning. They may not be copied, resold, or redistributed without permission.",
+    body: "Lessons, simulations, downloads, and other course materials are provided for personal learning. They may not be copied, resold, or redistributed without permission.",
   },
   {
     title: "Progress and certificates",
@@ -50,9 +50,9 @@ export default function TermsPage() {
     <main className="terms-page">
       <section className="terms-shell">
         <header className="terms-hero">
-          <Link href="/" className="terms-brand" aria-label="Electrical Training Platform home">
-            <span>ET</span>
-            <strong>Electrical Training Platform</strong>
+          <Link href="/" className="terms-brand" aria-label="MechatronicsLAB home">
+            <span>ML</span>
+            <strong>MechatronicsLAB</strong>
           </Link>
           <p className="terms-kicker">Legal</p>
           <h1>Terms and Conditions</h1>

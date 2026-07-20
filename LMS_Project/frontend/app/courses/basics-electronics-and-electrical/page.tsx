@@ -16,10 +16,7 @@ import {
 import { BASICS_COURSE_SLUG } from "../../../src/auth/course-access";
 import type { EnrollmentRecord } from "../../../src/auth/types";
 import { useBasicsCourseAccess } from "../../../src/auth/useBasicsCourseAccess";
-import {
-  basicsCourseModules,
-  basicsCourseProjects,
-} from "../../../src/courses/basics-electronics-and-electrical/courseCatalog";
+import { basicsCourseModules } from "../../../src/courses/basics-electronics-and-electrical/courseCatalog";
 
 export default function BasicsElectronicsAndElectricalCoursePage() {
   const router = useRouter();
@@ -153,7 +150,7 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
       ]
     : [
         { label: "Course lessons", value: String(basicsCourseModules.length) },
-        { label: "Project steps", value: String(basicsCourseProjects.length) },
+        { label: "Simulation practice", value: "Included" },
         { label: "Unlocked now", value: hasAccess ? String(isTrialPreview ? Math.min(previewLessonLimit, basicsCourseModules.length) : basicsCourseModules.length) : "0" },
       ];
 
@@ -402,7 +399,8 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
               <div>
                 <h1>Basics Electronics and Electrical</h1>
                 <p className="dashboard-copy">
-                  Learn core electrical and electronics concepts through lessons and practical projects.
+                  Learn core electrical and electronics concepts through structured lessons,
+                  visual circuit practice, and guided checkpoints.
                 </p>
               </div>
 
@@ -415,9 +413,6 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
             <div className="dashboard-actions">
               {!isLoggedIn ? <Link href="/register" className="dashboard-secondary-link">Create Account</Link> : null}
               {renderPrimaryAction()}
-              {hasAccess || isAdmin ? (
-                <Link href="/courses/basics-electronics-and-electrical/projects" className="dashboard-secondary-link">Course Projects</Link>
-              ) : null}
             </div>
 
             {notice ? <p className="dashboard-copy">{notice}</p> : null}
@@ -561,38 +556,6 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
             <section className="dashboard-surface-card course-surface-card">
               <div className="dashboard-card-head">
                 <div>
-                  <p className="dashboard-section-kicker">Project List</p>
-                  <h2>Project workspaces inside this course</h2>
-                </div>
-              </div>
-
-              <p className="dashboard-copy">
-                The course project folder is now attached to Basics Electronics and Electrical and
-                the first ready projects open step by step from one place.
-              </p>
-
-              <div className="course-module-grid">
-                {basicsCourseProjects.map((project) =>
-                  project.href ? (
-                    <Link key={project.title} href={project.href} className="course-module-card">
-                      <small>{project.status === "ready" ? "Ready project" : "Project route"}</small>
-                      <strong>{project.title}</strong>
-                      <span>{project.description}</span>
-                    </Link>
-                  ) : (
-                    <article key={project.title} className="course-module-card is-locked">
-                      <small>Next phase</small>
-                      <strong>{project.title}</strong>
-                      <span>{project.description}</span>
-                    </article>
-                  ),
-                )}
-              </div>
-            </section>
-
-            <section className="dashboard-surface-card course-surface-card">
-              <div className="dashboard-card-head">
-                <div>
                   <p className="dashboard-section-kicker">Lesson List</p>
                   <h2>All lessons in this course</h2>
                 </div>
@@ -623,7 +586,7 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
             </div>
 
             <p className="dashboard-copy">
-              Follow the lessons in order and complete each practical topic.
+              Follow the lessons in order and complete each interactive practice topic.
             </p>
 
             <div className="course-module-grid">
@@ -651,12 +614,6 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
                 ),
               )}
             </div>
-
-            {hasAccess ? (
-              <div className="dashboard-actions" style={{ marginTop: 24 }}>
-                <Link href="/courses/basics-electronics-and-electrical/projects" className="dashboard-secondary-link">Open Project Steps</Link>
-              </div>
-            ) : null}
           </section>
         )}
       </section>

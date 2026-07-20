@@ -17,15 +17,12 @@ import { useBasicsCourseAccess } from "../src/auth/useBasicsCourseAccess";
 
 const COURSE_URL = "/courses/basics-electronics-and-electrical";
 
-const PROJECTS_URL = "/courses/basics-electronics-and-electrical/projects";
-
 type IconName =
   | "arrow"
   | "book"
   | "check"
   | "circuit"
   | "menu"
-  | "play"
   | "star"
   | "users"
   | "x"
@@ -39,12 +36,11 @@ type IconProps = {
 const navigationItems = [
   { label: "Home", href: "/" },
   { label: "Course", href: COURSE_URL },
-  { label: "Projects", href: PROJECTS_URL },
 ];
 
 const benefits = [
   "Beginner-friendly lessons",
-  "Interactive practical projects",
+  "Animated electrical simulations",
   "Progress and completion tracking",
 ];
 
@@ -88,8 +84,6 @@ function Icon({ name, size = 20 }: IconProps) {
         <path d="M4 18h16" />
       </>
     ),
-
-    play: <path d="m8 5 11 7-11 7Z" />,
 
     star: (
       <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01Z" />
@@ -413,7 +407,11 @@ export default function HomeLanding() {
     try {
       const response = await createEnrollmentRequest(course.id);
 
-      setNotice(response.data.status === "APPROVED" ? "Course access is active now." : "Course access updated.");
+      setNotice(
+        response.data.status === "APPROVED"
+          ? "Course access is active now."
+          : "Course access updated.",
+      );
 
       await refresh();
     } catch (requestError) {
@@ -437,7 +435,7 @@ export default function HomeLanding() {
         slug: BASICS_COURSE_SLUG,
         categoryId: "11111111-1111-4111-8111-111111111111",
         description:
-          "Learn electrical fundamentals, electronic components, circuits, measurement, safety, and practical projects.",
+          "Learn electrical fundamentals, electronic components, circuits, measurement, safety, and interactive simulations.",
       });
 
       await publishAdminCourse(response.data.id);
@@ -562,14 +560,14 @@ export default function HomeLanding() {
     <main className="el-page">
       <header className="el-header">
         <div className="el-container el-header-inner">
-          <Link href="/" className="el-brand" aria-label="ET LMS home">
+          <Link href="/" className="el-brand" aria-label="MechatronicsLAB home">
             <span className="el-brand-icon">
               <Icon name="zap" size={20} />
             </span>
 
             <span className="el-brand-copy">
-              <strong>ET LMS</strong>
-              <small>Electrical Training</small>
+              <strong>MechatronicsLAB</strong>
+              {/* <small>Electrical Training</small> */}
             </span>
           </Link>
 
@@ -683,7 +681,7 @@ export default function HomeLanding() {
       <section className="el-hero">
         <div className="el-container el-hero-grid">
           <div className="el-hero-copy">
-            <p className="el-eyebrow">Electrical training platform</p>
+            <p className="el-eyebrow">BasicsLAB</p>
 
             <h1>
               Build real-world
@@ -692,22 +690,12 @@ export default function HomeLanding() {
             </h1>
 
             <p className="el-description">
-              Clear lessons, practical projects, and job-relevant electrical
-              knowledge.
+              Structured lessons, visual circuit simulations, and job-relevant
+              electrical knowledge for focused technical learning.
             </p>
 
             <div className="el-hero-actions">
               {renderCourseAction()}
-
-              <Link
-                href={PROJECTS_URL}
-                className="el-button el-button-secondary"
-              >
-                <span className="el-play-icon">
-                  <Icon name="play" size={13} />
-                </span>
-                View projects
-              </Link>
             </div>
 
             {(notice || visibleError) && (
@@ -757,15 +745,6 @@ export default function HomeLanding() {
             </article>
 
             <article>
-              <Icon name="circuit" size={24} />
-
-              <div>
-                <strong>8</strong>
-                <small>Practical projects</small>
-              </div>
-            </article>
-
-            <article>
               <Icon name="star" size={24} />
 
               <div>
@@ -783,7 +762,7 @@ export default function HomeLanding() {
             <div>
               <p>Basics Electronics and Electrical</p>
 
-              <h2>Start learning with practical lessons and projects.</h2>
+              <h2>Start learning with clear lessons and interactive circuit practice.</h2>
             </div>
 
             <div className="el-cta-actions">
@@ -818,8 +797,8 @@ export default function HomeLanding() {
           margin: 0;
           padding: 0;
           overflow-x: hidden;
-          color: #ffffff;
-          background: #061518;
+          color: #14213d;
+          background: #ffffff;
           font-family:
             Inter,
             ui-sans-serif,
@@ -847,8 +826,8 @@ export default function HomeLanding() {
           width: 100%;
           min-height: 100vh;
           overflow-x: hidden;
-          color: #ffffff;
-          background: #061518;
+          color: #14213d;
+          background: #ffffff;
         }
 
         .el-container {
@@ -859,8 +838,8 @@ export default function HomeLanding() {
         .el-header {
           position: relative;
           z-index: 100;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(5, 20, 23, 0.94);
+          border-bottom: 1px solid #e6edf3;
+          background: rgba(255, 255, 255, 0.94);
           backdrop-filter: blur(18px);
         }
 
@@ -885,9 +864,9 @@ export default function HomeLanding() {
           display: grid;
           place-items: center;
           border-radius: 13px;
-          color: #031614;
-          background: #2dd4bf;
-          box-shadow: 0 10px 26px rgba(45, 212, 191, 0.22);
+          color: #ffffff;
+          background: linear-gradient(135deg, #0f766e, #2563eb);
+          box-shadow: 0 10px 26px rgba(37, 99, 235, 0.18);
         }
 
         .el-brand-copy {
@@ -896,12 +875,13 @@ export default function HomeLanding() {
         }
 
         .el-brand-copy strong {
+          color: #102033;
           font-size: 17px;
         }
 
         .el-brand-copy small {
           margin-top: 6px;
-          color: #72d8cc;
+          color: #0f766e;
           font-size: 8px;
           font-weight: 800;
           letter-spacing: 0.14em;
@@ -917,15 +897,15 @@ export default function HomeLanding() {
         .el-desktop-nav a {
           padding: 10px 15px;
           border-radius: 9px;
-          color: #a7bdc0;
+          color: #5d6f85;
           font-size: 13px;
           font-weight: 700;
         }
 
         .el-desktop-nav a:hover,
         .el-desktop-nav a.is-active {
-          color: #ffffff;
-          background: rgba(255, 255, 255, 0.06);
+          color: #0f766e;
+          background: #e8f7f4;
         }
 
         .el-desktop-actions {
@@ -966,32 +946,32 @@ export default function HomeLanding() {
         }
 
         .el-button-primary {
-          color: #031614;
-          background: linear-gradient(135deg, #22d3bd, #47e6ce);
-          box-shadow: 0 14px 32px rgba(34, 211, 189, 0.2);
+          color: #ffffff;
+          background: linear-gradient(135deg, #0f766e, #2563eb);
+          box-shadow: 0 14px 32px rgba(37, 99, 235, 0.18);
         }
 
         .el-button-secondary {
-          color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          background: rgba(255, 255, 255, 0.04);
+          color: #0f766e;
+          border: 1px solid #b8e2dc;
+          background: #ffffff;
         }
 
         .el-button-outline {
-          color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.19);
-          background: rgba(255, 255, 255, 0.06);
+          color: #0f766e;
+          border: 1px solid #b8e2dc;
+          background: #f7fcfb;
         }
 
         .el-button-ghost {
-          color: #bed0d2;
+          color: #52677d;
           background: transparent;
         }
 
         .el-button-light {
-          color: #07635b;
-          background: #ffffff;
-          box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+          color: #ffffff;
+          background: linear-gradient(135deg, #0f766e, #2563eb);
+          box-shadow: 0 14px 32px rgba(37, 99, 235, 0.18);
         }
 
         .el-menu-button {
@@ -999,10 +979,10 @@ export default function HomeLanding() {
           height: 44px;
           display: none;
           place-items: center;
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          border: 1px solid #d7e4ed;
           border-radius: 11px;
-          color: #ffffff;
-          background: rgba(255, 255, 255, 0.06);
+          color: #14213d;
+          background: #ffffff;
         }
 
         .el-mobile-menu {
@@ -1013,30 +993,20 @@ export default function HomeLanding() {
           position: relative;
           padding: 86px 0 54px;
           background:
-            radial-gradient(
-              circle at 30% 15%,
-              rgba(20, 184, 166, 0.13),
-              transparent 30%
-            ),
-            radial-gradient(
-              circle at 90% 65%,
-              rgba(13, 148, 136, 0.12),
-              transparent 28%
-            ),
-            linear-gradient(90deg, #041315, #071f23);
+            linear-gradient(180deg, #ffffff 0%, #f7fbff 48%, #ffffff 100%);
         }
 
         .el-hero::before {
           content: "";
           position: absolute;
           inset: 0;
-          opacity: 0.18;
+          opacity: 0.8;
           pointer-events: none;
           background-image:
-            linear-gradient(rgba(45, 212, 191, 0.05) 1px, transparent 1px),
+            linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
             linear-gradient(
               90deg,
-              rgba(45, 212, 191, 0.05) 1px,
+              rgba(15, 118, 110, 0.055) 1px,
               transparent 1px
             );
           background-size: 44px 44px;
@@ -1061,7 +1031,7 @@ export default function HomeLanding() {
 
         .el-eyebrow {
           margin: 0 0 20px;
-          color: #5eead4;
+          color: #0f766e;
           font-size: 11px;
           font-weight: 900;
           letter-spacing: 0.15em;
@@ -1071,22 +1041,22 @@ export default function HomeLanding() {
         .el-hero-copy h1 {
           max-width: 670px;
           margin: 0;
-          color: #ffffff;
+          color: #122033;
           font-size: clamp(52px, 5vw, 76px);
           font-weight: 800;
           line-height: 1.03;
-          letter-spacing: -0.058em;
+          letter-spacing: 0;
         }
 
         .el-hero-copy h1 span {
           display: block;
-          color: #20cdb8;
+          color: #2563eb;
         }
 
         .el-description {
           max-width: 560px;
           margin: 28px 0 0;
-          color: #c1d2d5;
+          color: #53677d;
           font-size: 17px;
           line-height: 1.72;
         }
@@ -1099,14 +1069,6 @@ export default function HomeLanding() {
           flex-wrap: wrap;
         }
 
-        .el-play-icon {
-          width: 28px;
-          height: 28px;
-          display: grid;
-          place-items: center;
-          color: #5eead4;
-        }
-
         .el-feedback-list {
           max-width: 560px;
           margin-top: 20px;
@@ -1117,18 +1079,18 @@ export default function HomeLanding() {
         .el-feedback {
           margin: 0;
           padding: 11px 13px;
-          border: 1px solid rgba(94, 234, 212, 0.24);
+          border: 1px solid #b8e2dc;
           border-radius: 10px;
-          color: #a7f3d0;
-          background: rgba(13, 148, 136, 0.1);
+          color: #0f766e;
+          background: #eefbf8;
           font-size: 12px;
           font-weight: 700;
         }
 
         .el-feedback.is-error {
-          color: #fecaca;
-          border-color: rgba(248, 113, 113, 0.3);
-          background: rgba(127, 29, 29, 0.18);
+          color: #b91c1c;
+          border-color: #fecaca;
+          background: #fff1f2;
         }
 
         .el-benefit-list {
@@ -1143,7 +1105,7 @@ export default function HomeLanding() {
           display: flex;
           align-items: center;
           gap: 11px;
-          color: #edfdfb;
+          color: #34475d;
           font-size: 13px;
           font-weight: 700;
         }
@@ -1154,8 +1116,8 @@ export default function HomeLanding() {
           display: grid;
           place-items: center;
           border-radius: 50%;
-          color: #031614;
-          background: #20cdb8;
+          color: #ffffff;
+          background: #0f766e;
         }
 
         .el-preview-wrapper {
@@ -1167,10 +1129,10 @@ export default function HomeLanding() {
         .el-preview-card {
           position: relative;
           overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.13);
-          border-radius: 24px;
-          background: rgba(5, 23, 28, 0.96);
-          box-shadow: 0 35px 70px rgba(0, 0, 0, 0.34);
+          border: 1px solid #dfeaf2;
+          border-radius: 16px;
+          background: #ffffff;
+          box-shadow: 0 26px 70px rgba(37, 99, 235, 0.12);
         }
 
         .el-preview-header {
@@ -1179,7 +1141,7 @@ export default function HomeLanding() {
           align-items: center;
           justify-content: space-between;
           gap: 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+          border-bottom: 1px solid #edf2f7;
         }
 
         .el-preview-header > div {
@@ -1188,7 +1150,7 @@ export default function HomeLanding() {
         }
 
         .el-preview-header small {
-          color: #7d999d;
+          color: #6b7f94;
           font-size: 9px;
           font-weight: 800;
           letter-spacing: 0.1em;
@@ -1196,15 +1158,15 @@ export default function HomeLanding() {
         }
 
         .el-preview-header strong {
-          color: #ffffff;
+          color: #14213d;
           font-size: 17px;
         }
 
         .el-status {
           padding: 7px 10px;
           border-radius: 999px;
-          color: #a7f3d0;
-          background: rgba(16, 185, 129, 0.2);
+          color: #0f766e;
+          background: #dff8f3;
           font-size: 8px;
           font-weight: 800;
           text-transform: uppercase;
@@ -1218,15 +1180,15 @@ export default function HomeLanding() {
 
         .el-preview-sidebar {
           padding: 24px 12px;
-          border-right: 1px solid rgba(255, 255, 255, 0.06);
-          background: #06171c;
+          border-right: 1px solid #edf2f7;
+          background: #f7fbff;
         }
 
         .el-module-label {
           margin-bottom: 14px;
           padding: 0 9px;
           display: block;
-          color: #d4e6e8;
+          color: #435971;
           font-size: 10px;
           font-weight: 800;
         }
@@ -1239,18 +1201,14 @@ export default function HomeLanding() {
           justify-content: space-between;
           gap: 8px;
           border-radius: 8px;
-          color: #9fb5b8;
+          color: #60758b;
           font-size: 9px;
           font-weight: 700;
         }
 
         .el-sidebar-item.is-active {
-          color: #dcfffa;
-          background: linear-gradient(
-            90deg,
-            rgba(15, 118, 110, 0.9),
-            rgba(15, 118, 110, 0.35)
-          );
+          color: #0f766e;
+          background: #e8f7f4;
         }
 
         .el-sidebar-item i {
@@ -1259,9 +1217,9 @@ export default function HomeLanding() {
           flex-shrink: 0;
           display: grid;
           place-items: center;
-          border: 1px solid #3c5a60;
+          border: 1px solid #c9d8e4;
           border-radius: 50%;
-          color: #5eead4;
+          color: #0f766e;
         }
 
         .el-lesson-area {
@@ -1273,7 +1231,7 @@ export default function HomeLanding() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          color: #cce0e2;
+          color: #455c73;
           font-size: 10px;
           font-weight: 700;
         }
@@ -1283,7 +1241,7 @@ export default function HomeLanding() {
           margin-top: 9px;
           overflow: hidden;
           border-radius: 999px;
-          background: #123139;
+          background: #d9e7ef;
         }
 
         .el-progress-track span {
@@ -1291,13 +1249,13 @@ export default function HomeLanding() {
           height: 100%;
           display: block;
           border-radius: inherit;
-          background: linear-gradient(90deg, #0fa594, #37d6bf);
+          background: linear-gradient(90deg, #0f766e, #2563eb);
         }
 
         .el-progress-note {
           margin-top: 7px;
           display: block;
-          color: #779397;
+          color: #6b7f94;
           font-size: 8px;
         }
 
@@ -1305,9 +1263,9 @@ export default function HomeLanding() {
           height: 220px;
           margin-top: 17px;
           padding: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 15px;
-          background: #071c22;
+          border: 1px solid #e3edf4;
+          border-radius: 12px;
+          background: #f8fbff;
         }
 
         .el-circuit-panel svg {
@@ -1317,7 +1275,7 @@ export default function HomeLanding() {
 
         .el-circuit-panel .circuit-wire {
           fill: none;
-          stroke: #58ead8;
+          stroke: #0f766e;
           stroke-width: 3;
           stroke-linecap: round;
           stroke-linejoin: round;
@@ -1328,41 +1286,41 @@ export default function HomeLanding() {
         }
 
         .el-circuit-panel .circuit-resistor {
-          fill: #102e35;
-          stroke: #5eead4;
+          fill: #ffffff;
+          stroke: #2563eb;
           stroke-width: 1.7;
         }
 
         .el-circuit-panel .circuit-label {
-          fill: #e8fffc;
+          fill: #102033;
           font-size: 10px;
           font-weight: 800;
         }
 
         .el-circuit-panel .circuit-value {
-          fill: #a7f3d0;
+          fill: #0f766e;
           font-size: 10px;
         }
 
         .el-circuit-panel .battery,
         .el-circuit-panel .led-leg {
-          stroke: #e6fffb;
+          stroke: #102033;
           stroke-width: 3;
         }
 
         .el-circuit-panel .battery-label {
-          fill: #e6fffb;
+          fill: #102033;
           font-size: 10px;
           font-weight: 800;
         }
 
         .el-circuit-panel .circuit-node {
-          fill: #d8fffa;
+          fill: #2563eb;
         }
 
         .el-circuit-panel .circuit-led {
-          fill: #37efad;
-          stroke: #d1fae5;
+          fill: #22c55e;
+          stroke: #0f766e;
           stroke-width: 2;
         }
 
@@ -1373,19 +1331,19 @@ export default function HomeLanding() {
           align-items: center;
           justify-content: space-between;
           gap: 18px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 12px;
-          background: #0e2830;
+          border: 1px solid #e3edf4;
+          border-radius: 10px;
+          background: #ffffff;
         }
 
         .el-lesson-footer strong {
-          color: #ffffff;
+          color: #14213d;
           font-size: 12px;
         }
 
         .el-lesson-footer p {
           margin: 5px 0 0;
-          color: #86a0a4;
+          color: #64788c;
           font-size: 8px;
         }
 
@@ -1396,8 +1354,8 @@ export default function HomeLanding() {
           display: grid;
           place-items: center;
           border-radius: 11px;
-          color: #22d3bd;
-          background: rgba(34, 211, 189, 0.1);
+          color: #2563eb;
+          background: #eef4ff;
         }
 
         .el-meter-card {
@@ -1410,11 +1368,11 @@ export default function HomeLanding() {
           display: grid;
           grid-template-columns: 1fr auto;
           align-items: end;
-          border: 4px solid #18564e;
+          border: 4px solid #d5e5df;
           border-radius: 18px;
           color: #0b201d;
-          background: linear-gradient(145deg, #157468, #0a403b);
-          box-shadow: 0 20px 30px rgba(0, 0, 0, 0.34);
+          background: linear-gradient(145deg, #f8fbff, #dff8f3);
+          box-shadow: 0 20px 30px rgba(15, 118, 110, 0.16);
           transform: rotate(-4deg);
         }
 
@@ -1423,7 +1381,7 @@ export default function HomeLanding() {
           position: absolute;
           inset: 12px;
           border-radius: 8px;
-          background: #b8c9bb;
+          background: #ecfdf5;
           box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.25);
         }
 
@@ -1459,11 +1417,11 @@ export default function HomeLanding() {
           margin-top: 42px;
           padding: 26px 24px;
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          border: 1px solid rgba(255, 255, 255, 0.13);
-          border-radius: 16px;
-          background: rgba(8, 25, 29, 0.88);
-          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+          grid-template-columns: repeat(3, 1fr);
+          border: 1px solid #dfeaf2;
+          border-radius: 14px;
+          background: #ffffff;
+          box-shadow: 0 20px 45px rgba(37, 99, 235, 0.1);
         }
 
         .el-stat-bar article {
@@ -1472,7 +1430,7 @@ export default function HomeLanding() {
           display: flex;
           align-items: center;
           gap: 15px;
-          border-right: 1px solid rgba(255, 255, 255, 0.1);
+          border-right: 1px solid #e8eef5;
         }
 
         .el-stat-bar article:last-child {
@@ -1480,7 +1438,7 @@ export default function HomeLanding() {
         }
 
         .el-stat-bar svg {
-          color: #22d3bd;
+          color: #0f766e;
         }
 
         .el-stat-bar article > div {
@@ -1489,19 +1447,19 @@ export default function HomeLanding() {
         }
 
         .el-stat-bar strong {
-          color: #ffffff;
+          color: #14213d;
           font-size: 23px;
           line-height: 1;
         }
 
         .el-stat-bar small {
-          color: #9eb4b7;
+          color: #64788c;
           font-size: 10px;
         }
 
         .el-cta-section {
           padding: 78px 0;
-          background: #f4f8f7;
+          background: #f7fbff;
         }
 
         .el-cta-card {
@@ -1513,16 +1471,12 @@ export default function HomeLanding() {
           align-items: center;
           justify-content: space-between;
           gap: 48px;
-          border-radius: 25px;
-          color: #ffffff;
+          border: 1px solid #dfeaf2;
+          border-radius: 16px;
+          color: #14213d;
           background:
-            radial-gradient(
-              circle at 85% 0%,
-              rgba(45, 212, 191, 0.28),
-              transparent 33%
-            ),
-            linear-gradient(135deg, #073d3a, #071c20);
-          box-shadow: 0 25px 55px rgba(7, 61, 58, 0.17);
+            linear-gradient(135deg, #ffffff, #f2f9ff);
+          box-shadow: 0 25px 55px rgba(37, 99, 235, 0.1);
         }
 
         .el-cta-card::after {
@@ -1532,11 +1486,11 @@ export default function HomeLanding() {
           bottom: -145px;
           width: 245px;
           height: 245px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(37, 99, 235, 0.12);
           border-radius: 50%;
           box-shadow:
-            0 0 0 42px rgba(255, 255, 255, 0.025),
-            0 0 0 84px rgba(255, 255, 255, 0.018);
+            0 0 0 42px rgba(15, 118, 110, 0.035),
+            0 0 0 84px rgba(37, 99, 235, 0.03);
         }
 
         .el-cta-card > div {
@@ -1546,7 +1500,7 @@ export default function HomeLanding() {
 
         .el-cta-card p {
           margin: 0;
-          color: #5eead4;
+          color: #0f766e;
           font-size: 10px;
           font-weight: 900;
           letter-spacing: 0.13em;
@@ -1556,10 +1510,10 @@ export default function HomeLanding() {
         .el-cta-card h2 {
           max-width: 700px;
           margin: 15px 0 0;
-          color: #ffffff;
+          color: #14213d;
           font-size: clamp(30px, 4vw, 47px);
           line-height: 1.12;
-          letter-spacing: -0.045em;
+          letter-spacing: 0;
         }
 
         .el-cta-actions {
@@ -1573,7 +1527,7 @@ export default function HomeLanding() {
           display: inline-flex;
           align-items: center;
           gap: 7px;
-          color: #a7f3d0;
+          color: #2563eb;
           font-size: 11px;
           font-weight: 800;
         }
@@ -1655,7 +1609,7 @@ export default function HomeLanding() {
 
           .el-stat-bar article:nth-child(1),
           .el-stat-bar article:nth-child(2) {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid #e8eef5;
           }
 
           .el-cta-card {
@@ -1695,7 +1649,8 @@ export default function HomeLanding() {
             padding: 18px 20px;
             display: block;
             overflow-y: auto;
-            background: #07191c;
+            background: #ffffff;
+            box-shadow: 0 20px 45px rgba(37, 99, 235, 0.12);
           }
 
           .el-mobile-menu nav {
@@ -1707,7 +1662,8 @@ export default function HomeLanding() {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid #e8eef5;
+            color: #14213d;
             font-size: 15px;
             font-weight: 800;
           }
@@ -1887,7 +1843,7 @@ export default function HomeLanding() {
 
           .el-stat-bar article {
             border-right: 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid #e8eef5;
           }
 
           .el-stat-bar article:last-child {

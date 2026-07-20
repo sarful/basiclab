@@ -92,7 +92,7 @@ export default function RegisterView() {
   }
 
   return (
-    <AuthShell eyebrow="Join ET LMS" title="Create your account" description="Enter your details to start learning."
+    <AuthShell eyebrow="Join MechatronicsLAB" title="Create your account" description="Enter your details to start learning."
       asideTitle="Learn with confidence" asideItems={["Structured engineering courses", "Track lessons and progress", "Secure learner account"]}>
       <article className="auth-form-card registration-card">
         <div className="auth-form-head"><p className="auth-section-kicker">Registration</p><h2>Account information</h2><p>Fields marked with * are required.</p></div>

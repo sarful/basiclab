@@ -23,9 +23,9 @@ export default function AuthShell({
       <section className="auth-hero">
         <div className="auth-hero-copy">
           <Link href="/" className="auth-brand">
-            <span className="auth-brand-badge">ET</span>
+            <span className="auth-brand-badge">ML</span>
             <span>
-              <strong>Electrical Training Platform</strong>
+              <strong>MechatronicsLAB</strong>
               <small>Electrical learning platform</small>
             </span>
           </Link>
@@ -48,7 +48,7 @@ export default function AuthShell({
         </div>
 
         <aside className="auth-aside">
-          <p className="auth-aside-kicker">Current flow</p>
+          <p className="auth-aside-kicker">Learning path</p>
           <h2>{asideTitle}</h2>
           <div className="auth-aside-list">
             {asideItems.map((item) => (

@@ -1433,6 +1433,9 @@ export async function removeEnrollmentAccess(userId: string, courseId: string, n
 
 export async function getPublicCourseStats(slug: string) {
   const admin = getSupabaseAdminClient();
+  const structuredLessonCount = isDefaultFrontendCourseSlug(slug)
+    ? getAllLessons().length
+    : 0;
   const courseResponse = await admin
     .from("courses")
     .select("id, slug, title")
@@ -1460,7 +1463,7 @@ export async function getPublicCourseStats(slug: string) {
       slug: course.slug,
       title: course.title,
       studentsEnrolled: 0,
-      lessons: 0,
+      lessons: structuredLessonCount,
       courseRating: null,
       ratingSource: "no-quiz-attempts" as const,
       quizAttempts: 0,
@@ -1484,7 +1487,7 @@ export async function getPublicCourseStats(slug: string) {
         slug: courseResponse.data.slug,
         title: courseResponse.data.title,
         studentsEnrolled: 0,
-        lessons: 0,
+        lessons: structuredLessonCount,
         courseRating: null,
         ratingSource: "no-quiz-attempts" as const,
         quizAttempts: 0,
@@ -1498,7 +1501,7 @@ export async function getPublicCourseStats(slug: string) {
     slug: courseResponse.data.slug,
     title: courseResponse.data.title,
     studentsEnrolled: enrollmentResponse.count ?? 0,
-    lessons: 0,
+    lessons: structuredLessonCount,
     courseRating: null,
     ratingSource: "no-quiz-attempts" as const,
     quizAttempts: 0,

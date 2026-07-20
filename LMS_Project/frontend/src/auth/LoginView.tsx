@@ -123,13 +123,13 @@ export default function LoginView() {
 
       <header className="login-header">
         <div className="login-container login-header-inner">
-          <Link href="/" className="login-brand" aria-label="ET LMS homepage">
+          <Link href="/" className="login-brand" aria-label="MechatronicsLAB homepage">
             <span className="login-brand-icon">
               <Icon name="zap" size={20} />
             </span>
 
             <span className="login-brand-copy">
-              <strong>ET LMS</strong>
+              <strong>MechatronicsLAB</strong>
 
               <small>Electrical Training</small>
             </span>
@@ -251,7 +251,7 @@ export default function LoginView() {
       <footer className="login-footer">
         <div className="login-container">
           <p>
-            © {new Date().getFullYear()} ET LMS. Electrical Training Platform.
+            © {new Date().getFullYear()} MechatronicsLAB. Electrical lessons and simulations.
           </p>
         </div>
       </footer>
@@ -803,6 +803,161 @@ export default function LoginView() {
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
             scroll-behavior: auto !important;
+          }
+        }
+      `}</style>
+      <style jsx global>{`
+        body {
+          color: #14213d;
+          background: #ffffff;
+        }
+
+        .login-page {
+          color: #14213d;
+          background:
+            linear-gradient(rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(15, 118, 110, 0.045) 1px, transparent 1px),
+            linear-gradient(180deg, #ffffff, #f7fbff 54%, #ffffff);
+          background-size: 44px 44px, 44px 44px, auto;
+        }
+
+        .login-glow,
+        .login-background-grid {
+          display: none;
+        }
+
+        .login-header {
+          border-bottom: 1px solid #e6edf3;
+          background: rgba(255, 255, 255, 0.94);
+        }
+
+        .login-brand-icon {
+          color: #ffffff;
+          background: linear-gradient(135deg, #0f766e, #2563eb);
+          box-shadow: 0 10px 26px rgba(37, 99, 235, 0.18);
+        }
+
+        .login-brand-copy strong {
+          color: #102033;
+          letter-spacing: 0;
+        }
+
+        .login-brand-copy small,
+        .login-forgot-link,
+        .login-register-row a {
+          color: #0f766e;
+        }
+
+        .login-home-link {
+          color: #52677d;
+        }
+
+        .login-home-link:hover {
+          color: #0f766e;
+          background: #e8f7f4;
+        }
+
+        .login-card {
+          border: 1px solid #dfeaf2;
+          border-radius: 16px;
+          color: #14213d;
+          background: #ffffff;
+          box-shadow: 0 26px 70px rgba(37, 99, 235, 0.12);
+          backdrop-filter: none;
+        }
+
+        .login-card::before {
+          background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.28), transparent);
+        }
+
+        .login-user-icon {
+          color: #2563eb;
+          background: #eef4ff;
+        }
+
+        .login-card-header h1 {
+          color: #14213d;
+          letter-spacing: 0;
+        }
+
+        .login-card-header p,
+        .login-input-icon,
+        .login-register-row,
+        .login-footer p {
+          color: #64788c;
+        }
+
+        .login-field-label {
+          color: #34475d;
+        }
+
+        .login-input-wrapper input {
+          border-color: #c9d8e4;
+          border-radius: 11px;
+          color: #14213d;
+          background: #ffffff;
+        }
+
+        .login-input-wrapper input::placeholder {
+          color: #8aa0b5;
+        }
+
+        .login-input-wrapper input:hover {
+          border-color: #93c5fd;
+        }
+
+        .login-input-wrapper input:focus {
+          border-color: #2563eb;
+          background: #ffffff;
+          box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .login-password-toggle {
+          color: #64788c;
+        }
+
+        .login-password-toggle:hover {
+          color: #0f766e;
+          background: #e8f7f4;
+        }
+
+        .login-feedback {
+          border-color: #fecaca;
+          color: #b91c1c;
+          background: #fff1f2;
+        }
+
+        .login-submit {
+          color: #ffffff;
+          background: linear-gradient(135deg, #0f766e, #2563eb);
+          box-shadow: 0 14px 32px rgba(37, 99, 235, 0.18);
+        }
+
+        .login-submit:hover {
+          box-shadow: 0 18px 38px rgba(37, 99, 235, 0.24);
+        }
+
+        .login-spinner {
+          border-color: rgba(255, 255, 255, 0.42);
+          border-top-color: #ffffff;
+        }
+
+        .login-register-row,
+        .login-footer {
+          border-color: #e8eef5;
+        }
+
+        @media (max-width: 720px) {
+          .login-container {
+            width: min(100% - 28px, 1160px);
+          }
+
+          .login-main {
+            padding: 42px 0;
+          }
+
+          .login-card {
+            border-radius: 12px;
           }
         }
       `}</style>

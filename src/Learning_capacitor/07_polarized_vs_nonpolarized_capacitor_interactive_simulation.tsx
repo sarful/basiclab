@@ -1,3 +1,0 @@
-export { default } from "./07_polarized_vs_nonpolarized_capacitor_interactive_simulation/WhatIsPolarizedVsNonPolarizedCapacitorInteractiveSimulation";
-export { default as WhatIsPolarizedVsNonPolarizedCapacitorInteractiveSimulation } from "./07_polarized_vs_nonpolarized_capacitor_interactive_simulation/WhatIsPolarizedVsNonPolarizedCapacitorInteractiveSimulation";
-export * from "./07_polarized_vs_nonpolarized_capacitor_interactive_simulation/types";

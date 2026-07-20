@@ -4,10 +4,7 @@ import Link from "next/link";
 
 import { useBasicsCourseAccess } from "../../src/auth/useBasicsCourseAccess";
 import { useIndustrialSensorCourseAccess } from "../../src/auth/useIndustrialSensorCourseAccess";
-import {
-  basicsCourseModules,
-  basicsCourseProjects,
-} from "../../src/courses/basics-electronics-and-electrical/courseCatalog";
+import { basicsCourseModules } from "../../src/courses/basics-electronics-and-electrical/courseCatalog";
 import {
   industrialSensorCourseHref,
   industrialSensorCourseModules,
@@ -17,7 +14,6 @@ import {
 
 const courseTitle = "Basics Electronics and Electrical";
 const courseHref = "/courses/basics-electronics-and-electrical";
-const projectHref = "/courses/basics-electronics-and-electrical/projects";
 const firstLessonHref = "/current-voltage-learning/1";
 export default function CoursesIndexPage() {
   const { loading, error, isAdmin, isLoggedIn, hasAccess, user, course } =
@@ -62,8 +58,8 @@ export default function CoursesIndexPage() {
             <h1>Courses</h1>
             <p className="dashboard-copy">
               This LMS now includes the core electrical basics track and the Industrial Sensor
-              simulator course. Open a course workspace, review lessons, and continue from the
-              correct access state.
+              simulator course. Open a course workspace, review structured lessons, and continue
+              from the correct access state.
             </p>
           </div>
 
@@ -77,8 +73,8 @@ export default function CoursesIndexPage() {
               <strong>{totalLessonCount} lessons</strong>
             </div>
             <div className="course-sidebar-item">
-              <span>Project coverage</span>
-              <strong>{basicsCourseProjects.length} projects</strong>
+              <span>Practice mode</span>
+              <strong>Interactive simulations and guided lesson checks</strong>
             </div>
           </aside>
         </header>
@@ -114,17 +110,14 @@ export default function CoursesIndexPage() {
                 <strong>{basicsCourseModules.length} lesson routes</strong>
               </article>
               <article className="course-page-overview-card">
-                <span>Projects</span>
-                <strong>{basicsCourseProjects.length} project workspaces</strong>
+                <span>Practice</span>
+                <strong>Simulations, quizzes, and visual circuit walkthroughs</strong>
               </article>
             </div>
 
             <div className="dashboard-actions">
               <Link href={courseHref} className="dashboard-primary-link">
                 Open Course Page
-              </Link>
-              <Link href={projectHref} className="dashboard-secondary-link">
-                Open Projects
               </Link>
               {hasAccess || isAdmin ? (
                 <Link href={firstLessonHref} className="dashboard-secondary-link">
@@ -197,7 +190,7 @@ export default function CoursesIndexPage() {
             <div className="course-directory-rule-list">
               <div className="course-sidebar-item">
                 <span>Admin</span>
-                <strong>Can open the course, projects, lessons, and manage publishing.</strong>
+                <strong>Can open the course, lessons, and manage publishing.</strong>
               </div>
               <div className="course-sidebar-item">
                 <span>Trial or paid learner</span>

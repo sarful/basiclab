@@ -112,13 +112,13 @@ export default function ForgotPasswordView() {
 
       <header className="forgot-header">
         <div className="forgot-container forgot-header-inner">
-          <Link href="/" className="forgot-brand" aria-label="ET LMS homepage">
+          <Link href="/" className="forgot-brand" aria-label="MechatronicsLAB homepage">
             <span className="forgot-brand-icon">
               <Icon name="zap" size={20} />
             </span>
 
             <span className="forgot-brand-copy">
-              <strong>ET LMS</strong>
+              <strong>MechatronicsLAB</strong>
               <small>Electrical Training</small>
             </span>
           </Link>
@@ -214,7 +214,7 @@ export default function ForgotPasswordView() {
       <footer className="forgot-footer">
         <div className="forgot-container">
           <p>
-            © {new Date().getFullYear()} ET LMS. Electrical Training Platform.
+            © {new Date().getFullYear()} MechatronicsLAB. Electrical lessons and simulations.
           </p>
         </div>
       </footer>
@@ -735,6 +735,157 @@ export default function ForgotPasswordView() {
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
             scroll-behavior: auto !important;
+          }
+        }
+      `}</style>
+      <style jsx global>{`
+        body {
+          color: #14213d;
+          background: #ffffff;
+        }
+
+        .forgot-page {
+          color: #14213d;
+          background:
+            linear-gradient(rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(15, 118, 110, 0.045) 1px, transparent 1px),
+            linear-gradient(180deg, #ffffff, #f7fbff 54%, #ffffff);
+          background-size: 44px 44px, 44px 44px, auto;
+        }
+
+        .forgot-grid,
+        .forgot-glow {
+          display: none;
+        }
+
+        .forgot-header {
+          border-bottom: 1px solid #e6edf3;
+          background: rgba(255, 255, 255, 0.94);
+        }
+
+        .forgot-brand-icon {
+          color: #ffffff;
+          background: linear-gradient(135deg, #0f766e, #2563eb);
+          box-shadow: 0 10px 26px rgba(37, 99, 235, 0.18);
+        }
+
+        .forgot-brand-copy strong {
+          color: #102033;
+          letter-spacing: 0;
+        }
+
+        .forgot-brand-copy small,
+        .forgot-login-row a {
+          color: #0f766e;
+        }
+
+        .forgot-header-link {
+          color: #52677d;
+        }
+
+        .forgot-header-link:hover {
+          color: #0f766e;
+          background: #e8f7f4;
+        }
+
+        .forgot-card {
+          border: 1px solid #dfeaf2;
+          border-radius: 16px;
+          color: #14213d;
+          background: #ffffff;
+          box-shadow: 0 26px 70px rgba(37, 99, 235, 0.12);
+          backdrop-filter: none;
+        }
+
+        .forgot-card::before {
+          background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.28), transparent);
+        }
+
+        .forgot-card-icon {
+          color: #2563eb;
+          background: #eef4ff;
+        }
+
+        .forgot-card-header h1 {
+          color: #14213d;
+          letter-spacing: 0;
+        }
+
+        .forgot-card-header p,
+        .forgot-input-icon,
+        .forgot-login-row,
+        .forgot-footer p {
+          color: #64788c;
+        }
+
+        .forgot-field-label {
+          color: #34475d;
+        }
+
+        .forgot-input-wrapper input {
+          border-color: #c9d8e4;
+          border-radius: 11px;
+          color: #14213d;
+          background: #ffffff;
+        }
+
+        .forgot-input-wrapper input::placeholder {
+          color: #8aa0b5;
+        }
+
+        .forgot-input-wrapper input:hover {
+          border-color: #93c5fd;
+        }
+
+        .forgot-input-wrapper input:focus {
+          border-color: #2563eb;
+          background: #ffffff;
+          box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .forgot-success {
+          border-color: #99f6e4;
+          color: #0f766e;
+          background: #ecfdf5;
+        }
+
+        .forgot-error {
+          border-color: #fecaca;
+          color: #b91c1c;
+          background: #fff1f2;
+        }
+
+        .forgot-submit {
+          color: #ffffff;
+          background: linear-gradient(135deg, #0f766e, #2563eb);
+          box-shadow: 0 14px 32px rgba(37, 99, 235, 0.18);
+        }
+
+        .forgot-submit:hover:not(:disabled) {
+          box-shadow: 0 18px 38px rgba(37, 99, 235, 0.24);
+        }
+
+        .forgot-spinner {
+          border-color: rgba(255, 255, 255, 0.42);
+          border-top-color: #ffffff;
+        }
+
+        .forgot-login-row,
+        .forgot-footer {
+          border-color: #e8eef5;
+        }
+
+        @media (max-width: 720px) {
+          .forgot-container {
+            width: min(100% - 28px, 1160px);
+          }
+
+          .forgot-main {
+            padding: 42px 0;
+          }
+
+          .forgot-card {
+            border-radius: 12px;
           }
         }
       `}</style>
