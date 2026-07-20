@@ -18,6 +18,24 @@ import type { EnrollmentRecord } from "../../../src/auth/types";
 import { useBasicsCourseAccess } from "../../../src/auth/useBasicsCourseAccess";
 import { basicsCourseModules } from "../../../src/courses/basics-electronics-and-electrical/courseCatalog";
 
+const learningPillars = [
+  {
+    label: "Foundation",
+    title: "Current, voltage, resistance",
+    body: "Start with the language of electricity before moving into circuit behavior.",
+  },
+  {
+    label: "Components",
+    title: "Resistor, capacitor, diode, transistor",
+    body: "Learn how real electronic parts behave inside practical circuits.",
+  },
+  {
+    label: "Practice",
+    title: "Measurement and circuit reasoning",
+    body: "Use guided checkpoints and visual examples to build confident troubleshooting habits.",
+  },
+];
+
 export default function BasicsElectronicsAndElectricalCoursePage() {
   const router = useRouter();
   const {
@@ -138,7 +156,7 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
       ]
     : [
         { label: "Course role", value: "Learner portal" },
-        { label: "Managed lessons", value: `${basicsCourseModules.length} modules` },
+        { label: "Structured lessons", value: `${basicsCourseModules.length} modules` },
         { label: "Access state", value: learnerStatusLabel },
       ];
 
@@ -384,7 +402,7 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
         <header className="course-page-hero">
           <div className="course-page-copy">
             <div className="course-page-topline">
-              <p className="dashboard-kicker">Engineering Course</p>
+              <p className="dashboard-kicker">MechatronicsLAB Course</p>
               <div className="course-page-quicklinks">
                 <Link href="/" className="dashboard-secondary-link">
                   Home
@@ -399,8 +417,8 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
               <div>
                 <h1>Basics Electronics and Electrical</h1>
                 <p className="dashboard-copy">
-                  Learn core electrical and electronics concepts through structured lessons,
-                  visual circuit practice, and guided checkpoints.
+                  Learn electrical fundamentals through structured lessons, visual circuit
+                  practice, and guided checkpoints built for beginner to intermediate learners.
                 </p>
               </div>
 
@@ -429,13 +447,23 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
           </div>
 
           <aside className="course-page-sidebar">
-            <div className="course-sidebar-panel">
-                <p className="dashboard-section-kicker">Course Overview</p>
+            <div className="course-sidebar-panel course-learning-panel">
+              <p className="dashboard-section-kicker">Course Overview</p>
               <div className="course-page-metrics">
                 {heroMetrics.map((item) => (
                   <article key={item.label} className="course-page-metric-card">
                     <strong>{item.value}</strong>
                     <span>{item.label}</span>
+                  </article>
+                ))}
+              </div>
+
+              <div className="course-learning-stack">
+                {learningPillars.map((pillar) => (
+                  <article key={pillar.title} className="course-learning-card">
+                    <span>{pillar.label}</span>
+                    <strong>{pillar.title}</strong>
+                    <p>{pillar.body}</p>
                   </article>
                 ))}
               </div>
@@ -556,8 +584,8 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
             <section className="dashboard-surface-card course-surface-card">
               <div className="dashboard-card-head">
                 <div>
-                  <p className="dashboard-section-kicker">Lesson List</p>
-                  <h2>All lessons in this course</h2>
+                  <p className="dashboard-section-kicker">Lesson Library</p>
+                  <h2>All structured lessons in this course</h2>
                 </div>
               </div>
 
@@ -581,12 +609,13 @@ export default function BasicsElectronicsAndElectricalCoursePage() {
             <div className="dashboard-card-head">
               <div>
                 <p className="dashboard-section-kicker">Course Roadmap</p>
-                <h2>{!course ? "Course unavailable" : hasAccess ? "Continue your lessons" : "Lessons require upgrade"}</h2>
+                <h2>{!course ? "Course unavailable" : hasAccess ? "Continue your learning path" : "Structured lessons require access"}</h2>
               </div>
             </div>
 
             <p className="dashboard-copy">
-              Follow the lessons in order and complete each interactive practice topic.
+              Follow the sequence in order. Each lesson keeps theory, diagrams, simulation ideas,
+              and practice checks connected in one learning path.
             </p>
 
             <div className="course-module-grid">

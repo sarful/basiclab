@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-import AuthShell from "./AuthShell";
 import { register, resendVerificationEmail } from "./api";
 import { getDefaultRouteForRole } from "./routes";
 import { registerVariants, type EngineeringDiscipline, type Occupation } from "./types";
@@ -92,8 +91,7 @@ export default function RegisterView() {
   }
 
   return (
-    <AuthShell eyebrow="Join MechatronicsLAB" title="Create your account" description="Enter your details to start learning."
-      asideTitle="Learn with confidence" asideItems={["Structured engineering courses", "Track lessons and progress", "Secure learner account"]}>
+    <main className="auth-page registration-only-page">
       <article className="auth-form-card registration-card">
         <div className="auth-form-head"><p className="auth-section-kicker">Registration</p><h2>Account information</h2><p>Fields marked with * are required.</p></div>
         <form onSubmit={handleSubmit} className="auth-form registration-form">
@@ -148,7 +146,7 @@ export default function RegisterView() {
           <p className="registration-login">Already have an account? <Link href="/login">Log in</Link></p>
         </form>
       </article>
-    </AuthShell>
+    </main>
   );
 }
 

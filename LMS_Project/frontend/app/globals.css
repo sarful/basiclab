@@ -8450,6 +8450,18 @@ body {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
+.registration-only-page {
+  width: min(1080px, calc(100% - 32px));
+  min-height: 100vh;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 46px) 0;
+}
+
+.registration-only-page .registration-card {
+  width: 100%;
+  max-width: 1040px;
+}
+
 .course-page-copy,
 .course-sidebar-panel,
 .course-surface-card,
@@ -8501,6 +8513,106 @@ body {
   color: #92400e;
   border-color: #fcd34d;
   background: #fffbeb;
+}
+
+.course-page-shell {
+  gap: clamp(18px, 3vw, 28px);
+}
+
+.course-page-hero {
+  grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
+}
+
+.course-page-copy,
+.course-learning-panel,
+.course-surface-card {
+  border-radius: 14px;
+}
+
+.course-page-copy {
+  min-height: 100%;
+  padding: clamp(24px, 4vw, 42px);
+}
+
+.course-page-title-row h1 {
+  max-width: 760px;
+  font-size: clamp(2.5rem, 5.4vw, 4.9rem);
+  line-height: 1.02;
+}
+
+.course-page-title-row .dashboard-copy {
+  max-width: 680px;
+  margin-top: 16px;
+  font-size: 1.02rem;
+}
+
+.course-page-quicklinks .dashboard-secondary-link,
+.course-page-copy .dashboard-actions .dashboard-secondary-link,
+.course-page-copy .dashboard-actions .dashboard-primary-link {
+  min-height: 46px;
+}
+
+.course-learning-panel {
+  gap: 20px;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.055), rgba(37, 99, 235, 0.055)),
+    #ffffff;
+}
+
+.course-learning-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.course-learning-card {
+  padding: 16px;
+  border: 1px solid var(--ml-line);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.07);
+}
+
+.course-learning-card span {
+  color: var(--ml-teal);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.course-learning-card strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--ml-ink);
+  line-height: 1.35;
+}
+
+.course-learning-card p {
+  margin-top: 7px;
+  color: var(--ml-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.course-surface-card .dashboard-card-head h2 {
+  color: var(--ml-ink);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.course-module-grid {
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+}
+
+.course-module-card {
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.course-module-card.is-locked {
+  opacity: 0.82;
 }
 
 .terms-page {
@@ -8659,6 +8771,11 @@ body {
     padding: 8px 0 28px;
   }
 
+  .registration-only-page {
+    width: min(100% - 16px, 720px);
+    padding: 8px 0 28px;
+  }
+
   .auth-hero,
   .auth-panel,
   .dashboard-shell,
@@ -8695,5 +8812,407 @@ body {
   .registration-language-grid,
   .terms-section {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Final MechatronicsLAB learner workspace override */
+.learner-console-page {
+  --learner-ink: #14213d;
+  --learner-muted: #53677d;
+  --learner-line: #dfeaf2;
+  --learner-soft: #f7fbff;
+  --learner-teal: #0f766e;
+  --learner-blue: #2563eb;
+  width: min(100% - 32px, 1460px);
+  padding: 18px 0 46px;
+  background:
+    linear-gradient(rgba(20, 33, 61, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 33, 61, 0.035) 1px, transparent 1px),
+    #ffffff;
+  background-size: 34px 34px;
+}
+
+.learner-console-shell {
+  grid-template-columns: 248px minmax(0, 1fr);
+  border: 1px solid var(--learner-line);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(37, 99, 235, 0.1);
+}
+
+.learner-console-sidebar {
+  gap: 18px;
+  padding: 18px;
+  border-right: 1px solid var(--learner-line);
+  background: #ffffff;
+}
+
+.learner-console-logo {
+  min-height: 54px;
+  border: 0;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--learner-teal), var(--learner-blue));
+  font-family: Inter, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+  box-shadow: 0 14px 28px rgba(15, 118, 110, 0.18);
+}
+
+.learner-console-nav {
+  gap: 8px;
+}
+
+.learner-console-nav-item {
+  min-height: 48px;
+  border-radius: 11px;
+  color: var(--learner-muted);
+  font-weight: 800;
+}
+
+.learner-console-nav-item:hover,
+.learner-console-nav-item.is-current {
+  border-color: rgba(15, 118, 110, 0.24);
+  color: var(--learner-teal);
+  background: #e8f7f4;
+}
+
+.learner-console-nav-icon {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.72;
+}
+
+.learner-console-logout {
+  min-height: 48px;
+  border: 1px solid rgba(15, 118, 110, 0.28);
+  border-radius: 11px;
+  color: var(--learner-teal);
+  background: #ffffff;
+}
+
+.learner-console-main {
+  background:
+    linear-gradient(rgba(37, 99, 235, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.035) 1px, transparent 1px),
+    var(--learner-soft);
+  background-size: 32px 32px;
+}
+
+.learner-console-topbar {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--learner-line);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.learner-console-menu,
+.learner-console-search,
+.learner-console-indicator,
+.learner-console-avatar {
+  border-color: var(--learner-line);
+  color: var(--learner-ink);
+  background: #ffffff;
+}
+
+.learner-console-menu {
+  letter-spacing: 0.08em;
+}
+
+.learner-console-search {
+  border-radius: 12px;
+}
+
+.learner-console-search span,
+.learner-console-profile span,
+.learner-console-stat-card span,
+.learner-console-stat-card small,
+.learner-console-progress-row span,
+.learner-console-upcoming span,
+.learner-console-activity-item span {
+  color: var(--learner-muted);
+}
+
+.learner-console-search input,
+.learner-console-profile strong,
+.learner-console-heading h1,
+.learner-console-feature-body h2,
+.learner-console-card-head h2,
+.learner-console-stat-card strong,
+.learner-console-course-body strong,
+.learner-console-activity-item strong,
+.learner-console-upcoming strong {
+  color: var(--learner-ink);
+}
+
+.learner-console-heading,
+.learner-console-stats,
+.learner-console-grid,
+.learner-section-card {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.learner-console-heading h1,
+.learner-console-feature-body h2,
+.learner-console-card-head h2 {
+  font-family: Inter, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+.learner-console-heading p,
+.learner-console-feature-body p,
+.learner-console-streak p {
+  color: var(--learner-muted);
+}
+
+.learner-console-stat-card,
+.learner-console-card,
+.learner-console-feature-card,
+.learner-section-card {
+  border: 1px solid var(--learner-line);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(37, 99, 235, 0.08);
+}
+
+.learner-section-card {
+  margin: 0 24px 24px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.learner-console-stat-card {
+  padding: 18px;
+}
+
+.learner-console-feature-card {
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.06), rgba(37, 99, 235, 0.06)),
+    #ffffff;
+}
+
+.learner-console-feature-icon {
+  width: 88px;
+  height: 88px;
+  border: 0;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--learner-teal), var(--learner-blue));
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.16);
+}
+
+.learner-console-progress-track {
+  height: 12px;
+  border-color: #cfe0ec;
+  background: #eef6fb;
+}
+
+.learner-console-progress-fill {
+  background: linear-gradient(90deg, var(--learner-teal), var(--learner-blue));
+}
+
+.learner-console-course-item,
+.learner-console-activity-item,
+.learner-console-streak,
+.learner-console-upcoming {
+  border-color: var(--learner-line);
+  background: #f8fbff;
+}
+
+.learner-console-course-item {
+  border-radius: 12px;
+}
+
+.learner-console-course-thumbnail {
+  border-color: #cfe0ec;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.9), rgba(37, 99, 235, 0.9)),
+    #ffffff;
+}
+
+.learner-console-activity-item {
+  padding: 14px;
+  border: 1px solid var(--learner-line);
+  border-radius: 12px;
+}
+
+.learner-console-activity-item:last-child {
+  border-bottom: 1px solid var(--learner-line);
+  padding-bottom: 14px;
+}
+
+.learner-console-activity-badge {
+  border-color: rgba(15, 118, 110, 0.26);
+  color: var(--learner-teal);
+  background: #e8f7f4;
+}
+
+.learner-console-streak,
+.learner-console-upcoming {
+  padding: 16px;
+  border: 1px solid var(--learner-line);
+  border-radius: 12px;
+}
+
+.learner-console-streak-day strong.is-complete {
+  color: var(--learner-teal);
+}
+
+@media (max-width: 1040px) {
+  .learner-console-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .learner-console-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--learner-line);
+  }
+
+  .learner-console-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .learner-console-nav-item {
+    flex: 0 0 auto;
+    min-width: 140px;
+  }
+
+  .learner-console-logout {
+    margin-top: 0;
+  }
+
+  .learner-console-feature-card,
+  .learner-console-grid,
+  .learner-console-grid-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .learner-console-page {
+    width: min(100% - 16px, 720px);
+    padding: 8px 0 28px;
+  }
+
+  .learner-console-shell {
+    border-radius: 12px;
+  }
+
+  .learner-console-sidebar,
+  .learner-console-topbar,
+  .learner-console-heading,
+  .learner-console-stats,
+  .learner-console-grid,
+  .learner-section-card {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .learner-console-topbar,
+  .learner-console-topbar-left,
+  .learner-console-topbar-right,
+  .learner-console-feature-card,
+  .learner-console-course-item,
+  .learner-console-card-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .learner-console-topbar,
+  .learner-console-topbar-left,
+  .learner-console-topbar-right {
+    display: flex;
+  }
+
+  .learner-console-search,
+  .learner-console-profile,
+  .learner-console-indicator,
+  .learner-console-feature-actions,
+  .learner-console-course-item .dashboard-actions {
+    width: 100%;
+  }
+
+  .learner-console-stats,
+  .learner-console-course-item,
+  .learner-console-activity-item,
+  .learner-console-streak-days {
+    grid-template-columns: 1fr;
+  }
+
+  .learner-console-feature-card {
+    margin: 0 16px 18px;
+    display: flex;
+  }
+
+  .learner-section-card {
+    margin: 0 16px 18px;
+  }
+
+  .learner-console-feature-icon,
+  .learner-console-course-thumbnail {
+    width: 100%;
+    max-width: none;
+  }
+
+  .learner-console-progress-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* User sidebar color lock: match the white MechatronicsLAB homepage palette. */
+body .learner-console-page .learner-console-sidebar {
+  background:
+    linear-gradient(180deg, rgba(15, 118, 110, 0.05), rgba(37, 99, 235, 0.035)),
+    #ffffff !important;
+  color: var(--learner-ink, #14213d) !important;
+  border-right: 1px solid var(--learner-line, #dfeaf2) !important;
+}
+
+body .learner-console-page .learner-console-logo {
+  color: #ffffff !important;
+  border: 0 !important;
+  background: linear-gradient(135deg, #0f766e, #2563eb) !important;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.16) !important;
+}
+
+body .learner-console-page .learner-console-nav-item {
+  color: #53677d !important;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+body .learner-console-page .learner-console-nav-item:hover,
+body .learner-console-page .learner-console-nav-item.is-current {
+  color: #0f766e !important;
+  border-color: rgba(15, 118, 110, 0.24) !important;
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(37, 99, 235, 0.08)),
+    #ffffff !important;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.1) !important;
+}
+
+body .learner-console-page .learner-console-nav-icon {
+  border: 0 !important;
+  background: currentColor !important;
+}
+
+body .learner-console-page .learner-console-logout {
+  color: #0f766e !important;
+  border-color: rgba(15, 118, 110, 0.28) !important;
+  background: #ffffff !important;
+}
+
+@media (max-width: 1040px) {
+  body .learner-console-page .learner-console-sidebar {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--learner-line, #dfeaf2) !important;
   }
 }

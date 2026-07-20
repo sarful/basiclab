@@ -5,24 +5,27 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
+  basicsCourseModules,
+  basicsCourseProjects,
+} from "../courses/basics-electronics-and-electrical/courseCatalog";
+import { industrialSensorCourseModules } from "../courses/Industrial_Sensor/courseCatalog";
+import {
   activateAdminUser,
   approveAdminPaymentRequest,
   assignAdminEnrollment,
   createAdminUser,
   createEnrollmentRequest,
-  createUpgradeRequest,
   deleteAdminCourse,
   deleteAdminUser,
   fetchAdminActivityLogs,
-  fetchAdminDashboard,
   fetchAdminCourses,
+  fetchAdminDashboard,
   fetchAdminEnrollments,
   fetchAdminPaymentRequests,
   fetchAdminUsers,
   fetchCurrentUser,
   fetchLearnerDashboard,
   fetchPaymentHistory,
-  issueLearnerCertificateRequest,
   logout,
   rejectAdminPaymentRequest,
   removeAdminEnrollment,
@@ -31,16 +34,15 @@ import {
   updateAdminUser,
 } from "./api";
 import { useBackendMode } from "./backend-mode";
-import { useBasicsCourseAccess } from "./useBasicsCourseAccess";
-import { useIndustrialSensorCourseAccess } from "./useIndustrialSensorCourseAccess";
+import { learnerDashboardSections } from "./learner-dashboard-planning";
 import { getPreferredRoleRoute } from "./routes";
 import type {
   AdminActivityLogRecord,
   AdminDashboardData,
   AdminManagedUser,
   AuthUser,
-  CreateAdminUserPayload,
   CourseRecord,
+  CreateAdminUserPayload,
   EnrollmentRecord,
   LearnerDashboardData,
   PaymentRequestRecord,
@@ -48,13 +50,8 @@ import type {
   UpdateUserPayload,
   UserRole,
 } from "./types";
-import {
-  basicsCourseModules,
-  basicsCourseProjects,
-} from "../courses/basics-electronics-and-electrical/courseCatalog";
-import { industrialSensorCourseModules } from "../courses/Industrial_Sensor/courseCatalog";
-import { getAllLessons } from "../courses/basics-electronics-and-electrical/shared/lessonRegistry";
-import { learnerDashboardSections } from "./learner-dashboard-planning";
+import { useBasicsCourseAccess } from "./useBasicsCourseAccess";
+import { useIndustrialSensorCourseAccess } from "./useIndustrialSensorCourseAccess";
 
 type DashboardState =
   | {
@@ -73,16 +70,26 @@ type DashboardState =
 
 const coursePortalLink = "/courses/basics-electronics-and-electrical";
 const courseInvoiceLink = "/courses/basics-electronics-and-electrical/invoice";
-const courseProjectsLink = "/courses/basics-electronics-and-electrical/projects";
+const courseProjectsLink =
+  "/courses/basics-electronics-and-electrical/projects";
 const homepageLink = "/";
 const courseTitle = "Basics Electronics and Electrical";
 const primaryAdminCourseSlug = "basics-electronics-and-electrical";
 const invoiceBdtPerUsd = 122;
 const invoiceTaxPercentage = 5;
 const courseCategoryOptions = [
-  { id: "11111111-1111-4111-8111-111111111111", label: "Electrical Fundamentals" },
-  { id: "22222222-2222-4222-8222-222222222222", label: "Industrial Automation" },
-  { id: "33333333-3333-4333-8333-333333333333", label: "Sensors and Instrumentation" },
+  {
+    id: "11111111-1111-4111-8111-111111111111",
+    label: "Electrical Fundamentals",
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222222",
+    label: "Industrial Automation",
+  },
+  {
+    id: "33333333-3333-4333-8333-333333333333",
+    label: "Sensors and Instrumentation",
+  },
   { id: "44444444-4444-4444-8444-444444444444", label: "Motor Control" },
   { id: "55555555-5555-4555-8555-555555555555", label: "PLC and Control" },
 ] as const;
@@ -92,7 +99,10 @@ function formatCourseCategoryLabel(categoryId?: string) {
     return "Uncategorized";
   }
 
-  return courseCategoryOptions.find((category) => category.id === categoryId)?.label ?? "Other";
+  return (
+    courseCategoryOptions.find((category) => category.id === categoryId)
+      ?.label ?? "Other"
+  );
 }
 
 const adminCourseRequirementCards = [
@@ -103,7 +113,8 @@ const adminCourseRequirementCards = [
     href: coursePortalLink,
     lessons: basicsCourseModules.length,
     projects: basicsCourseProjects.length,
-    requirement: "Core electrical basics course with project workspaces and payment access rules.",
+    requirement:
+      "Core electrical basics course with project workspaces and payment access rules.",
   },
   {
     slug: "industrial-sensor",
@@ -112,7 +123,8 @@ const adminCourseRequirementCards = [
     href: "/courses/industrial-sensor",
     lessons: industrialSensorCourseModules.length,
     projects: 0,
-    requirement: "New simulator course requiring admin visibility, access assignment, and course status controls.",
+    requirement:
+      "New simulator course requiring admin visibility, access assignment, and course status controls.",
   },
 ];
 const allAdminCourseLessons = [
@@ -120,38 +132,90 @@ const allAdminCourseLessons = [
   ...industrialSensorCourseModules,
 ];
 const adminSidebarItems = [
-  { label: "Dashboard", href: "/Admin/dashboard", sectionId: "dashboard" as const, tone: "current" as const },
-  { label: "Users", href: "/Admin/users", sectionId: "users" as const, tone: "current" as const },
-  { label: "Courses", href: "/Admin/courses", sectionId: "courses" as const, tone: "default" as const },
-  { label: "Course Access", href: "/Admin/course-access", sectionId: "course-access" as const, tone: "default" as const },
-  { label: "Payments", href: "/Admin/payments", sectionId: "payments" as const, tone: "default" as const },
-  { label: "Analytics", href: "/Admin/analytics", sectionId: "analytics" as const, tone: "default" as const },
+  {
+    label: "Dashboard",
+    href: "/Admin/dashboard",
+    sectionId: "dashboard" as const,
+    tone: "current" as const,
+  },
+  {
+    label: "Users",
+    href: "/Admin/users",
+    sectionId: "users" as const,
+    tone: "current" as const,
+  },
+  {
+    label: "Courses",
+    href: "/Admin/courses",
+    sectionId: "courses" as const,
+    tone: "default" as const,
+  },
+  {
+    label: "Course Access",
+    href: "/Admin/course-access",
+    sectionId: "course-access" as const,
+    tone: "default" as const,
+  },
+  {
+    label: "Payments",
+    href: "/Admin/payments",
+    sectionId: "payments" as const,
+    tone: "default" as const,
+  },
+  {
+    label: "Analytics",
+    href: "/Admin/analytics",
+    sectionId: "analytics" as const,
+    tone: "default" as const,
+  },
 ] as const;
 
 const learnerSidebarItems = [
-  { label: "Dashboard", href: "/User/dashboard", sectionId: "dashboard" as const },
-  { label: "My Courses", href: "/User/my-courses", sectionId: "my-courses" as const },
+  {
+    label: "Dashboard",
+    href: "/User/dashboard",
+    sectionId: "dashboard" as const,
+  },
+  {
+    label: "My Courses",
+    href: "/User/my-courses",
+    sectionId: "my-courses" as const,
+  },
   { label: "Lessons", href: "/User/lessons", sectionId: "lessons" as const },
   { label: "Progress", href: "/User/progress", sectionId: "progress" as const },
   { label: "Settings", href: "/User/settings", sectionId: "settings" as const },
 ] as const;
 
 function getLearnerDashboardSection(pathname: string | null) {
-  if (!pathname || pathname === "/dashboard" || pathname === "/User" || pathname === "/User/dashboard") {
+  if (
+    !pathname ||
+    pathname === "/dashboard" ||
+    pathname === "/User" ||
+    pathname === "/User/dashboard"
+  ) {
     return "dashboard";
   }
 
-  return learnerSidebarItems.find((item) => item.href === pathname)?.sectionId ?? "dashboard";
+  return (
+    learnerSidebarItems.find((item) => item.href === pathname)?.sectionId ??
+    "dashboard"
+  );
 }
 
 function getAdminDashboardSection(pathname: string | null) {
-  if (!pathname || pathname === "/dashboard" || pathname === "/Admin" || pathname === "/Admin/dashboard") {
+  if (
+    !pathname ||
+    pathname === "/dashboard" ||
+    pathname === "/Admin" ||
+    pathname === "/Admin/dashboard"
+  ) {
     return "dashboard";
   }
 
-  const normalizedPathname = pathname.endsWith("/") && pathname.length > 1
-    ? pathname.slice(0, -1)
-    : pathname;
+  const normalizedPathname =
+    pathname.endsWith("/") && pathname.length > 1
+      ? pathname.slice(0, -1)
+      : pathname;
 
   return (
     adminSidebarItems.find(
@@ -230,8 +294,12 @@ function getExpectedInvoiceAmounts(course?: CourseRecord | null) {
     return null;
   }
 
-  const coursePriceUsd = roundInvoiceCurrency(course.priceBdt / invoiceBdtPerUsd);
-  const taxAmountUsd = roundInvoiceCurrency(coursePriceUsd * (invoiceTaxPercentage / 100));
+  const coursePriceUsd = roundInvoiceCurrency(
+    course.priceBdt / invoiceBdtPerUsd,
+  );
+  const taxAmountUsd = roundInvoiceCurrency(
+    coursePriceUsd * (invoiceTaxPercentage / 100),
+  );
 
   return {
     courseAmountBdt: course.priceBdt,
@@ -345,41 +413,60 @@ export default function DashboardView() {
   const [loggingOut, setLoggingOut] = useState(false);
   const [adminUsers, setAdminUsers] = useState<AdminManagedUser[]>([]);
   const [adminCourses, setAdminCourses] = useState<CourseRecord[]>([]);
-  const [adminEnrollments, setAdminEnrollments] = useState<EnrollmentRecord[]>([]);
-  const [activityLogs, setActivityLogs] = useState<AdminActivityLogRecord[]>([]);
-  const [paymentRequests, setPaymentRequests] = useState<PaymentRequestRecord[]>([]);
-  const [adminUserActionId, setAdminUserActionId] = useState<string | null>(null);
+  const [adminEnrollments, setAdminEnrollments] = useState<EnrollmentRecord[]>(
+    [],
+  );
+  const [activityLogs, setActivityLogs] = useState<AdminActivityLogRecord[]>(
+    [],
+  );
+  const [paymentRequests, setPaymentRequests] = useState<
+    PaymentRequestRecord[]
+  >([]);
+  const [adminUserActionId, setAdminUserActionId] = useState<string | null>(
+    null,
+  );
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [adminUserNotice, setAdminUserNotice] = useState<string | null>(null);
-  const [adminUserCreateNotice, setAdminUserCreateNotice] = useState<string | null>(null);
+  const [adminUserCreateNotice, setAdminUserCreateNotice] = useState<
+    string | null
+  >(null);
   const [adminCourseId, setAdminCourseId] = useState<string | null>(null);
   const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
-  const [adminCourseActionId, setAdminCourseActionId] = useState<string | null>(null);
-  const [adminCourseNotice, setAdminCourseNotice] = useState<string | null>(null);
-  const [deleteCourseConfirmId, setDeleteCourseConfirmId] = useState<string | null>(null);
+  const [adminCourseActionId, setAdminCourseActionId] = useState<string | null>(
+    null,
+  );
+  const [adminCourseNotice, setAdminCourseNotice] = useState<string | null>(
+    null,
+  );
+  const [deleteCourseConfirmId, setDeleteCourseConfirmId] = useState<
+    string | null
+  >(null);
   const [deleteCourseConfirmValue, setDeleteCourseConfirmValue] = useState("");
-  const [adminAccessActionId, setAdminAccessActionId] = useState<string | null>(null);
-  const [adminAccessNotice, setAdminAccessNotice] = useState<string | null>(null);
+  const [adminAccessActionId, setAdminAccessActionId] = useState<string | null>(
+    null,
+  );
+  const [adminAccessNotice, setAdminAccessNotice] = useState<string | null>(
+    null,
+  );
   const [selectedAccessUserId, setSelectedAccessUserId] = useState("");
   const [selectedAccessCourseId, setSelectedAccessCourseId] = useState("");
   const [accessNotes, setAccessNotes] = useState("");
   const [paymentActionId, setPaymentActionId] = useState<string | null>(null);
   const [paymentNotice, setPaymentNotice] = useState<string | null>(null);
-  const [paymentReviewNotes, setPaymentReviewNotes] = useState<Record<string, string>>({});
-  const [paymentHistory, setPaymentHistory] = useState<PaymentRequestRecord[]>([]);
-  const [upgradeSubmitting, setUpgradeSubmitting] = useState(false);
-  const [upgradeNotice, setUpgradeNotice] = useState<string | null>(null);
+  const [paymentReviewNotes, setPaymentReviewNotes] = useState<
+    Record<string, string>
+  >({});
+  const [paymentHistory, setPaymentHistory] = useState<PaymentRequestRecord[]>(
+    [],
+  );
   const [learnerEnrollSubmitting, setLearnerEnrollSubmitting] = useState(false);
-  const [learnerEnrollNotice, setLearnerEnrollNotice] = useState<string | null>(null);
+  const [learnerEnrollNotice, setLearnerEnrollNotice] = useState<string | null>(
+    null,
+  );
   const [certificateSubmitting, setCertificateSubmitting] = useState(false);
-  const [certificateNotice, setCertificateNotice] = useState<string | null>(null);
-  const [upgradeForm, setUpgradeForm] = useState({
-    planName: "Premium Plan",
-    transactionId: "",
-    paymentMethod: "BANK_TRANSFER",
-    amount: 2000,
-    currency: "BDT",
-  });
+  const [certificateNotice, setCertificateNotice] = useState<string | null>(
+    null,
+  );
   const [dashboardSearch, setDashboardSearch] = useState("");
   const [activityLogFilters, setActivityLogFilters] = useState({
     category: "ALL",
@@ -450,11 +537,16 @@ export default function DashboardView() {
             setPaymentRequests(paymentResponse.data);
             setActivityLogs(activityLogsResponse.data);
             setAdminCourseId(
-              coursesResponse.data.find((course) => course.slug === primaryAdminCourseSlug)?.id ??
-                null,
+              coursesResponse.data.find(
+                (course) => course.slug === primaryAdminCourseSlug,
+              )?.id ?? null,
             );
             setSelectedAccessCourseId(coursesResponse.data[0]?.id ?? "");
-            setSelectedAccessUserId(usersResponse.data.find((managedUser) => managedUser.role !== "ADMIN")?.id ?? "");
+            setSelectedAccessUserId(
+              usersResponse.data.find(
+                (managedUser) => managedUser.role !== "ADMIN",
+              )?.id ?? "",
+            );
             setState({
               status: "ready",
               user,
@@ -478,7 +570,9 @@ export default function DashboardView() {
         }
       } catch (loadError) {
         const message =
-          loadError instanceof Error ? loadError.message : "Unable to load dashboard.";
+          loadError instanceof Error
+            ? loadError.message
+            : "Unable to load dashboard.";
 
         if (message.toLowerCase().includes("unauthorized")) {
           router.replace("/login");
@@ -519,9 +613,12 @@ export default function DashboardView() {
     const response = await fetchAdminCourses();
     setAdminCourses(response.data);
     setAdminCourseId(
-      response.data.find((course) => course.slug === primaryAdminCourseSlug)?.id ?? null,
+      response.data.find((course) => course.slug === primaryAdminCourseSlug)
+        ?.id ?? null,
     );
-    setSelectedAccessCourseId((current) => current || response.data[0]?.id || "");
+    setSelectedAccessCourseId(
+      (current) => current || response.data[0]?.id || "",
+    );
   }
 
   async function reloadAdminEnrollments() {
@@ -554,11 +651,6 @@ export default function DashboardView() {
       user,
       learnerData: learnerResponse.data,
     });
-  }
-
-  async function reloadPaymentHistory() {
-    const response = await fetchPaymentHistory();
-    setPaymentHistory(response.data);
   }
 
   async function handleLogout() {
@@ -631,7 +723,9 @@ export default function DashboardView() {
       setAdminUserNotice("User updated successfully.");
     } catch (updateError) {
       setAdminUserNotice(
-        updateError instanceof Error ? updateError.message : "Unable to update user.",
+        updateError instanceof Error
+          ? updateError.message
+          : "Unable to update user.",
       );
     } finally {
       setAdminUserActionId(null);
@@ -643,7 +737,11 @@ export default function DashboardView() {
     setAdminUserCreateNotice(null);
 
     try {
-      if (!createUserForm.fullName.trim() || !createUserForm.email.trim() || !createUserForm.password) {
+      if (
+        !createUserForm.fullName.trim() ||
+        !createUserForm.email.trim() ||
+        !createUserForm.password
+      ) {
         throw new Error("Full name, email, and password are required.");
       }
 
@@ -669,7 +767,9 @@ export default function DashboardView() {
       setAdminUserCreateNotice("Admin-managed user created successfully.");
     } catch (createError) {
       setAdminUserCreateNotice(
-        createError instanceof Error ? createError.message : "Unable to create user.",
+        createError instanceof Error
+          ? createError.message
+          : "Unable to create user.",
       );
     } finally {
       setAdminUserActionId(null);
@@ -692,16 +792,23 @@ export default function DashboardView() {
       await reloadAdminUsers();
     } catch (toggleError) {
       setAdminUserNotice(
-        toggleError instanceof Error ? toggleError.message : "Unable to change user access.",
+        toggleError instanceof Error
+          ? toggleError.message
+          : "Unable to change user access.",
       );
     } finally {
       setAdminUserActionId(null);
     }
   }
 
-  async function handleDeleteUser(targetUser: AdminManagedUser, currentUserId: string) {
+  async function handleDeleteUser(
+    targetUser: AdminManagedUser,
+    currentUserId: string,
+  ) {
     if (targetUser.id === currentUserId) {
-      setAdminUserNotice("You cannot delete your own admin account from this dashboard.");
+      setAdminUserNotice(
+        "You cannot delete your own admin account from this dashboard.",
+      );
       return;
     }
 
@@ -714,7 +821,9 @@ export default function DashboardView() {
       setAdminUserNotice("User deleted successfully.");
     } catch (deleteError) {
       setAdminUserNotice(
-        deleteError instanceof Error ? deleteError.message : "Unable to delete user.",
+        deleteError instanceof Error
+          ? deleteError.message
+          : "Unable to delete user.",
       );
     } finally {
       setAdminUserActionId(null);
@@ -723,7 +832,9 @@ export default function DashboardView() {
 
   async function handleManualEnroll(targetUser: AdminManagedUser) {
     if (!adminCourseId) {
-      setAdminUserNotice("Create or publish the backend course first before manual enrollment.");
+      setAdminUserNotice(
+        "Create or publish the backend course first before manual enrollment.",
+      );
       return;
     }
 
@@ -731,17 +842,24 @@ export default function DashboardView() {
     setAdminUserNotice(null);
 
     try {
-      await assignAdminEnrollment(targetUser.id, adminCourseId, "Manual enrollment from admin dashboard");
+      await assignAdminEnrollment(
+        targetUser.id,
+        adminCourseId,
+        "Manual enrollment from admin dashboard",
+      );
       await reloadAdminUsers();
       await reloadAdminCourseId();
       await reloadAdminEnrollments();
       await reloadActivityLogs();
       const courseName =
-        adminCourses.find((course) => course.id === adminCourseId)?.title ?? courseTitle;
+        adminCourses.find((course) => course.id === adminCourseId)?.title ??
+        courseTitle;
       setAdminUserNotice(`User enrolled manually into ${courseName}.`);
     } catch (enrollError) {
       setAdminUserNotice(
-        enrollError instanceof Error ? enrollError.message : "Unable to enroll user manually.",
+        enrollError instanceof Error
+          ? enrollError.message
+          : "Unable to enroll user manually.",
       );
     } finally {
       setAdminUserActionId(null);
@@ -765,31 +883,43 @@ export default function DashboardView() {
         description: courseEditForm.description?.trim() || "",
         categoryId: courseEditForm.categoryId?.trim() || "",
         accessType,
-        priceBdt: accessType === "FREE" ? 0 : Number(courseEditForm.priceBdt ?? 0),
+        priceBdt:
+          accessType === "FREE" ? 0 : Number(courseEditForm.priceBdt ?? 0),
         trialDays:
           accessType === "TRIAL_PREVIEW"
-            ? Math.min(365, Math.max(1, Math.trunc(Number(courseEditForm.trialDays ?? 7))))
+            ? Math.min(
+                365,
+                Math.max(1, Math.trunc(Number(courseEditForm.trialDays ?? 7))),
+              )
             : 7,
         previewLessonLimit:
           accessType === "TRIAL_PREVIEW"
             ? Number(courseEditForm.previewLessonLimit ?? 0)
             : 0,
         trialVisible:
-          accessType === "TRIAL_PREVIEW" ? Boolean(courseEditForm.trialVisible) : false,
+          accessType === "TRIAL_PREVIEW"
+            ? Boolean(courseEditForm.trialVisible)
+            : false,
       };
 
       const response = await updateAdminCourse(courseId, normalizedPayload);
       setAdminCourses((currentCourses) =>
-        currentCourses.map((course) => (course.id === courseId ? response.data : course)),
+        currentCourses.map((course) =>
+          course.id === courseId ? response.data : course,
+        ),
       );
       setAdminCourseId((current) =>
-        response.data.slug === primaryAdminCourseSlug ? response.data.id : current,
+        response.data.slug === primaryAdminCourseSlug
+          ? response.data.id
+          : current,
       );
       setEditingCourseId(null);
       setAdminCourseNotice("Course updated successfully.");
     } catch (courseError) {
       setAdminCourseNotice(
-        courseError instanceof Error ? courseError.message : "Unable to update course.",
+        courseError instanceof Error
+          ? courseError.message
+          : "Unable to update course.",
       );
     } finally {
       setAdminCourseActionId(null);
@@ -810,7 +940,9 @@ export default function DashboardView() {
       setAdminCourseNotice("Course soft-deleted successfully.");
     } catch (courseError) {
       setAdminCourseNotice(
-        courseError instanceof Error ? courseError.message : "Unable to delete course.",
+        courseError instanceof Error
+          ? courseError.message
+          : "Unable to delete course.",
       );
     } finally {
       setAdminCourseActionId(null);
@@ -819,11 +951,15 @@ export default function DashboardView() {
 
   async function handleAssignAccess() {
     if (!selectedAccessUserId || !selectedAccessCourseId) {
-      setAdminAccessNotice("Select both a user and a course before assigning access.");
+      setAdminAccessNotice(
+        "Select both a user and a course before assigning access.",
+      );
       return;
     }
 
-    const selectedCourse = adminCourses.find((course) => course.id === selectedAccessCourseId) ?? null;
+    const selectedCourse =
+      adminCourses.find((course) => course.id === selectedAccessCourseId) ??
+      null;
     const hasPaidInvoice = paymentRequests.some(
       (paymentRequest) =>
         paymentRequest.userId === selectedAccessUserId &&
@@ -852,7 +988,9 @@ export default function DashboardView() {
       setAdminAccessNotice("Manual course access assigned successfully.");
     } catch (accessError) {
       setAdminAccessNotice(
-        accessError instanceof Error ? accessError.message : "Unable to assign access.",
+        accessError instanceof Error
+          ? accessError.message
+          : "Unable to assign access.",
       );
     } finally {
       setAdminAccessActionId(null);
@@ -861,7 +999,9 @@ export default function DashboardView() {
 
   async function handleRemoveAccess() {
     if (!selectedAccessUserId || !selectedAccessCourseId) {
-      setAdminAccessNotice("Select both a user and a course before removing access.");
+      setAdminAccessNotice(
+        "Select both a user and a course before removing access.",
+      );
       return;
     }
 
@@ -880,19 +1020,25 @@ export default function DashboardView() {
       setAdminAccessNotice("Course access removed successfully.");
     } catch (accessError) {
       setAdminAccessNotice(
-        accessError instanceof Error ? accessError.message : "Unable to remove access.",
+        accessError instanceof Error
+          ? accessError.message
+          : "Unable to remove access.",
       );
     } finally {
       setAdminAccessActionId(null);
     }
   }
 
-  async function handlePaymentReview(paymentRequestId: string, action: "approve" | "reject") {
+  async function handlePaymentReview(
+    paymentRequestId: string,
+    action: "approve" | "reject",
+  ) {
     setPaymentActionId(paymentRequestId);
     setPaymentNotice(null);
 
     try {
-      const reviewNotes = paymentReviewNotes[paymentRequestId]?.trim() || undefined;
+      const reviewNotes =
+        paymentReviewNotes[paymentRequestId]?.trim() || undefined;
 
       if (action === "approve") {
         await approveAdminPaymentRequest(paymentRequestId, reviewNotes);
@@ -918,43 +1064,6 @@ export default function DashboardView() {
     }
   }
 
-  async function handleUpgradeSubmit() {
-    setUpgradeSubmitting(true);
-    setUpgradeNotice(null);
-
-    try {
-      if (!upgradeForm.planName.trim() || !upgradeForm.transactionId.trim()) {
-        throw new Error("Plan name and transaction ID are required.");
-      }
-
-      if (upgradeForm.amount <= 0) {
-        throw new Error("Amount must be greater than zero.");
-      }
-
-      await createUpgradeRequest({
-        ...upgradeForm,
-        transactionId: upgradeForm.transactionId.trim(),
-      });
-      await reloadPaymentHistory();
-      setUpgradeForm({
-        planName: "Premium Plan",
-        transactionId: "",
-        paymentMethod: "BANK_TRANSFER",
-        amount: 2000,
-        currency: "BDT",
-      });
-      setUpgradeNotice("Upgrade request submitted successfully. Admin review is now pending.");
-    } catch (upgradeError) {
-      setUpgradeNotice(
-        upgradeError instanceof Error
-          ? upgradeError.message
-          : "Unable to submit the upgrade request.",
-      );
-    } finally {
-      setUpgradeSubmitting(false);
-    }
-  }
-
   async function handleLearnerCourseEnroll() {
     if (state.status !== "ready" || !state.learnerData) {
       return;
@@ -974,7 +1083,9 @@ export default function DashboardView() {
     setLearnerEnrollNotice(null);
 
     try {
-      const response = await createEnrollmentRequest(basicsCourseAccess.course.id);
+      const response = await createEnrollmentRequest(
+        basicsCourseAccess.course.id,
+      );
       setLearnerEnrollNotice(
         response.data.status === "APPROVED"
           ? "Course access is active now."
@@ -1052,10 +1163,10 @@ export default function DashboardView() {
         dashboardSearch,
       ),
     );
-    const editingManagedUser =
-      editingUserId
-        ? adminUsers.find((managedUser) => managedUser.id === editingUserId) ?? null
-        : null;
+    const editingManagedUser = editingUserId
+      ? (adminUsers.find((managedUser) => managedUser.id === editingUserId) ??
+        null)
+      : null;
     const filteredCourses = adminCourses.filter((course) =>
       matchesSearch(
         [
@@ -1071,31 +1182,63 @@ export default function DashboardView() {
       ),
     );
     const activitySeries = getActivitySeries(adminData.recentActivities);
-    const maxActivityValue = Math.max(...activitySeries.map((item) => item.value), 1);
-    const activeUsersCount = adminUsers.filter((managedUser) => !managedUser.isSuspended).length;
-    const suspendedUsersCount = adminUsers.filter((managedUser) => managedUser.isSuspended).length;
-    const adminCount = adminUsers.filter((managedUser) => managedUser.role === "ADMIN").length;
-    const learnerCount = adminUsers.filter((managedUser) => managedUser.role !== "ADMIN").length;
-    const publishedCoursesCount = adminCourses.filter((course) => course.status === "PUBLISHED").length;
-    const paidCoursesCount = adminCourses.filter((course) => course.accessType === "PAID").length;
-    const trialPreviewCoursesCount = adminCourses.filter((course) => course.accessType === "TRIAL_PREVIEW").length;
-    const activeAccessCount = adminEnrollments.filter((enrollment) => enrollment.status !== "REMOVED").length;
-    const removedAccessCount = adminEnrollments.filter((enrollment) => enrollment.status === "REMOVED").length;
+    const maxActivityValue = Math.max(
+      ...activitySeries.map((item) => item.value),
+      1,
+    );
+    const activeUsersCount = adminUsers.filter(
+      (managedUser) => !managedUser.isSuspended,
+    ).length;
+    const suspendedUsersCount = adminUsers.filter(
+      (managedUser) => managedUser.isSuspended,
+    ).length;
+    const adminCount = adminUsers.filter(
+      (managedUser) => managedUser.role === "ADMIN",
+    ).length;
+    const learnerCount = adminUsers.filter(
+      (managedUser) => managedUser.role !== "ADMIN",
+    ).length;
+    const publishedCoursesCount = adminCourses.filter(
+      (course) => course.status === "PUBLISHED",
+    ).length;
+    const paidCoursesCount = adminCourses.filter(
+      (course) => course.accessType === "PAID",
+    ).length;
+    const trialPreviewCoursesCount = adminCourses.filter(
+      (course) => course.accessType === "TRIAL_PREVIEW",
+    ).length;
+    const activeAccessCount = adminEnrollments.filter(
+      (enrollment) => enrollment.status !== "REMOVED",
+    ).length;
+    const removedAccessCount = adminEnrollments.filter(
+      (enrollment) => enrollment.status === "REMOVED",
+    ).length;
     const topCourses = adminData.topCourses ?? [];
-    const pendingPaymentRequests = paymentRequests.filter((paymentRequest) => paymentRequest.invoiceStatus === "PENDING");
-    const paidInvoiceCount = paymentRequests.filter((paymentRequest) => paymentRequest.invoiceStatus === "PAID").length;
-    const unpaidInvoiceCount = paymentRequests.filter((paymentRequest) => paymentRequest.invoiceStatus === "UNPAID").length;
+    const pendingPaymentRequests = paymentRequests.filter(
+      (paymentRequest) => paymentRequest.invoiceStatus === "PENDING",
+    );
+    const paidInvoiceCount = paymentRequests.filter(
+      (paymentRequest) => paymentRequest.invoiceStatus === "PAID",
+    ).length;
+    const unpaidInvoiceCount = paymentRequests.filter(
+      (paymentRequest) => paymentRequest.invoiceStatus === "UNPAID",
+    ).length;
     const pendingPaymentAmount = pendingPaymentRequests.reduce(
       (sum, paymentRequest) => sum + (paymentRequest.amount ?? 0),
       0,
     );
-    const paidPaymentRequests = paymentRequests.filter((paymentRequest) => paymentRequest.invoiceStatus === "PAID");
+    const paidPaymentRequests = paymentRequests.filter(
+      (paymentRequest) => paymentRequest.invoiceStatus === "PAID",
+    );
     const filteredAccessHistory = adminEnrollments.filter((enrollment) => {
       if (selectedAccessUserId && enrollment.userId !== selectedAccessUserId) {
         return false;
       }
 
-      if (selectedAccessCourseId && enrollment.courseId !== selectedAccessCourseId) {
+      if (
+        selectedAccessCourseId &&
+        enrollment.courseId !== selectedAccessCourseId
+      ) {
         return false;
       }
 
@@ -1133,39 +1276,74 @@ export default function DashboardView() {
 
       return haystack.includes(activityLogFilters.q.trim().toLowerCase());
     });
-    const userMap = new Map(adminUsers.map((managedUser) => [managedUser.id, managedUser]));
-    const courseMap = new Map(adminCourses.map((course) => [course.id, course]));
-    const convertSubmittedAmountToBdt = (paymentRequest: PaymentRequestRecord) =>
+    const userMap = new Map(
+      adminUsers.map((managedUser) => [managedUser.id, managedUser]),
+    );
+    const courseMap = new Map(
+      adminCourses.map((course) => [course.id, course]),
+    );
+    const convertSubmittedAmountToBdt = (
+      paymentRequest: PaymentRequestRecord,
+    ) =>
       paymentRequest.currency === "USD"
         ? roundInvoiceCurrency(paymentRequest.amount * invoiceBdtPerUsd)
         : paymentRequest.amount;
     const pendingSubmittedAmountBdt = pendingPaymentRequests.reduce(
-      (sum, paymentRequest) => sum + convertSubmittedAmountToBdt(paymentRequest),
+      (sum, paymentRequest) =>
+        sum + convertSubmittedAmountToBdt(paymentRequest),
       0,
     );
     const paidSubmittedAmountBdt = paidPaymentRequests.reduce(
-      (sum, paymentRequest) => sum + convertSubmittedAmountToBdt(paymentRequest),
+      (sum, paymentRequest) =>
+        sum + convertSubmittedAmountToBdt(paymentRequest),
       0,
     );
-    const expectedInvoiceRevenueBdt = paidPaymentRequests.reduce((sum, paymentRequest) => {
-      const paymentCourse = paymentRequest.courseId ? courseMap.get(paymentRequest.courseId) ?? null : null;
-      const expectedInvoiceAmounts = getExpectedInvoiceAmounts(paymentCourse);
+    const expectedInvoiceRevenueBdt = paidPaymentRequests.reduce(
+      (sum, paymentRequest) => {
+        const paymentCourse = paymentRequest.courseId
+          ? (courseMap.get(paymentRequest.courseId) ?? null)
+          : null;
+        const expectedInvoiceAmounts = getExpectedInvoiceAmounts(paymentCourse);
 
-      return sum + (expectedInvoiceAmounts?.courseAmountBdt ?? convertSubmittedAmountToBdt(paymentRequest));
-    }, 0);
-    const expectedInvoiceRevenueUsd = paidPaymentRequests.reduce((sum, paymentRequest) => {
-      const paymentCourse = paymentRequest.courseId ? courseMap.get(paymentRequest.courseId) ?? null : null;
-      const expectedInvoiceAmounts = getExpectedInvoiceAmounts(paymentCourse);
+        return (
+          sum +
+          (expectedInvoiceAmounts?.courseAmountBdt ??
+            convertSubmittedAmountToBdt(paymentRequest))
+        );
+      },
+      0,
+    );
+    const expectedInvoiceRevenueUsd = paidPaymentRequests.reduce(
+      (sum, paymentRequest) => {
+        const paymentCourse = paymentRequest.courseId
+          ? (courseMap.get(paymentRequest.courseId) ?? null)
+          : null;
+        const expectedInvoiceAmounts = getExpectedInvoiceAmounts(paymentCourse);
 
-      return sum + (expectedInvoiceAmounts?.totalAmountUsd ?? roundInvoiceCurrency(convertSubmittedAmountToBdt(paymentRequest) / invoiceBdtPerUsd));
-    }, 0);
+        return (
+          sum +
+          (expectedInvoiceAmounts?.totalAmountUsd ??
+            roundInvoiceCurrency(
+              convertSubmittedAmountToBdt(paymentRequest) / invoiceBdtPerUsd,
+            ))
+        );
+      },
+      0,
+    );
     const courseInvoiceAnalytics = adminCourses.map((course) => {
-      const coursePayments = paymentRequests.filter((paymentRequest) => paymentRequest.courseId === course.id);
-      const coursePendingPayments = coursePayments.filter((paymentRequest) => paymentRequest.invoiceStatus === "PENDING");
-      const coursePaidPayments = coursePayments.filter((paymentRequest) => paymentRequest.invoiceStatus === "PAID");
+      const coursePayments = paymentRequests.filter(
+        (paymentRequest) => paymentRequest.courseId === course.id,
+      );
+      const coursePendingPayments = coursePayments.filter(
+        (paymentRequest) => paymentRequest.invoiceStatus === "PENDING",
+      );
+      const coursePaidPayments = coursePayments.filter(
+        (paymentRequest) => paymentRequest.invoiceStatus === "PAID",
+      );
       const expectedInvoiceAmounts = getExpectedInvoiceAmounts(course);
       const submittedAmountBdt = coursePayments.reduce(
-        (sum, paymentRequest) => sum + convertSubmittedAmountToBdt(paymentRequest),
+        (sum, paymentRequest) =>
+          sum + convertSubmittedAmountToBdt(paymentRequest),
         0,
       );
 
@@ -1179,19 +1357,30 @@ export default function DashboardView() {
       };
     });
     const accessPaymentScope = paymentRequests.filter((paymentRequest) => {
-      if (selectedAccessUserId && paymentRequest.userId !== selectedAccessUserId) {
+      if (
+        selectedAccessUserId &&
+        paymentRequest.userId !== selectedAccessUserId
+      ) {
         return false;
       }
 
-      if (selectedAccessCourseId && paymentRequest.courseId !== selectedAccessCourseId) {
+      if (
+        selectedAccessCourseId &&
+        paymentRequest.courseId !== selectedAccessCourseId
+      ) {
         return false;
       }
 
       return true;
     });
-    const selectedAccessCourse = selectedAccessCourseId ? courseMap.get(selectedAccessCourseId) ?? null : null;
-    const selectedAccessUser = selectedAccessUserId ? userMap.get(selectedAccessUserId) ?? null : null;
-    const selectedAccessInvoiceAmounts = getExpectedInvoiceAmounts(selectedAccessCourse);
+    const selectedAccessCourse = selectedAccessCourseId
+      ? (courseMap.get(selectedAccessCourseId) ?? null)
+      : null;
+    const selectedAccessUser = selectedAccessUserId
+      ? (userMap.get(selectedAccessUserId) ?? null)
+      : null;
+    const selectedAccessInvoiceAmounts =
+      getExpectedInvoiceAmounts(selectedAccessCourse);
     const scopedPendingInvoices = accessPaymentScope.filter(
       (paymentRequest) => paymentRequest.invoiceStatus === "PENDING",
     );
@@ -1202,26 +1391,26 @@ export default function DashboardView() {
       adminSection === "dashboard"
         ? "Admin Dashboard"
         : adminSection === "courses"
-        ? "Admin Courses"
-        : adminSection === "course-access"
-          ? "Course Access"
-          : adminSection === "payments"
-            ? "Payments"
-            : adminSection === "analytics"
-              ? "Analytics"
-              : "Admin Users";
+          ? "Admin Courses"
+          : adminSection === "course-access"
+            ? "Course Access"
+            : adminSection === "payments"
+              ? "Payments"
+              : adminSection === "analytics"
+                ? "Analytics"
+                : "Admin Users";
     const adminHeadingCopy =
       adminSection === "dashboard"
         ? "Monitor users, courses, access, payments, and analytics from one clean admin overview."
         : adminSection === "courses"
-        ? "Manage course records, pricing, access rules, publishing state, and safe delete from one focused workspace."
-        : adminSection === "course-access"
-          ? "Assign, remove, and audit manual course access overrides for specific users from one focused workspace."
-        : adminSection === "payments"
-          ? "Review learner payment requests, pending amount, approval notes, and revenue-facing status from one focused workspace."
-          : adminSection === "analytics"
-            ? "Track platform metrics, weekly activity, learner counts, payment funnel, and course performance from one focused workspace."
-        : "Create, edit, block, restore, enroll, and manage LMS users from one focused workspace.";
+          ? "Manage course records, pricing, access rules, publishing state, and safe delete from one focused workspace."
+          : adminSection === "course-access"
+            ? "Assign, remove, and audit manual course access overrides for specific users from one focused workspace."
+            : adminSection === "payments"
+              ? "Review learner payment requests, pending amount, approval notes, and revenue-facing status from one focused workspace."
+              : adminSection === "analytics"
+                ? "Track platform metrics, weekly activity, learner counts, payment funnel, and course performance from one focused workspace."
+                : "Create, edit, block, restore, enroll, and manage LMS users from one focused workspace.";
 
     if (adminSection === "dashboard") {
       return (
@@ -1264,7 +1453,9 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Dashboard overview is summary-only"
                       disabled
                     />
@@ -1273,9 +1464,13 @@ export default function DashboardView() {
 
                 <div className="admin-console-topbar-right">
                   <div className="admin-console-indicator">Live</div>
-                  <div className="admin-console-indicator">Users {adminUsers.length}</div>
+                  <div className="admin-console-indicator">
+                    Users {adminUsers.length}
+                  </div>
                   <div className="admin-console-profile">
-                    <div className="admin-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="admin-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{roleLabel(user.role)}</strong>
                       <span>{user.fullName}</span>
@@ -1289,7 +1484,9 @@ export default function DashboardView() {
                   <h1>{adminHeadingTitle}</h1>
                   <p>{adminHeadingCopy}</p>
                 </div>
-                <div className="admin-console-range">{getCurrentWeekLabel()}</div>
+                <div className="admin-console-range">
+                  {getCurrentWeekLabel()}
+                </div>
               </section>
 
               <section className="admin-console-stats">
@@ -1314,7 +1511,6 @@ export default function DashboardView() {
                   <small>{`${pendingPaymentAmount} BDT awaiting review`}</small>
                 </article>
               </section>
-
             </div>
           </section>
         </main>
@@ -1362,7 +1558,9 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Analytics view is summary-only"
                       disabled
                     />
@@ -1371,9 +1569,13 @@ export default function DashboardView() {
 
                 <div className="admin-console-topbar-right">
                   <div className="admin-console-indicator">Live</div>
-                  <div className="admin-console-indicator">Revenue {adminData.widgets.revenueBdt ?? 0} BDT</div>
+                  <div className="admin-console-indicator">
+                    Revenue {adminData.widgets.revenueBdt ?? 0} BDT
+                  </div>
                   <div className="admin-console-profile">
-                    <div className="admin-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="admin-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{roleLabel(user.role)}</strong>
                       <span>{user.fullName}</span>
@@ -1387,7 +1589,9 @@ export default function DashboardView() {
                   <h1>{adminHeadingTitle}</h1>
                   <p>{adminHeadingCopy}</p>
                 </div>
-                <div className="admin-console-range">{getCurrentWeekLabel()}</div>
+                <div className="admin-console-range">
+                  {getCurrentWeekLabel()}
+                </div>
               </section>
 
               <section className="admin-console-stats">
@@ -1417,14 +1621,19 @@ export default function DashboardView() {
                 <article className="admin-console-card">
                   <div className="admin-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Weekly activity</p>
+                      <p className="dashboard-section-kicker">
+                        Weekly activity
+                      </p>
                       <h2>LMS engagement trend</h2>
                     </div>
                     <span className="dashboard-chip">This week</span>
                   </div>
                   <div className="admin-console-mini-chart">
                     {activitySeries.map((item) => (
-                      <div key={item.label} className="admin-console-mini-chart-bar">
+                      <div
+                        key={item.label}
+                        className="admin-console-mini-chart-bar"
+                      >
                         <div
                           className="admin-console-mini-chart-fill"
                           style={{
@@ -1474,12 +1683,17 @@ export default function DashboardView() {
                       <p className="dashboard-section-kicker">Top courses</p>
                       <h2>Enrollment leaderboard</h2>
                     </div>
-                    <span className="dashboard-chip">{topCourses.length} ranked</span>
+                    <span className="dashboard-chip">
+                      {topCourses.length} ranked
+                    </span>
                   </div>
                   <div className="admin-console-ranked-list">
                     {topCourses.length ? (
                       topCourses.map((course, index) => (
-                        <div key={course.courseId} className="admin-console-ranked-item">
+                        <div
+                          key={course.courseId}
+                          className="admin-console-ranked-item"
+                        >
                           <span>{index + 1}</span>
                           <strong>{course.title}</strong>
                           <small>{`${course.enrolledUsers} enrolled • ${course.accessType} • ${course.revenueBdt} BDT`}</small>
@@ -1489,7 +1703,9 @@ export default function DashboardView() {
                       <div className="admin-console-ranked-item">
                         <span>0</span>
                         <strong>No course analytics yet</strong>
-                        <small>Top courses will appear after enrollments start.</small>
+                        <small>
+                          Top courses will appear after enrollments start.
+                        </small>
                       </div>
                     )}
                   </div>
@@ -1498,7 +1714,9 @@ export default function DashboardView() {
                 <article className="admin-console-card">
                   <div className="admin-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Platform snapshot</p>
+                      <p className="dashboard-section-kicker">
+                        Platform snapshot
+                      </p>
                       <h2>Core system metrics</h2>
                     </div>
                     <span className="dashboard-chip">Summary</span>
@@ -1578,7 +1796,9 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search learner, transaction, method, plan..."
                     />
                   </label>
@@ -1586,9 +1806,13 @@ export default function DashboardView() {
 
                 <div className="admin-console-topbar-right">
                   <div className="admin-console-indicator">Live</div>
-                  <div className="admin-console-indicator">Pending {pendingPaymentRequests.length}</div>
+                  <div className="admin-console-indicator">
+                    Pending {pendingPaymentRequests.length}
+                  </div>
                   <div className="admin-console-profile">
-                    <div className="admin-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="admin-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{roleLabel(user.role)}</strong>
                       <span>{user.fullName}</span>
@@ -1602,16 +1826,22 @@ export default function DashboardView() {
                   <h1>{adminHeadingTitle}</h1>
                   <p>{adminHeadingCopy}</p>
                 </div>
-                <div className="admin-console-range">{getCurrentWeekLabel()}</div>
+                <div className="admin-console-range">
+                  {getCurrentWeekLabel()}
+                </div>
               </section>
 
               <section className="admin-console-card admin-console-users-card">
                 <div className="admin-console-card-head">
                   <div>
-                    <p className="dashboard-section-kicker">Receive invoice payment</p>
+                    <p className="dashboard-section-kicker">
+                      Receive invoice payment
+                    </p>
                     <h2>Course purchase invoice payments</h2>
                   </div>
-                  <span className="dashboard-chip">{pendingPaymentRequests.length} pending</span>
+                  <span className="dashboard-chip">
+                    {pendingPaymentRequests.length} pending
+                  </span>
                 </div>
                 <div className="dashboard-highlight-row">
                   <div className="dashboard-highlight">
@@ -1632,32 +1862,57 @@ export default function DashboardView() {
                   </div>
                 </div>
                 <p className="dashboard-copy">
-                  Receive submitted invoice payments, verify transaction references, and approve paid course access.
+                  Receive submitted invoice payments, verify transaction
+                  references, and approve paid course access.
                 </p>
-                {paymentNotice ? <p className="dashboard-copy">{paymentNotice}</p> : null}
+                {paymentNotice ? (
+                  <p className="dashboard-copy">{paymentNotice}</p>
+                ) : null}
                 <div className="admin-console-user-grid">
                   {paymentRequests.length ? (
                     paymentRequests.map((paymentRequest) => {
                       const paymentUser =
-                        adminUsers.find((managedUser) => managedUser.id === paymentRequest.userId) ??
-                        null;
-                      const paymentCourse = paymentRequest.courseId ? courseMap.get(paymentRequest.courseId) ?? null : null;
-                      const expectedInvoiceAmounts = getExpectedInvoiceAmounts(paymentCourse);
+                        adminUsers.find(
+                          (managedUser) =>
+                            managedUser.id === paymentRequest.userId,
+                        ) ?? null;
+                      const paymentCourse = paymentRequest.courseId
+                        ? (courseMap.get(paymentRequest.courseId) ?? null)
+                        : null;
+                      const expectedInvoiceAmounts =
+                        getExpectedInvoiceAmounts(paymentCourse);
 
                       return (
-                        <article key={paymentRequest.id} className="admin-console-user-card admin-payment-invoice-card">
+                        <article
+                          key={paymentRequest.id}
+                          className="admin-console-user-card admin-payment-invoice-card"
+                        >
                           <div className="dashboard-user-head">
                             <div>
-                              <strong>{paymentRequest.buyerName ?? paymentUser?.fullName ?? paymentRequest.userId}</strong>
-                              <span>{paymentRequest.buyerEmail ?? paymentUser?.email ?? "Learner payment request"}</span>
+                              <strong>
+                                {paymentRequest.buyerName ??
+                                  paymentUser?.fullName ??
+                                  paymentRequest.userId}
+                              </strong>
+                              <span>
+                                {paymentRequest.buyerEmail ??
+                                  paymentUser?.email ??
+                                  "Learner payment request"}
+                              </span>
                             </div>
-                            <span className={`dashboard-chip invoice-status-${paymentRequest.invoiceStatus.toLowerCase()}`}>{paymentRequest.invoiceStatus}</span>
+                            <span
+                              className={`dashboard-chip invoice-status-${paymentRequest.invoiceStatus.toLowerCase()}`}
+                            >
+                              {paymentRequest.invoiceStatus}
+                            </span>
                           </div>
 
                           <div className="dashboard-user-meta">
                             <span>{`Invoice: ${paymentRequest.invoiceNumber ?? "Legacy payment"}`}</span>
                             <span>{`Course: ${paymentCourse?.title ?? paymentRequest.planName}`}</span>
-                            {paymentCourse ? <span>{`Course slug: ${paymentCourse.slug}`}</span> : null}
+                            {paymentCourse ? (
+                              <span>{`Course slug: ${paymentCourse.slug}`}</span>
+                            ) : null}
                             <span>{`Transaction: ${paymentRequest.transactionId}`}</span>
                             <span>{`Reference: ${paymentRequest.paymentReference ?? "Not provided"}`}</span>
                             <span>{`Method: ${paymentRequest.paymentMethod}`}</span>
@@ -1670,12 +1925,76 @@ export default function DashboardView() {
                             ) : null}
                             <span>{`Phone: ${paymentRequest.buyerPhone ?? "Not provided"}`}</span>
                             <span>{`Submitted: ${formatDate(paymentRequest.submittedAt)}`}</span>
-                            {paymentRequest.paidAt ? <span>{`Paid: ${formatDate(paymentRequest.paidAt)}`}</span> : null}
+                            {paymentRequest.paidAt ? (
+                              <span>{`Paid: ${formatDate(paymentRequest.paidAt)}`}</span>
+                            ) : null}
                           </div>
 
-                          {paymentRequest.additionalMessage ? <p className="dashboard-copy">{paymentRequest.additionalMessage}</p> : null}
+                          {paymentRequest.additionalMessage ? (
+                            <p className="dashboard-copy">
+                              {paymentRequest.additionalMessage}
+                            </p>
+                          ) : null}
 
-                          {paymentRequest.invoiceStatus === "PENDING" ? <><label className="auth-field"><span>Receive note</span><input value={paymentReviewNotes[paymentRequest.id] ?? ""} onChange={(event) => setPaymentReviewNotes((current) => ({ ...current, [paymentRequest.id]: event.target.value }))} placeholder="Optional receive or rejection note" /></label><div className="dashboard-actions"><button type="button" className="dashboard-primary-link dashboard-button" onClick={() => handlePaymentReview(paymentRequest.id, "approve")} disabled={paymentActionId === paymentRequest.id}>{paymentActionId === paymentRequest.id ? "Receiving..." : "Payment Received"}</button><button type="button" className="dashboard-secondary-link dashboard-button" onClick={() => handlePaymentReview(paymentRequest.id, "reject")} disabled={paymentActionId === paymentRequest.id}>Reject Payment</button></div></> : <p className="dashboard-muted">{paymentRequest.invoiceStatus === "PAID" ? "Payment received and course upgrade approved." : "Payment was not approved."}</p>}
+                          {paymentRequest.invoiceStatus === "PENDING" ? (
+                            <>
+                              <label className="auth-field">
+                                <span>Receive note</span>
+                                <input
+                                  value={
+                                    paymentReviewNotes[paymentRequest.id] ?? ""
+                                  }
+                                  onChange={(event) =>
+                                    setPaymentReviewNotes((current) => ({
+                                      ...current,
+                                      [paymentRequest.id]: event.target.value,
+                                    }))
+                                  }
+                                  placeholder="Optional receive or rejection note"
+                                />
+                              </label>
+                              <div className="dashboard-actions">
+                                <button
+                                  type="button"
+                                  className="dashboard-primary-link dashboard-button"
+                                  onClick={() =>
+                                    handlePaymentReview(
+                                      paymentRequest.id,
+                                      "approve",
+                                    )
+                                  }
+                                  disabled={
+                                    paymentActionId === paymentRequest.id
+                                  }
+                                >
+                                  {paymentActionId === paymentRequest.id
+                                    ? "Receiving..."
+                                    : "Payment Received"}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="dashboard-secondary-link dashboard-button"
+                                  onClick={() =>
+                                    handlePaymentReview(
+                                      paymentRequest.id,
+                                      "reject",
+                                    )
+                                  }
+                                  disabled={
+                                    paymentActionId === paymentRequest.id
+                                  }
+                                >
+                                  Reject Payment
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <p className="dashboard-muted">
+                              {paymentRequest.invoiceStatus === "PAID"
+                                ? "Payment received and course upgrade approved."
+                                : "Payment was not approved."}
+                            </p>
+                          )}
                         </article>
                       );
                     })
@@ -1733,7 +2052,9 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search access note, user, course..."
                     />
                   </label>
@@ -1741,9 +2062,13 @@ export default function DashboardView() {
 
                 <div className="admin-console-topbar-right">
                   <div className="admin-console-indicator">Live</div>
-                  <div className="admin-console-indicator">Access {adminEnrollments.length}</div>
+                  <div className="admin-console-indicator">
+                    Access {adminEnrollments.length}
+                  </div>
                   <div className="admin-console-profile">
-                    <div className="admin-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="admin-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{roleLabel(user.role)}</strong>
                       <span>{user.fullName}</span>
@@ -1757,16 +2082,22 @@ export default function DashboardView() {
                   <h1>{adminHeadingTitle}</h1>
                   <p>{adminHeadingCopy}</p>
                 </div>
-                <div className="admin-console-range">{getCurrentWeekLabel()}</div>
+                <div className="admin-console-range">
+                  {getCurrentWeekLabel()}
+                </div>
               </section>
 
               <section className="admin-console-card admin-console-users-card">
                 <div className="admin-console-card-head">
                   <div>
-                    <p className="dashboard-section-kicker">Manual course access</p>
+                    <p className="dashboard-section-kicker">
+                      Manual course access
+                    </p>
                     <h2>Assign, remove, and audit access overrides</h2>
                   </div>
-                  <span className="dashboard-chip">{filteredAccessHistory.length} rows</span>
+                  <span className="dashboard-chip">
+                    {filteredAccessHistory.length} rows
+                  </span>
                 </div>
                 <div className="dashboard-highlight-row">
                   <div className="dashboard-highlight">
@@ -1787,11 +2118,14 @@ export default function DashboardView() {
                   </div>
                 </div>
                 <p className="dashboard-copy">
-                  Filter by learner and course, then assign or remove manual overrides with an audit
-                  note. Paid-course access can be checked against the selected course invoice price,
-                  USD conversion, and submitted payment status.
+                  Filter by learner and course, then assign or remove manual
+                  overrides with an audit note. Paid-course access can be
+                  checked against the selected course invoice price, USD
+                  conversion, and submitted payment status.
                 </p>
-                {adminAccessNotice ? <p className="dashboard-copy">{adminAccessNotice}</p> : null}
+                {adminAccessNotice ? (
+                  <p className="dashboard-copy">{adminAccessNotice}</p>
+                ) : null}
 
                 <div className="dashboard-user-edit-grid">
                   <label className="auth-field">
@@ -1799,7 +2133,9 @@ export default function DashboardView() {
                     <select
                       className="dashboard-select"
                       value={selectedAccessUserId}
-                      onChange={(event) => setSelectedAccessUserId(event.target.value)}
+                      onChange={(event) =>
+                        setSelectedAccessUserId(event.target.value)
+                      }
                     >
                       <option value="">All users</option>
                       {adminUsers
@@ -1817,16 +2153,22 @@ export default function DashboardView() {
                     <select
                       className="dashboard-select"
                       value={selectedAccessCourseId}
-                      onChange={(event) => setSelectedAccessCourseId(event.target.value)}
+                      onChange={(event) =>
+                        setSelectedAccessCourseId(event.target.value)
+                      }
                     >
                       <option value="">All courses</option>
                       {adminCourses.map((course) => {
-                        const expectedInvoiceAmounts = getExpectedInvoiceAmounts(course);
+                        const expectedInvoiceAmounts =
+                          getExpectedInvoiceAmounts(course);
 
                         return (
                           <option key={course.id} value={course.id}>
-                            {course.title} - {formatInvoiceMoney(course.priceBdt, "BDT")}
-                            {expectedInvoiceAmounts ? ` / ${formatInvoiceMoney(expectedInvoiceAmounts.totalAmountUsd, "USD")}` : ""}
+                            {course.title} -{" "}
+                            {formatInvoiceMoney(course.priceBdt, "BDT")}
+                            {expectedInvoiceAmounts
+                              ? ` / ${formatInvoiceMoney(expectedInvoiceAmounts.totalAmountUsd, "USD")}`
+                              : ""}
                           </option>
                         );
                       })}
@@ -1862,7 +2204,9 @@ export default function DashboardView() {
                     onClick={handleAssignAccess}
                     disabled={adminAccessActionId === "assign"}
                   >
-                    {adminAccessActionId === "assign" ? "Assigning..." : "Assign access"}
+                    {adminAccessActionId === "assign"
+                      ? "Assigning..."
+                      : "Assign access"}
                   </button>
                   <button
                     type="button"
@@ -1870,7 +2214,9 @@ export default function DashboardView() {
                     onClick={handleRemoveAccess}
                     disabled={adminAccessActionId === "remove"}
                   >
-                    {adminAccessActionId === "remove" ? "Removing..." : "Remove access"}
+                    {adminAccessActionId === "remove"
+                      ? "Removing..."
+                      : "Remove access"}
                   </button>
                 </div>
 
@@ -1879,9 +2225,14 @@ export default function DashboardView() {
                     filteredAccessHistory.map((enrollment) => {
                       const managedUser = userMap.get(enrollment.userId);
                       const course = courseMap.get(enrollment.courseId);
-                      const accessTypeLabel = formatAccountStateLabel(managedUser?.accountState);
-                      const courseTypeLabel = formatCourseAccessTypeLabel(course?.accessType);
-                      const expectedInvoiceAmounts = getExpectedInvoiceAmounts(course);
+                      const accessTypeLabel = formatAccountStateLabel(
+                        managedUser?.accountState,
+                      );
+                      const courseTypeLabel = formatCourseAccessTypeLabel(
+                        course?.accessType,
+                      );
+                      const expectedInvoiceAmounts =
+                        getExpectedInvoiceAmounts(course);
                       const relatedPayment =
                         paymentRequests.find(
                           (paymentRequest) =>
@@ -1890,14 +2241,23 @@ export default function DashboardView() {
                         ) ?? null;
 
                       return (
-                        <article key={enrollment.id} className="admin-console-user-card">
+                        <article
+                          key={enrollment.id}
+                          className="admin-console-user-card"
+                        >
                           <div className="dashboard-user-head">
                             <div>
-                              <strong>{managedUser?.fullName ?? enrollment.userId}</strong>
-                              <span>{course?.title ?? enrollment.courseId}</span>
+                              <strong>
+                                {managedUser?.fullName ?? enrollment.userId}
+                              </strong>
+                              <span>
+                                {course?.title ?? enrollment.courseId}
+                              </span>
                             </div>
                             <span className="dashboard-chip">
-                              {enrollment.status === "REMOVED" ? "Removed" : "Active"}
+                              {enrollment.status === "REMOVED"
+                                ? "Removed"
+                                : "Active"}
                             </span>
                           </div>
 
@@ -1927,10 +2287,16 @@ export default function DashboardView() {
                           </div>
                           {course ? (
                             <div className="dashboard-actions">
-                              <Link href={`/courses/${course.slug}/invoice`} className="dashboard-secondary-link">
+                              <Link
+                                href={`/courses/${course.slug}/invoice`}
+                                className="dashboard-secondary-link"
+                              >
                                 View invoice
                               </Link>
-                              <Link href={`/courses/${course.slug}`} className="dashboard-secondary-link">
+                              <Link
+                                href={`/courses/${course.slug}`}
+                                className="dashboard-secondary-link"
+                              >
                                 Open course
                               </Link>
                             </div>
@@ -1992,7 +2358,9 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search title, category, slug, status..."
                     />
                   </label>
@@ -2000,9 +2368,13 @@ export default function DashboardView() {
 
                 <div className="admin-console-topbar-right">
                   <div className="admin-console-indicator">Live</div>
-                  <div className="admin-console-indicator">Courses {adminCourses.length}</div>
+                  <div className="admin-console-indicator">
+                    Courses {adminCourses.length}
+                  </div>
                   <div className="admin-console-profile">
-                    <div className="admin-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="admin-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{roleLabel(user.role)}</strong>
                       <span>{user.fullName}</span>
@@ -2016,16 +2388,22 @@ export default function DashboardView() {
                   <h1>{adminHeadingTitle}</h1>
                   <p>{adminHeadingCopy}</p>
                 </div>
-                <div className="admin-console-range">{getCurrentWeekLabel()}</div>
+                <div className="admin-console-range">
+                  {getCurrentWeekLabel()}
+                </div>
               </section>
 
               <section className="admin-console-card admin-console-users-card">
                 <div className="admin-console-card-head">
                   <div>
-                    <p className="dashboard-section-kicker">Course management</p>
+                    <p className="dashboard-section-kicker">
+                      Course management
+                    </p>
                     <h2>Edit course access and pricing</h2>
                   </div>
-                  <span className="dashboard-chip">{filteredCourses.length} courses</span>
+                  <span className="dashboard-chip">
+                    {filteredCourses.length} courses
+                  </span>
                 </div>
                 <div className="dashboard-highlight-row">
                   <div className="dashboard-highlight">
@@ -2046,30 +2424,38 @@ export default function DashboardView() {
                   </div>
                 </div>
                 <p className="dashboard-copy">
-                  Update `access_type`, `price_bdt`, `preview_lesson_limit`, `trial_visible`,
-                  `trial_days`, and publishing state directly from this focused courses page.
-                  Paid-course invoices use course BDT price, divide by {invoiceBdtPerUsd} for USD,
-                  then add fixed {invoiceTaxPercentage}% tax.
+                  Update `access_type`, `price_bdt`, `preview_lesson_limit`,
+                  `trial_visible`, `trial_days`, and publishing state directly
+                  from this focused courses page. Paid-course invoices use
+                  course BDT price, divide by {invoiceBdtPerUsd} for USD, then
+                  add fixed {invoiceTaxPercentage}% tax.
                 </p>
                 <div className="course-module-grid">
                   {adminCourseRequirementCards.map((requiredCourse) => {
                     const backendCourse = adminCourses.find(
                       (course) => course.slug === requiredCourse.slug,
                     );
-                    const expectedInvoiceAmounts = getExpectedInvoiceAmounts(backendCourse);
+                    const expectedInvoiceAmounts =
+                      getExpectedInvoiceAmounts(backendCourse);
 
                     return (
                       <article
                         key={requiredCourse.slug}
                         className={`course-module-card${backendCourse ? "" : " is-locked"}`}
                       >
-                        <small>{backendCourse ? "Backend course ready" : "Backend record needed"}</small>
+                        <small>
+                          {backendCourse
+                            ? "Backend course ready"
+                            : "Backend record needed"}
+                        </small>
                         <strong>{requiredCourse.title}</strong>
                         <span>{`Category: ${formatCourseCategoryLabel(backendCourse?.categoryId ?? requiredCourse.categoryId)}`}</span>
                         <span>{requiredCourse.requirement}</span>
                         <span>
                           {`${requiredCourse.lessons} lessons${
-                            requiredCourse.projects ? `, ${requiredCourse.projects} projects` : ""
+                            requiredCourse.projects
+                              ? `, ${requiredCourse.projects} projects`
+                              : ""
                           }`}
                         </span>
                         {expectedInvoiceAmounts ? (
@@ -2078,7 +2464,10 @@ export default function DashboardView() {
                           </span>
                         ) : null}
                         {backendCourse ? (
-                          <Link href={requiredCourse.href} className="dashboard-secondary-link">
+                          <Link
+                            href={requiredCourse.href}
+                            className="dashboard-secondary-link"
+                          >
                             Open course
                           </Link>
                         ) : null}
@@ -2086,26 +2475,40 @@ export default function DashboardView() {
                     );
                   })}
                 </div>
-                {adminCourseNotice ? <p className="dashboard-copy">{adminCourseNotice}</p> : null}
+                {adminCourseNotice ? (
+                  <p className="dashboard-copy">{adminCourseNotice}</p>
+                ) : null}
                 <div className="admin-console-user-grid">
                   {filteredCourses.map((course) => {
-                    const expectedInvoiceAmounts = getExpectedInvoiceAmounts(course);
+                    const expectedInvoiceAmounts =
+                      getExpectedInvoiceAmounts(course);
                     const editPriceBdt =
                       (courseEditForm.accessType ?? "FREE") === "FREE"
                         ? 0
                         : Number(courseEditForm.priceBdt ?? 0);
-                    const editCoursePriceUsd = roundInvoiceCurrency(editPriceBdt / invoiceBdtPerUsd);
-                    const editTaxAmountUsd = roundInvoiceCurrency(editCoursePriceUsd * (invoiceTaxPercentage / 100));
-                    const editTotalAmountUsd = roundInvoiceCurrency(editCoursePriceUsd + editTaxAmountUsd);
+                    const editCoursePriceUsd = roundInvoiceCurrency(
+                      editPriceBdt / invoiceBdtPerUsd,
+                    );
+                    const editTaxAmountUsd = roundInvoiceCurrency(
+                      editCoursePriceUsd * (invoiceTaxPercentage / 100),
+                    );
+                    const editTotalAmountUsd = roundInvoiceCurrency(
+                      editCoursePriceUsd + editTaxAmountUsd,
+                    );
 
                     return (
-                      <article key={course.id} className="admin-console-user-card">
+                      <article
+                        key={course.id}
+                        className="admin-console-user-card"
+                      >
                         <div className="dashboard-user-head">
                           <div>
                             <strong>{course.title}</strong>
                             <span>{course.slug}</span>
                           </div>
-                          <span className="dashboard-chip">{course.status}</span>
+                          <span className="dashboard-chip">
+                            {course.status}
+                          </span>
                         </div>
 
                         <div className="dashboard-user-meta">
@@ -2128,151 +2531,174 @@ export default function DashboardView() {
 
                         {editingCourseId === course.id ? (
                           <div className="dashboard-user-edit-grid">
-                          <label className="auth-field">
-                            <span>Course title</span>
-                            <input
-                              value={courseEditForm.title ?? ""}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  title: event.target.value,
-                                }))
-                              }
-                            />
-                          </label>
-                          <label className="auth-field">
-                            <span>Slug</span>
-                            <input
-                              value={courseEditForm.slug ?? ""}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  slug: event.target.value,
-                                }))
-                              }
-                            />
-                          </label>
-                          <label className="auth-field">
-                            <span>Category</span>
-                            <select
-                              className="dashboard-select"
-                              value={courseEditForm.categoryId ?? ""}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  categoryId: event.target.value,
-                                }))
-                              }
-                            >
-                              <option value="">Uncategorized</option>
-                              {courseCategoryOptions.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                  {category.label}
+                            <label className="auth-field">
+                              <span>Course title</span>
+                              <input
+                                value={courseEditForm.title ?? ""}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    title: event.target.value,
+                                  }))
+                                }
+                              />
+                            </label>
+                            <label className="auth-field">
+                              <span>Slug</span>
+                              <input
+                                value={courseEditForm.slug ?? ""}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    slug: event.target.value,
+                                  }))
+                                }
+                              />
+                            </label>
+                            <label className="auth-field">
+                              <span>Category</span>
+                              <select
+                                className="dashboard-select"
+                                value={courseEditForm.categoryId ?? ""}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    categoryId: event.target.value,
+                                  }))
+                                }
+                              >
+                                <option value="">Uncategorized</option>
+                                {courseCategoryOptions.map((category) => (
+                                  <option key={category.id} value={category.id}>
+                                    {category.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="auth-field">
+                              <span>Access type</span>
+                              <select
+                                className="dashboard-select"
+                                value={courseEditForm.accessType ?? "FREE"}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    accessType: event.target
+                                      .value as CourseRecord["accessType"],
+                                  }))
+                                }
+                              >
+                                <option value="FREE">FREE</option>
+                                <option value="TRIAL_PREVIEW">
+                                  TRIAL_PREVIEW
                                 </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label className="auth-field">
-                            <span>Access type</span>
-                            <select
-                              className="dashboard-select"
-                              value={courseEditForm.accessType ?? "FREE"}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  accessType: event.target.value as CourseRecord["accessType"],
-                                }))
-                              }
-                            >
-                              <option value="FREE">FREE</option>
-                              <option value="TRIAL_PREVIEW">TRIAL_PREVIEW</option>
-                              <option value="PAID">PAID</option>
-                            </select>
-                          </label>
-                          <label className="auth-field">
-                            <span>Price BDT</span>
-                            <input
-                              type="number"
-                              min={0}
-                              disabled={(courseEditForm.accessType ?? "FREE") === "FREE"}
-                              value={courseEditForm.priceBdt ?? 0}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  priceBdt: Number(event.target.value || 0),
-                                }))
-                              }
-                            />
-                          </label>
-                          <div className="dashboard-highlight">
-                            <span>Invoice preview</span>
-                            <strong>{formatInvoiceMoney(Math.max(0, editPriceBdt), "BDT")}</strong>
-                            <small>
-                              {`${formatInvoiceMoney(editCoursePriceUsd, "USD")} + ${formatInvoiceMoney(editTaxAmountUsd, "USD")} tax = ${formatInvoiceMoney(editTotalAmountUsd, "USD")}`}
-                            </small>
-                          </div>
-                          <label className="auth-field">
-                            <span>Preview lesson limit</span>
-                            <input
-                              type="number"
-                              min={0}
-                              disabled={(courseEditForm.accessType ?? "FREE") !== "TRIAL_PREVIEW"}
-                              value={courseEditForm.previewLessonLimit ?? 0}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  previewLessonLimit: Number(event.target.value || 0),
-                                }))
-                              }
-                            />
-                          </label>
-                          <label className="auth-field">
-                            <span>Status</span>
-                            <select
-                              className="dashboard-select"
-                              value={courseEditForm.status ?? "DRAFT"}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  status: event.target.value as CourseRecord["status"],
-                                }))
-                              }
-                            >
-                              <option value="DRAFT">DRAFT</option>
-                              <option value="PUBLISHED">PUBLISHED</option>
-                              <option value="ARCHIVED">ARCHIVED</option>
-                            </select>
-                          </label>
-                          <label className="auth-field">
-                            <span>Trial duration (days)</span>
-                            <input
-                              type="number"
-                              min={1}
-                              max={365}
-                              disabled={(courseEditForm.accessType ?? "FREE") !== "TRIAL_PREVIEW"}
-                              value={courseEditForm.trialDays ?? 7}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  trialDays: Number(event.target.value || 1),
-                                }))
-                              }
-                            />
-                          </label>
-                          <label className="dashboard-checkbox">
-                            <input
-                              type="checkbox"
-                              disabled={(courseEditForm.accessType ?? "FREE") !== "TRIAL_PREVIEW"}
-                              checked={Boolean(courseEditForm.trialVisible)}
-                              onChange={(event) =>
-                                setCourseEditForm((current) => ({
-                                  ...current,
-                                  trialVisible: event.target.checked,
-                                }))
-                              }
-                            />
-                            <span>Trial visible</span>
-                          </label>
+                                <option value="PAID">PAID</option>
+                              </select>
+                            </label>
+                            <label className="auth-field">
+                              <span>Price BDT</span>
+                              <input
+                                type="number"
+                                min={0}
+                                disabled={
+                                  (courseEditForm.accessType ?? "FREE") ===
+                                  "FREE"
+                                }
+                                value={courseEditForm.priceBdt ?? 0}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    priceBdt: Number(event.target.value || 0),
+                                  }))
+                                }
+                              />
+                            </label>
+                            <div className="dashboard-highlight">
+                              <span>Invoice preview</span>
+                              <strong>
+                                {formatInvoiceMoney(
+                                  Math.max(0, editPriceBdt),
+                                  "BDT",
+                                )}
+                              </strong>
+                              <small>
+                                {`${formatInvoiceMoney(editCoursePriceUsd, "USD")} + ${formatInvoiceMoney(editTaxAmountUsd, "USD")} tax = ${formatInvoiceMoney(editTotalAmountUsd, "USD")}`}
+                              </small>
+                            </div>
+                            <label className="auth-field">
+                              <span>Preview lesson limit</span>
+                              <input
+                                type="number"
+                                min={0}
+                                disabled={
+                                  (courseEditForm.accessType ?? "FREE") !==
+                                  "TRIAL_PREVIEW"
+                                }
+                                value={courseEditForm.previewLessonLimit ?? 0}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    previewLessonLimit: Number(
+                                      event.target.value || 0,
+                                    ),
+                                  }))
+                                }
+                              />
+                            </label>
+                            <label className="auth-field">
+                              <span>Status</span>
+                              <select
+                                className="dashboard-select"
+                                value={courseEditForm.status ?? "DRAFT"}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    status: event.target
+                                      .value as CourseRecord["status"],
+                                  }))
+                                }
+                              >
+                                <option value="DRAFT">DRAFT</option>
+                                <option value="PUBLISHED">PUBLISHED</option>
+                                <option value="ARCHIVED">ARCHIVED</option>
+                              </select>
+                            </label>
+                            <label className="auth-field">
+                              <span>Trial duration (days)</span>
+                              <input
+                                type="number"
+                                min={1}
+                                max={365}
+                                disabled={
+                                  (courseEditForm.accessType ?? "FREE") !==
+                                  "TRIAL_PREVIEW"
+                                }
+                                value={courseEditForm.trialDays ?? 7}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    trialDays: Number(event.target.value || 1),
+                                  }))
+                                }
+                              />
+                            </label>
+                            <label className="dashboard-checkbox">
+                              <input
+                                type="checkbox"
+                                disabled={
+                                  (courseEditForm.accessType ?? "FREE") !==
+                                  "TRIAL_PREVIEW"
+                                }
+                                checked={Boolean(courseEditForm.trialVisible)}
+                                onChange={(event) =>
+                                  setCourseEditForm((current) => ({
+                                    ...current,
+                                    trialVisible: event.target.checked,
+                                  }))
+                                }
+                              />
+                              <span>Trial visible</span>
+                            </label>
                           </div>
                         ) : null}
 
@@ -2285,7 +2711,9 @@ export default function DashboardView() {
                                 onClick={() => handleSaveCourse(course.id)}
                                 disabled={adminCourseActionId === course.id}
                               >
-                                {adminCourseActionId === course.id ? "Saving..." : "Save course"}
+                                {adminCourseActionId === course.id
+                                  ? "Saving..."
+                                  : "Save course"}
                               </button>
                               <button
                                 type="button"
@@ -2337,41 +2765,46 @@ export default function DashboardView() {
 
                         {deleteCourseConfirmId === course.id ? (
                           <div className="dashboard-user-edit-grid">
-                          <label className="auth-field">
-                            <span>{`Type ${course.slug} to confirm safe delete`}</span>
-                            <input
-                              value={deleteCourseConfirmValue}
-                              onChange={(event) => setDeleteCourseConfirmValue(event.target.value)}
-                              placeholder={course.slug}
-                            />
-                          </label>
-                          <div className="dashboard-actions">
-                            <button
-                              type="button"
-                              className="dashboard-primary-link dashboard-button"
-                              onClick={() => handleDeleteCourse(course.id)}
-                              disabled={
-                                adminCourseActionId === course.id ||
-                                deleteCourseConfirmValue.trim() !== course.slug
-                              }
-                            >
-                              {adminCourseActionId === course.id
-                                ? "Deleting..."
-                                : "Confirm safe delete"}
-                            </button>
-                            <button
-                              type="button"
-                              className="dashboard-secondary-link dashboard-button"
-                              onClick={() => {
-                                setDeleteCourseConfirmId(null);
-                                setDeleteCourseConfirmValue("");
-                                setAdminCourseNotice(null);
-                              }}
-                              disabled={adminCourseActionId === course.id}
-                            >
-                              Cancel delete
-                            </button>
-                          </div>
+                            <label className="auth-field">
+                              <span>{`Type ${course.slug} to confirm safe delete`}</span>
+                              <input
+                                value={deleteCourseConfirmValue}
+                                onChange={(event) =>
+                                  setDeleteCourseConfirmValue(
+                                    event.target.value,
+                                  )
+                                }
+                                placeholder={course.slug}
+                              />
+                            </label>
+                            <div className="dashboard-actions">
+                              <button
+                                type="button"
+                                className="dashboard-primary-link dashboard-button"
+                                onClick={() => handleDeleteCourse(course.id)}
+                                disabled={
+                                  adminCourseActionId === course.id ||
+                                  deleteCourseConfirmValue.trim() !==
+                                    course.slug
+                                }
+                              >
+                                {adminCourseActionId === course.id
+                                  ? "Deleting..."
+                                  : "Confirm safe delete"}
+                              </button>
+                              <button
+                                type="button"
+                                className="dashboard-secondary-link dashboard-button"
+                                onClick={() => {
+                                  setDeleteCourseConfirmId(null);
+                                  setDeleteCourseConfirmValue("");
+                                  setAdminCourseNotice(null);
+                                }}
+                                disabled={adminCourseActionId === course.id}
+                              >
+                                Cancel delete
+                              </button>
+                            </div>
                           </div>
                         ) : null}
                       </article>
@@ -2426,7 +2859,9 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search users, email, role, language..."
                     />
                   </label>
@@ -2434,9 +2869,13 @@ export default function DashboardView() {
 
                 <div className="admin-console-topbar-right">
                   <div className="admin-console-indicator">Live</div>
-                  <div className="admin-console-indicator">Users {adminUsers.length}</div>
+                  <div className="admin-console-indicator">
+                    Users {adminUsers.length}
+                  </div>
                   <div className="admin-console-profile">
-                    <div className="admin-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="admin-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{roleLabel(user.role)}</strong>
                       <span>{user.fullName}</span>
@@ -2450,7 +2889,9 @@ export default function DashboardView() {
                   <h1>{adminHeadingTitle}</h1>
                   <p>{adminHeadingCopy}</p>
                 </div>
-                <div className="admin-console-range">{getCurrentWeekLabel()}</div>
+                <div className="admin-console-range">
+                  {getCurrentWeekLabel()}
+                </div>
               </section>
 
               <section className="admin-console-card admin-console-users-card">
@@ -2459,7 +2900,9 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">User management</p>
                     <h2>Create and manage LMS users</h2>
                   </div>
-                  <span className="dashboard-chip">{filteredUsers.length} users</span>
+                  <span className="dashboard-chip">
+                    {filteredUsers.length} users
+                  </span>
                 </div>
                 <div className="dashboard-highlight-row">
                   <div className="dashboard-highlight">
@@ -2546,7 +2989,9 @@ export default function DashboardView() {
                       onChange={(event) =>
                         setCreateUserForm((current) => ({
                           ...current,
-                          accountState: event.target.value as NonNullable<CreateAdminUserPayload["accountState"]>,
+                          accountState: event.target.value as NonNullable<
+                            CreateAdminUserPayload["accountState"]
+                          >,
                         }))
                       }
                     >
@@ -2563,7 +3008,9 @@ export default function DashboardView() {
                       onChange={(event) =>
                         setCreateUserForm((current) => ({
                           ...current,
-                          preferredLanguage: event.target.value as NonNullable<CreateAdminUserPayload["preferredLanguage"]>,
+                          preferredLanguage: event.target.value as NonNullable<
+                            CreateAdminUserPayload["preferredLanguage"]
+                          >,
                         }))
                       }
                     >
@@ -2592,15 +3039,21 @@ export default function DashboardView() {
                     onClick={handleCreateUser}
                     disabled={adminUserActionId === "create-user"}
                   >
-                    {adminUserActionId === "create-user" ? "Creating..." : "Create user"}
+                    {adminUserActionId === "create-user"
+                      ? "Creating..."
+                      : "Create user"}
                   </button>
                 </div>
-                {adminUserCreateNotice ? <p className="dashboard-copy">{adminUserCreateNotice}</p> : null}
+                {adminUserCreateNotice ? (
+                  <p className="dashboard-copy">{adminUserCreateNotice}</p>
+                ) : null}
                 <p className="dashboard-copy">
-                  Edit users, manually enroll learners, remove access, restore access, or delete
-                  users from this focused admin page.
+                  Edit users, manually enroll learners, remove access, restore
+                  access, or delete users from this focused admin page.
                 </p>
-                {adminUserNotice ? <p className="dashboard-copy">{adminUserNotice}</p> : null}
+                {adminUserNotice ? (
+                  <p className="dashboard-copy">{adminUserNotice}</p>
+                ) : null}
                 {editingManagedUser ? (
                   <section className="admin-console-user-card">
                     <div className="admin-console-card-head">
@@ -2608,7 +3061,9 @@ export default function DashboardView() {
                         <p className="dashboard-section-kicker">Edit user</p>
                         <h2>{editingManagedUser.fullName}</h2>
                       </div>
-                      <span className="dashboard-chip">{editingManagedUser.email}</span>
+                      <span className="dashboard-chip">
+                        {editingManagedUser.email}
+                      </span>
                     </div>
                     <div className="dashboard-user-edit-grid">
                       <label className="auth-field">
@@ -2648,7 +3103,9 @@ export default function DashboardView() {
                           onChange={(event) =>
                             setEditForm((current) => ({
                               ...current,
-                              preferredLanguage: event.target.value as "en" | "bn",
+                              preferredLanguage: event.target.value as
+                                | "en"
+                                | "bn",
                             }))
                           }
                         >
@@ -2664,7 +3121,10 @@ export default function DashboardView() {
                           onChange={(event) =>
                             setEditForm((current) => ({
                               ...current,
-                              accountState: event.target.value as "FREE" | "TRIAL" | "PAID",
+                              accountState: event.target.value as
+                                | "FREE"
+                                | "TRIAL"
+                                | "PAID",
                             }))
                           }
                         >
@@ -2673,7 +3133,10 @@ export default function DashboardView() {
                           <option value="PAID">Paid</option>
                         </select>
                       </label>
-                      <div className="dashboard-copy">Email verification status is read-only in this edit form.</div>
+                      <div className="dashboard-copy">
+                        Email verification status is read-only in this edit
+                        form.
+                      </div>
                     </div>
                     <div className="dashboard-actions">
                       <button
@@ -2682,7 +3145,9 @@ export default function DashboardView() {
                         onClick={() => handleSaveUser(editingManagedUser.id)}
                         disabled={adminUserActionId === editingManagedUser.id}
                       >
-                        {adminUserActionId === editingManagedUser.id ? "Saving..." : "Save"}
+                        {adminUserActionId === editingManagedUser.id
+                          ? "Saving..."
+                          : "Save"}
                       </button>
                       <button
                         type="button"
@@ -2697,14 +3162,19 @@ export default function DashboardView() {
                 ) : null}
                 <div className="admin-console-user-grid">
                   {filteredUsers.map((managedUser) => (
-                    <article key={managedUser.id} className="admin-console-user-card">
+                    <article
+                      key={managedUser.id}
+                      className="admin-console-user-card"
+                    >
                       <div className="dashboard-user-head">
                         <div>
                           <strong>{managedUser.fullName}</strong>
                           <span>{managedUser.email}</span>
                         </div>
                         <span className="dashboard-chip">
-                          {managedUser.isSuspended ? "Access removed" : roleLabel(managedUser.role)}
+                          {managedUser.isSuspended
+                            ? "Access removed"
+                            : roleLabel(managedUser.role)}
                         </span>
                       </div>
 
@@ -2722,7 +3192,9 @@ export default function DashboardView() {
                           className="dashboard-secondary-link dashboard-button"
                           onClick={() => startEditingUser(managedUser)}
                         >
-                          {editingUserId === managedUser.id ? "Editing now" : "Edit"}
+                          {editingUserId === managedUser.id
+                            ? "Editing now"
+                            : "Edit"}
                         </button>
                         <button
                           type="button"
@@ -2734,7 +3206,9 @@ export default function DashboardView() {
                             !adminCourseId
                           }
                         >
-                          {adminUserActionId === managedUser.id ? "Updating..." : "Manual enroll"}
+                          {adminUserActionId === managedUser.id
+                            ? "Updating..."
+                            : "Manual enroll"}
                         </button>
                         <button
                           type="button"
@@ -2753,7 +3227,8 @@ export default function DashboardView() {
                           className="dashboard-secondary-link dashboard-button"
                           onClick={() => handleDeleteUser(managedUser, user.id)}
                           disabled={
-                            adminUserActionId === managedUser.id || managedUser.id === user.id
+                            adminUserActionId === managedUser.id ||
+                            managedUser.id === user.id
                           }
                         >
                           Delete
@@ -2817,9 +3292,13 @@ export default function DashboardView() {
 
               <div className="admin-console-topbar-right">
                 <div className="admin-console-indicator">Live</div>
-                <div className="admin-console-indicator">Users {adminUsers.length}</div>
+                <div className="admin-console-indicator">
+                  Users {adminUsers.length}
+                </div>
                 <div className="admin-console-profile">
-                  <div className="admin-console-avatar">{getInitials(user.fullName)}</div>
+                  <div className="admin-console-avatar">
+                    {getInitials(user.fullName)}
+                  </div>
                   <div>
                     <strong>{roleLabel(user.role)}</strong>
                     <span>{user.fullName}</span>
@@ -2845,7 +3324,12 @@ export default function DashboardView() {
                 </article>
                 <article className="admin-console-stat-card">
                   <span>USD revenue total</span>
-                  <strong>{formatInvoiceMoney(roundInvoiceCurrency(expectedInvoiceRevenueUsd), "USD")}</strong>
+                  <strong>
+                    {formatInvoiceMoney(
+                      roundInvoiceCurrency(expectedInvoiceRevenueUsd),
+                      "USD",
+                    )}
+                  </strong>
                   <small>{`BDT / ${invoiceBdtPerUsd} plus ${invoiceTaxPercentage}% tax`}</small>
                 </article>
                 <article className="admin-console-stat-card">
@@ -2855,139 +3339,157 @@ export default function DashboardView() {
                 </article>
                 <article className="admin-console-stat-card">
                   <span>Submitted paid value</span>
-                  <strong>{formatInvoiceMoney(paidSubmittedAmountBdt, "BDT")}</strong>
+                  <strong>
+                    {formatInvoiceMoney(paidSubmittedAmountBdt, "BDT")}
+                  </strong>
                   <small>{`${formatInvoiceMoney(roundInvoiceCurrency(paidSubmittedAmountBdt / invoiceBdtPerUsd), "USD")} BDT-equivalent`}</small>
                 </article>
               </section>
             ) : null}
 
             {adminSection === "dashboard" ? (
-            <section className="admin-console-stats">
-              <article className="admin-console-stat-card">
-                <span>Total Users</span>
-                <strong>{adminData.widgets.totalUsers}</strong>
-                <small>{learnerCount} learners inside the LMS workspace</small>
-              </article>
-              <article className="admin-console-stat-card">
-                <span>Free / Trial / Paid</span>
-                <strong>{`${adminData.widgets.freeUsers ?? 0} / ${adminData.widgets.trialUsers ?? 0} / ${adminData.widgets.paidUsers ?? 0}`}</strong>
-                <small>Subscription-state breakdown</small>
-              </article>
-              <article className="admin-console-stat-card">
-                <span>Total Courses</span>
-                <strong>{adminData.widgets.totalCourses}</strong>
-                <small>Single published electrical course workspace</small>
-              </article>
-              <article className="admin-console-stat-card">
-                <span>Total Lessons</span>
-                <strong>{allAdminCourseLessons.length}</strong>
-                <small>All lesson routes under the main course</small>
-              </article>
-              <article className="admin-console-stat-card">
-                <span>Pending Enrollments</span>
-                <strong>{adminData.widgets.pendingEnrollments}</strong>
-                <small>Manual review and admin enrollment ready</small>
-              </article>
-              <article className="admin-console-stat-card">
-                <span>Pending Payments</span>
-                <strong>{adminData.widgets.pendingPayments ?? 0}</strong>
-                <small>{`Revenue ${adminData.widgets.revenueBdt ?? 0} BDT`}</small>
-              </article>
-              <article className="admin-console-stat-card">
-                <span>Active Learners</span>
-                <strong>{adminData.widgets.activeLearners}</strong>
-                <small>{`${activeUsersCount} active, ${suspendedUsersCount} blocked`}</small>
-              </article>
-            </section>
+              <section className="admin-console-stats">
+                <article className="admin-console-stat-card">
+                  <span>Total Users</span>
+                  <strong>{adminData.widgets.totalUsers}</strong>
+                  <small>
+                    {learnerCount} learners inside the LMS workspace
+                  </small>
+                </article>
+                <article className="admin-console-stat-card">
+                  <span>Free / Trial / Paid</span>
+                  <strong>{`${adminData.widgets.freeUsers ?? 0} / ${adminData.widgets.trialUsers ?? 0} / ${adminData.widgets.paidUsers ?? 0}`}</strong>
+                  <small>Subscription-state breakdown</small>
+                </article>
+                <article className="admin-console-stat-card">
+                  <span>Total Courses</span>
+                  <strong>{adminData.widgets.totalCourses}</strong>
+                  <small>Single published electrical course workspace</small>
+                </article>
+                <article className="admin-console-stat-card">
+                  <span>Total Lessons</span>
+                  <strong>{allAdminCourseLessons.length}</strong>
+                  <small>All lesson routes under the main course</small>
+                </article>
+                <article className="admin-console-stat-card">
+                  <span>Pending Enrollments</span>
+                  <strong>{adminData.widgets.pendingEnrollments}</strong>
+                  <small>Manual review and admin enrollment ready</small>
+                </article>
+                <article className="admin-console-stat-card">
+                  <span>Pending Payments</span>
+                  <strong>{adminData.widgets.pendingPayments ?? 0}</strong>
+                  <small>{`Revenue ${adminData.widgets.revenueBdt ?? 0} BDT`}</small>
+                </article>
+                <article className="admin-console-stat-card">
+                  <span>Active Learners</span>
+                  <strong>{adminData.widgets.activeLearners}</strong>
+                  <small>{`${activeUsersCount} active, ${suspendedUsersCount} blocked`}</small>
+                </article>
+              </section>
             ) : null}
 
             {adminSection === "dashboard" ? (
-            <section className="admin-console-grid admin-console-grid-overview">
-              <article className="admin-console-card admin-console-chart-card">
-                <div className="admin-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">Enrollment overview</p>
-                    <h2>Weekly LMS activity</h2>
+              <section className="admin-console-grid admin-console-grid-overview">
+                <article className="admin-console-card admin-console-chart-card">
+                  <div className="admin-console-card-head">
+                    <div>
+                      <p className="dashboard-section-kicker">
+                        Enrollment overview
+                      </p>
+                      <h2>Weekly LMS activity</h2>
+                    </div>
+                    <span className="dashboard-chip">This week</span>
                   </div>
-                  <span className="dashboard-chip">This week</span>
-                </div>
-                <div className="admin-console-mini-chart">
-                  {activitySeries.map((item) => (
-                    <div key={item.label} className="admin-console-mini-chart-bar">
+                  <div className="admin-console-mini-chart">
+                    {activitySeries.map((item) => (
                       <div
-                        className="admin-console-mini-chart-fill"
-                        style={{
-                          height: `${Math.max(16, (item.value / maxActivityValue) * 100)}%`,
-                        }}
-                      />
-                      <strong>{item.value}</strong>
-                      <span>{item.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </article>
+                        key={item.label}
+                        className="admin-console-mini-chart-bar"
+                      >
+                        <div
+                          className="admin-console-mini-chart-fill"
+                          style={{
+                            height: `${Math.max(16, (item.value / maxActivityValue) * 100)}%`,
+                          }}
+                        />
+                        <strong>{item.value}</strong>
+                        <span>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </article>
 
-              <article className="admin-console-card">
-                <div className="admin-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">Top course</p>
-                    <h2>{courseTitle}</h2>
-                  </div>
-                  <Link href={coursePortalLink} className="dashboard-secondary-link">
-                    View
-                  </Link>
-                </div>
-                <div className="admin-console-ranked-list">
-                  <div className="admin-console-ranked-item">
-                    <span>1</span>
-                    <strong>{courseTitle}</strong>
-                    <small>{adminData.widgets.activeLearners} learners active</small>
-                  </div>
-                  <div className="admin-console-summary-row">
+                <article className="admin-console-card">
+                  <div className="admin-console-card-head">
                     <div>
-                      <span>Lessons</span>
-                      <strong>{allAdminCourseLessons.length}</strong>
+                      <p className="dashboard-section-kicker">Top course</p>
+                      <h2>{courseTitle}</h2>
                     </div>
-                    <div>
-                      <span>Projects</span>
-                      <strong>{basicsCourseProjects.length}</strong>
+                    <Link
+                      href={coursePortalLink}
+                      className="dashboard-secondary-link"
+                    >
+                      View
+                    </Link>
+                  </div>
+                  <div className="admin-console-ranked-list">
+                    <div className="admin-console-ranked-item">
+                      <span>1</span>
+                      <strong>{courseTitle}</strong>
+                      <small>
+                        {adminData.widgets.activeLearners} learners active
+                      </small>
                     </div>
-                    <div>
-                      <span>Pending</span>
-                      <strong>{adminData.widgets.pendingEnrollments}</strong>
+                    <div className="admin-console-summary-row">
+                      <div>
+                        <span>Lessons</span>
+                        <strong>{allAdminCourseLessons.length}</strong>
+                      </div>
+                      <div>
+                        <span>Projects</span>
+                        <strong>{basicsCourseProjects.length}</strong>
+                      </div>
+                      <div>
+                        <span>Pending</span>
+                        <strong>{adminData.widgets.pendingEnrollments}</strong>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
+                </article>
 
-              <article className="admin-console-card">
-                <div className="admin-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">User management</p>
-                    <h2>Access summary</h2>
+                <article className="admin-console-card">
+                  <div className="admin-console-card-head">
+                    <div>
+                      <p className="dashboard-section-kicker">
+                        User management
+                      </p>
+                      <h2>Access summary</h2>
+                    </div>
+                    <span className="dashboard-chip">
+                      {filteredUsers.length} visible
+                    </span>
                   </div>
-                  <span className="dashboard-chip">{filteredUsers.length} visible</span>
-                </div>
-                <div className="admin-console-summary-list">
-                  <div className="admin-console-summary-line">
-                    <span>Total users</span>
-                    <strong>{adminUsers.length}</strong>
+                  <div className="admin-console-summary-list">
+                    <div className="admin-console-summary-line">
+                      <span>Total users</span>
+                      <strong>{adminUsers.length}</strong>
+                    </div>
+                    <div className="admin-console-summary-line">
+                      <span>Active users</span>
+                      <strong>{activeUsersCount}</strong>
+                    </div>
+                    <div className="admin-console-summary-line">
+                      <span>Admins</span>
+                      <strong>{adminCount}</strong>
+                    </div>
+                    <div className="admin-console-summary-line">
+                      <span>Suspended users</span>
+                      <strong>{suspendedUsersCount}</strong>
+                    </div>
                   </div>
-                  <div className="admin-console-summary-line">
-                    <span>Active users</span>
-                    <strong>{activeUsersCount}</strong>
-                  </div>
-                  <div className="admin-console-summary-line">
-                    <span>Admins</span>
-                    <strong>{adminCount}</strong>
-                  </div>
-                  <div className="admin-console-summary-line">
-                    <span>Suspended users</span>
-                    <strong>{suspendedUsersCount}</strong>
-                  </div>
-                </div>
-              </article>
-            </section>
+                </article>
+              </section>
             ) : null}
 
             <section className="admin-console-grid admin-console-grid-overview">
@@ -3006,7 +3508,12 @@ export default function DashboardView() {
                   </div>
                   <div className="admin-console-summary-line">
                     <span>Pending amount</span>
-                    <strong>{formatInvoiceMoney(pendingSubmittedAmountBdt || pendingPaymentAmount, "BDT")}</strong>
+                    <strong>
+                      {formatInvoiceMoney(
+                        pendingSubmittedAmountBdt || pendingPaymentAmount,
+                        "BDT",
+                      )}
+                    </strong>
                   </div>
                   <div className="admin-console-summary-line">
                     <span>Approved payments</span>
@@ -3014,11 +3521,18 @@ export default function DashboardView() {
                   </div>
                   <div className="admin-console-summary-line">
                     <span>Expected paid revenue</span>
-                    <strong>{formatInvoiceMoney(expectedInvoiceRevenueBdt, "BDT")}</strong>
+                    <strong>
+                      {formatInvoiceMoney(expectedInvoiceRevenueBdt, "BDT")}
+                    </strong>
                   </div>
                   <div className="admin-console-summary-line">
                     <span>USD with tax</span>
-                    <strong>{formatInvoiceMoney(roundInvoiceCurrency(expectedInvoiceRevenueUsd), "USD")}</strong>
+                    <strong>
+                      {formatInvoiceMoney(
+                        roundInvoiceCurrency(expectedInvoiceRevenueUsd),
+                        "USD",
+                      )}
+                    </strong>
                   </div>
                 </div>
               </article>
@@ -3029,12 +3543,17 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">Top courses</p>
                     <h2>Enrollment leaderboard</h2>
                   </div>
-                  <span className="dashboard-chip">{topCourses.length} ranked</span>
+                  <span className="dashboard-chip">
+                    {topCourses.length} ranked
+                  </span>
                 </div>
                 <div className="admin-console-ranked-list">
                   {topCourses.length ? (
                     topCourses.map((course, index) => (
-                      <div key={course.courseId} className="admin-console-ranked-item">
+                      <div
+                        key={course.courseId}
+                        className="admin-console-ranked-item"
+                      >
                         <span>{index + 1}</span>
                         <strong>{course.title}</strong>
                         <small>
@@ -3046,7 +3565,9 @@ export default function DashboardView() {
                     <div className="admin-console-ranked-item">
                       <span>0</span>
                       <strong>No course analytics yet</strong>
-                      <small>Top courses will appear after enrollments start.</small>
+                      <small>
+                        Top courses will appear after enrollments start.
+                      </small>
                     </div>
                   )}
                 </div>
@@ -3057,24 +3578,35 @@ export default function DashboardView() {
               <section className="admin-console-card admin-console-users-card">
                 <div className="admin-console-card-head">
                   <div>
-                    <p className="dashboard-section-kicker">Invoice analytics</p>
+                    <p className="dashboard-section-kicker">
+                      Invoice analytics
+                    </p>
                     <h2>Course price and payment breakdown</h2>
                   </div>
-                  <span className="dashboard-chip">{courseInvoiceAnalytics.length} courses</span>
+                  <span className="dashboard-chip">
+                    {courseInvoiceAnalytics.length} courses
+                  </span>
                 </div>
                 <p className="dashboard-copy">
-                  Each paid-course invoice uses the course BDT price, converts USD by dividing by
-                  {` ${invoiceBdtPerUsd}`}, then adds fixed {invoiceTaxPercentage}% tax.
+                  Each paid-course invoice uses the course BDT price, converts
+                  USD by dividing by
+                  {` ${invoiceBdtPerUsd}`}, then adds fixed{" "}
+                  {invoiceTaxPercentage}% tax.
                 </p>
                 <div className="admin-console-user-grid">
                   {courseInvoiceAnalytics.map((item) => (
-                    <article key={item.course.id} className="admin-console-user-card">
+                    <article
+                      key={item.course.id}
+                      className="admin-console-user-card"
+                    >
                       <div className="dashboard-user-head">
                         <div>
                           <strong>{item.course.title}</strong>
                           <span>{item.course.slug}</span>
                         </div>
-                        <span className="dashboard-chip">{item.course.accessType}</span>
+                        <span className="dashboard-chip">
+                          {item.course.accessType}
+                        </span>
                       </div>
                       <div className="dashboard-user-meta">
                         <span>{`Payments: ${item.coursePayments.length} total`}</span>
@@ -3093,10 +3625,16 @@ export default function DashboardView() {
                         )}
                       </div>
                       <div className="dashboard-actions">
-                        <Link href={`/courses/${item.course.slug}`} className="dashboard-secondary-link">
+                        <Link
+                          href={`/courses/${item.course.slug}`}
+                          className="dashboard-secondary-link"
+                        >
                           Open course
                         </Link>
-                        <Link href={`/courses/${item.course.slug}/invoice`} className="dashboard-secondary-link">
+                        <Link
+                          href={`/courses/${item.course.slug}/invoice`}
+                          className="dashboard-secondary-link"
+                        >
                           View invoice
                         </Link>
                       </div>
@@ -3113,12 +3651,20 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">Lesson catalog</p>
                     <h2>Course lesson list</h2>
                   </div>
-                  <span className="dashboard-chip">{filteredLessons.length} lessons</span>
+                  <span className="dashboard-chip">
+                    {filteredLessons.length} lessons
+                  </span>
                 </div>
                 <div className="admin-console-table">
                   {filteredLessons.map((lesson, index) => (
-                    <Link key={lesson.href} href={lesson.href} className="admin-console-table-row">
-                      <span className="admin-console-table-rank">{index + 1}</span>
+                    <Link
+                      key={lesson.href}
+                      href={lesson.href}
+                      className="admin-console-table-row"
+                    >
+                      <span className="admin-console-table-rank">
+                        {index + 1}
+                      </span>
                       <strong>{lesson.title}</strong>
                       <small>Open lesson route</small>
                     </Link>
@@ -3132,7 +3678,9 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">Project catalog</p>
                     <h2>Course projects</h2>
                   </div>
-                  <span className="dashboard-chip">{filteredProjects.length} projects</span>
+                  <span className="dashboard-chip">
+                    {filteredProjects.length} projects
+                  </span>
                 </div>
                 <div className="admin-console-table">
                   {filteredProjects.map((project, index) =>
@@ -3142,13 +3690,20 @@ export default function DashboardView() {
                         href={project.href}
                         className="admin-console-table-row"
                       >
-                        <span className="admin-console-table-rank">{index + 1}</span>
+                        <span className="admin-console-table-rank">
+                          {index + 1}
+                        </span>
                         <strong>{project.title}</strong>
                         <small>Open project workspace</small>
                       </Link>
                     ) : (
-                      <div key={project.title} className="admin-console-table-row">
-                        <span className="admin-console-table-rank">{index + 1}</span>
+                      <div
+                        key={project.title}
+                        className="admin-console-table-row"
+                      >
+                        <span className="admin-console-table-rank">
+                          {index + 1}
+                        </span>
                         <strong>{project.title}</strong>
                         <small>Project folder ready for next phase</small>
                       </div>
@@ -3169,17 +3724,23 @@ export default function DashboardView() {
                   <div className="admin-console-system-item">
                     <span>Server status</span>
                     <strong>{adminData.systemHealth.service}</strong>
-                    <small>{formatDate(adminData.systemHealth.timestamp)}</small>
+                    <small>
+                      {formatDate(adminData.systemHealth.timestamp)}
+                    </small>
                   </div>
                   <div className="admin-console-system-item">
                     <span>Database</span>
                     <strong>{adminData.systemHealth.database}</strong>
-                    <small>{adminData.systemHealth.storageDriver} storage driver</small>
+                    <small>
+                      {adminData.systemHealth.storageDriver} storage driver
+                    </small>
                   </div>
                   <div className="admin-console-system-item">
                     <span>Stored files</span>
                     <strong>{adminData.systemHealth.totalFiles}</strong>
-                    <small>{adminData.systemHealth.totalStorageMegabytes} MB used</small>
+                    <small>
+                      {adminData.systemHealth.totalStorageMegabytes} MB used
+                    </small>
                   </div>
                 </div>
               </article>
@@ -3191,13 +3752,17 @@ export default function DashboardView() {
                   <p className="dashboard-section-kicker">Course management</p>
                   <h2>Edit pricing and access rules</h2>
                 </div>
-                <span className="dashboard-chip">{adminCourses.length} courses</span>
+                <span className="dashboard-chip">
+                  {adminCourses.length} courses
+                </span>
               </div>
               <p className="dashboard-copy">
-                Update `access_type`, `price_bdt`, `preview_lesson_limit`, and `trial_visible`
-                directly from the admin dashboard.
+                Update `access_type`, `price_bdt`, `preview_lesson_limit`, and
+                `trial_visible` directly from the admin dashboard.
               </p>
-              {adminCourseNotice ? <p className="dashboard-copy">{adminCourseNotice}</p> : null}
+              {adminCourseNotice ? (
+                <p className="dashboard-copy">{adminCourseNotice}</p>
+              ) : null}
               <div className="admin-console-user-grid">
                 {adminCourses.map((course) => (
                   <article key={course.id} className="admin-console-user-card">
@@ -3250,7 +3815,8 @@ export default function DashboardView() {
                             onChange={(event) =>
                               setCourseEditForm((current) => ({
                                 ...current,
-                                accessType: event.target.value as CourseRecord["accessType"],
+                                accessType: event.target
+                                  .value as CourseRecord["accessType"],
                               }))
                             }
                           >
@@ -3264,7 +3830,9 @@ export default function DashboardView() {
                           <input
                             type="number"
                             min={0}
-                            disabled={(courseEditForm.accessType ?? "FREE") === "FREE"}
+                            disabled={
+                              (courseEditForm.accessType ?? "FREE") === "FREE"
+                            }
                             value={courseEditForm.priceBdt ?? 0}
                             onChange={(event) =>
                               setCourseEditForm((current) => ({
@@ -3279,12 +3847,17 @@ export default function DashboardView() {
                           <input
                             type="number"
                             min={0}
-                            disabled={(courseEditForm.accessType ?? "FREE") !== "TRIAL_PREVIEW"}
+                            disabled={
+                              (courseEditForm.accessType ?? "FREE") !==
+                              "TRIAL_PREVIEW"
+                            }
                             value={courseEditForm.previewLessonLimit ?? 0}
                             onChange={(event) =>
                               setCourseEditForm((current) => ({
                                 ...current,
-                                previewLessonLimit: Number(event.target.value || 0),
+                                previewLessonLimit: Number(
+                                  event.target.value || 0,
+                                ),
                               }))
                             }
                           />
@@ -3297,7 +3870,8 @@ export default function DashboardView() {
                             onChange={(event) =>
                               setCourseEditForm((current) => ({
                                 ...current,
-                                status: event.target.value as CourseRecord["status"],
+                                status: event.target
+                                  .value as CourseRecord["status"],
                               }))
                             }
                           >
@@ -3309,7 +3883,10 @@ export default function DashboardView() {
                         <label className="dashboard-checkbox">
                           <input
                             type="checkbox"
-                            disabled={(courseEditForm.accessType ?? "FREE") !== "TRIAL_PREVIEW"}
+                            disabled={
+                              (courseEditForm.accessType ?? "FREE") !==
+                              "TRIAL_PREVIEW"
+                            }
                             checked={Boolean(courseEditForm.trialVisible)}
                             onChange={(event) =>
                               setCourseEditForm((current) => ({
@@ -3332,7 +3909,9 @@ export default function DashboardView() {
                             onClick={() => handleSaveCourse(course.id)}
                             disabled={adminCourseActionId === course.id}
                           >
-                            {adminCourseActionId === course.id ? "Saving..." : "Save course"}
+                            {adminCourseActionId === course.id
+                              ? "Saving..."
+                              : "Save course"}
                           </button>
                           <button
                             type="button"
@@ -3381,7 +3960,9 @@ export default function DashboardView() {
                           <span>{`Type ${course.slug} to confirm safe delete`}</span>
                           <input
                             value={deleteCourseConfirmValue}
-                            onChange={(event) => setDeleteCourseConfirmValue(event.target.value)}
+                            onChange={(event) =>
+                              setDeleteCourseConfirmValue(event.target.value)
+                            }
                             placeholder={course.slug}
                           />
                         </label>
@@ -3395,7 +3976,9 @@ export default function DashboardView() {
                               deleteCourseConfirmValue.trim() !== course.slug
                             }
                           >
-                            {adminCourseActionId === course.id ? "Deleting..." : "Confirm safe delete"}
+                            {adminCourseActionId === course.id
+                              ? "Deleting..."
+                              : "Confirm safe delete"}
                           </button>
                           <button
                             type="button"
@@ -3420,24 +4003,32 @@ export default function DashboardView() {
             <section className="admin-console-card admin-console-users-card">
               <div className="admin-console-card-head">
                 <div>
-                  <p className="dashboard-section-kicker">Course access history</p>
+                  <p className="dashboard-section-kicker">
+                    Course access history
+                  </p>
                   <h2>Assign, remove, and audit access overrides</h2>
                 </div>
-                <span className="dashboard-chip">{filteredAccessHistory.length} rows</span>
+                <span className="dashboard-chip">
+                  {filteredAccessHistory.length} rows
+                </span>
               </div>
               <p className="dashboard-copy">
-                Filter access history by user and course, then assign or remove overrides with an
-                audit note. Paid-course access should match the learner invoice status and dynamic
-                BDT-to-USD price rule.
+                Filter access history by user and course, then assign or remove
+                overrides with an audit note. Paid-course access should match
+                the learner invoice status and dynamic BDT-to-USD price rule.
               </p>
-              {adminAccessNotice ? <p className="dashboard-copy">{adminAccessNotice}</p> : null}
+              {adminAccessNotice ? (
+                <p className="dashboard-copy">{adminAccessNotice}</p>
+              ) : null}
               <div className="dashboard-user-edit-grid">
                 <label className="auth-field">
                   <span>User</span>
                   <select
                     className="dashboard-select"
                     value={selectedAccessUserId}
-                    onChange={(event) => setSelectedAccessUserId(event.target.value)}
+                    onChange={(event) =>
+                      setSelectedAccessUserId(event.target.value)
+                    }
                   >
                     <option value="">All users</option>
                     {adminUsers
@@ -3454,16 +4045,22 @@ export default function DashboardView() {
                   <select
                     className="dashboard-select"
                     value={selectedAccessCourseId}
-                    onChange={(event) => setSelectedAccessCourseId(event.target.value)}
+                    onChange={(event) =>
+                      setSelectedAccessCourseId(event.target.value)
+                    }
                   >
                     <option value="">All courses</option>
                     {adminCourses.map((course) => {
-                      const expectedInvoiceAmounts = getExpectedInvoiceAmounts(course);
+                      const expectedInvoiceAmounts =
+                        getExpectedInvoiceAmounts(course);
 
                       return (
                         <option key={course.id} value={course.id}>
-                          {course.title} - {formatInvoiceMoney(course.priceBdt, "BDT")}
-                          {expectedInvoiceAmounts ? ` / ${formatInvoiceMoney(expectedInvoiceAmounts.totalAmountUsd, "USD")}` : ""}
+                          {course.title} -{" "}
+                          {formatInvoiceMoney(course.priceBdt, "BDT")}
+                          {expectedInvoiceAmounts
+                            ? ` / ${formatInvoiceMoney(expectedInvoiceAmounts.totalAmountUsd, "USD")}`
+                            : ""}
                         </option>
                       );
                     })}
@@ -3496,7 +4093,9 @@ export default function DashboardView() {
                   onClick={handleAssignAccess}
                   disabled={adminAccessActionId === "assign"}
                 >
-                  {adminAccessActionId === "assign" ? "Assigning..." : "Assign access"}
+                  {adminAccessActionId === "assign"
+                    ? "Assigning..."
+                    : "Assign access"}
                 </button>
                 <button
                   type="button"
@@ -3504,7 +4103,9 @@ export default function DashboardView() {
                   onClick={handleRemoveAccess}
                   disabled={adminAccessActionId === "remove"}
                 >
-                  {adminAccessActionId === "remove" ? "Removing..." : "Remove access"}
+                  {adminAccessActionId === "remove"
+                    ? "Removing..."
+                    : "Remove access"}
                 </button>
               </div>
               <div className="admin-console-user-grid">
@@ -3512,9 +4113,14 @@ export default function DashboardView() {
                   filteredAccessHistory.map((enrollment) => {
                     const managedUser = userMap.get(enrollment.userId);
                     const course = courseMap.get(enrollment.courseId);
-                    const accessTypeLabel = formatAccountStateLabel(managedUser?.accountState);
-                    const courseTypeLabel = formatCourseAccessTypeLabel(course?.accessType);
-                    const expectedInvoiceAmounts = getExpectedInvoiceAmounts(course);
+                    const accessTypeLabel = formatAccountStateLabel(
+                      managedUser?.accountState,
+                    );
+                    const courseTypeLabel = formatCourseAccessTypeLabel(
+                      course?.accessType,
+                    );
+                    const expectedInvoiceAmounts =
+                      getExpectedInvoiceAmounts(course);
                     const relatedPayment =
                       paymentRequests.find(
                         (paymentRequest) =>
@@ -3523,13 +4129,20 @@ export default function DashboardView() {
                       ) ?? null;
 
                     return (
-                      <article key={enrollment.id} className="admin-console-user-card">
+                      <article
+                        key={enrollment.id}
+                        className="admin-console-user-card"
+                      >
                         <div className="dashboard-user-head">
                           <div>
-                            <strong>{managedUser?.fullName ?? enrollment.userId}</strong>
+                            <strong>
+                              {managedUser?.fullName ?? enrollment.userId}
+                            </strong>
                             <span>{course?.title ?? enrollment.courseId}</span>
                           </div>
-                          <span className="dashboard-chip">{enrollment.status}</span>
+                          <span className="dashboard-chip">
+                            {enrollment.status}
+                          </span>
                         </div>
                         <div className="dashboard-user-meta">
                           <span>{`Source: ${enrollment.source}`}</span>
@@ -3554,13 +4167,21 @@ export default function DashboardView() {
                           <span>{`Reviewed: ${formatDate(enrollment.reviewedAt)}`}</span>
                           <span>{`Course slug: ${course?.slug ?? "Unknown"}`}</span>
                         </div>
-                        {enrollment.notes ? <p className="dashboard-copy">{enrollment.notes}</p> : null}
+                        {enrollment.notes ? (
+                          <p className="dashboard-copy">{enrollment.notes}</p>
+                        ) : null}
                         {course ? (
                           <div className="dashboard-actions">
-                            <Link href={`/courses/${course.slug}/invoice`} className="dashboard-secondary-link">
+                            <Link
+                              href={`/courses/${course.slug}/invoice`}
+                              className="dashboard-secondary-link"
+                            >
                               View invoice
                             </Link>
-                            <Link href={`/courses/${course.slug}`} className="dashboard-secondary-link">
+                            <Link
+                              href={`/courses/${course.slug}`}
+                              className="dashboard-secondary-link"
+                            >
                               Open course
                             </Link>
                           </div>
@@ -3570,7 +4191,8 @@ export default function DashboardView() {
                   })
                 ) : (
                   <p className="dashboard-muted">
-                    No access history matches the current user/course filters yet.
+                    No access history matches the current user/course filters
+                    yet.
                   </p>
                 )}
               </div>
@@ -3579,10 +4201,14 @@ export default function DashboardView() {
             <section className="admin-console-card admin-console-users-card">
               <div className="admin-console-card-head">
                 <div>
-                  <p className="dashboard-section-kicker">Admin activity timeline</p>
+                  <p className="dashboard-section-kicker">
+                    Admin activity timeline
+                  </p>
                   <h2>User, course, access, and payment actions</h2>
                 </div>
-                <span className="dashboard-chip">{filteredActivityLogs.length} events</span>
+                <span className="dashboard-chip">
+                  {filteredActivityLogs.length} events
+                </span>
               </div>
               <div className="dashboard-user-edit-grid">
                 <label className="auth-field">
@@ -3627,7 +4253,9 @@ export default function DashboardView() {
                           <strong>{log.action}</strong>
                           <span>{log.entityType}</span>
                         </div>
-                        <span className="dashboard-chip">{formatShortDate(log.createdAt)}</span>
+                        <span className="dashboard-chip">
+                          {formatShortDate(log.createdAt)}
+                        </span>
                       </div>
                       <div className="dashboard-user-meta">
                         <span>{`Entity ID: ${log.entityId ?? "N/A"}`}</span>
@@ -3635,13 +4263,16 @@ export default function DashboardView() {
                         <span>{`Created: ${formatDate(log.createdAt)}`}</span>
                       </div>
                       {log.metadata ? (
-                        <p className="dashboard-copy">{JSON.stringify(log.metadata)}</p>
+                        <p className="dashboard-copy">
+                          {JSON.stringify(log.metadata)}
+                        </p>
                       ) : null}
                     </article>
                   ))
                 ) : (
                   <p className="dashboard-muted">
-                    No admin activity logs match the current category or search filter.
+                    No admin activity logs match the current category or search
+                    filter.
                   </p>
                 )}
               </div>
@@ -3650,38 +4281,67 @@ export default function DashboardView() {
             <section className="admin-console-card admin-console-users-card">
               <div className="admin-console-card-head">
                 <div>
-                  <p className="dashboard-section-kicker">Receive invoice payment</p>
+                  <p className="dashboard-section-kicker">
+                    Receive invoice payment
+                  </p>
                   <h2>Course purchase invoice payments</h2>
                 </div>
-                <span className="dashboard-chip">{pendingPaymentRequests.length} pending</span>
+                <span className="dashboard-chip">
+                  {pendingPaymentRequests.length} pending
+                </span>
               </div>
               <p className="dashboard-copy">
-                Receive SQL-backed invoice payment submissions and mark each transaction as received or rejected.
+                Receive SQL-backed invoice payment submissions and mark each
+                transaction as received or rejected.
               </p>
-              {paymentNotice ? <p className="dashboard-copy">{paymentNotice}</p> : null}
+              {paymentNotice ? (
+                <p className="dashboard-copy">{paymentNotice}</p>
+              ) : null}
               <div className="admin-console-user-grid">
                 {paymentRequests.length ? (
                   paymentRequests.map((paymentRequest) => {
                     const paymentUser =
-                      adminUsers.find((managedUser) => managedUser.id === paymentRequest.userId) ??
-                      null;
-                    const paymentCourse = paymentRequest.courseId ? courseMap.get(paymentRequest.courseId) ?? null : null;
-                    const expectedInvoiceAmounts = getExpectedInvoiceAmounts(paymentCourse);
+                      adminUsers.find(
+                        (managedUser) =>
+                          managedUser.id === paymentRequest.userId,
+                      ) ?? null;
+                    const paymentCourse = paymentRequest.courseId
+                      ? (courseMap.get(paymentRequest.courseId) ?? null)
+                      : null;
+                    const expectedInvoiceAmounts =
+                      getExpectedInvoiceAmounts(paymentCourse);
 
                     return (
-                      <article key={paymentRequest.id} className="admin-console-user-card admin-payment-invoice-card">
+                      <article
+                        key={paymentRequest.id}
+                        className="admin-console-user-card admin-payment-invoice-card"
+                      >
                         <div className="dashboard-user-head">
                           <div>
-                            <strong>{paymentRequest.buyerName ?? paymentUser?.fullName ?? paymentRequest.userId}</strong>
-                            <span>{paymentRequest.buyerEmail ?? paymentUser?.email ?? "Learner payment request"}</span>
+                            <strong>
+                              {paymentRequest.buyerName ??
+                                paymentUser?.fullName ??
+                                paymentRequest.userId}
+                            </strong>
+                            <span>
+                              {paymentRequest.buyerEmail ??
+                                paymentUser?.email ??
+                                "Learner payment request"}
+                            </span>
                           </div>
-                          <span className={`dashboard-chip invoice-status-${paymentRequest.invoiceStatus.toLowerCase()}`}>{paymentRequest.invoiceStatus}</span>
+                          <span
+                            className={`dashboard-chip invoice-status-${paymentRequest.invoiceStatus.toLowerCase()}`}
+                          >
+                            {paymentRequest.invoiceStatus}
+                          </span>
                         </div>
 
                         <div className="dashboard-user-meta">
                           <span>{`Invoice: ${paymentRequest.invoiceNumber ?? "Legacy payment"}`}</span>
                           <span>{`Course: ${paymentCourse?.title ?? paymentRequest.planName}`}</span>
-                          {paymentCourse ? <span>{`Course slug: ${paymentCourse.slug}`}</span> : null}
+                          {paymentCourse ? (
+                            <span>{`Course slug: ${paymentCourse.slug}`}</span>
+                          ) : null}
                           <span>{`Transaction: ${paymentRequest.transactionId}`}</span>
                           <span>{`Reference: ${paymentRequest.paymentReference ?? "Not provided"}`}</span>
                           <span>{`Method: ${paymentRequest.paymentMethod}`}</span>
@@ -3694,41 +4354,67 @@ export default function DashboardView() {
                           ) : null}
                           <span>{`Phone: ${paymentRequest.buyerPhone ?? "Not provided"}`}</span>
                           <span>{`Submitted: ${formatDate(paymentRequest.submittedAt)}`}</span>
-                          {paymentRequest.paidAt ? <span>{`Paid: ${formatDate(paymentRequest.paidAt)}`}</span> : null}
+                          {paymentRequest.paidAt ? (
+                            <span>{`Paid: ${formatDate(paymentRequest.paidAt)}`}</span>
+                          ) : null}
                         </div>
 
-                        {paymentRequest.invoiceStatus === "PENDING" ? <><label className="auth-field">
-                          <span>Receive note</span>
-                          <input
-                            value={paymentReviewNotes[paymentRequest.id] ?? ""}
-                            onChange={(event) =>
-                              setPaymentReviewNotes((current) => ({
-                                ...current,
-                                [paymentRequest.id]: event.target.value,
-                              }))
-                            }
-                            placeholder="Optional receive or rejection note"
-                          />
-                        </label>
+                        {paymentRequest.invoiceStatus === "PENDING" ? (
+                          <>
+                            <label className="auth-field">
+                              <span>Receive note</span>
+                              <input
+                                value={
+                                  paymentReviewNotes[paymentRequest.id] ?? ""
+                                }
+                                onChange={(event) =>
+                                  setPaymentReviewNotes((current) => ({
+                                    ...current,
+                                    [paymentRequest.id]: event.target.value,
+                                  }))
+                                }
+                                placeholder="Optional receive or rejection note"
+                              />
+                            </label>
 
-                        <div className="dashboard-actions">
-                          <button
-                            type="button"
-                            className="dashboard-primary-link dashboard-button"
-                            onClick={() => handlePaymentReview(paymentRequest.id, "approve")}
-                            disabled={paymentActionId === paymentRequest.id}
-                          >
-                            {paymentActionId === paymentRequest.id ? "Receiving..." : "Payment Received"}
-                          </button>
-                          <button
-                            type="button"
-                            className="dashboard-secondary-link dashboard-button"
-                            onClick={() => handlePaymentReview(paymentRequest.id, "reject")}
-                            disabled={paymentActionId === paymentRequest.id}
-                          >
-                            Reject Payment
-                          </button>
-                        </div></> : <p className="dashboard-muted">{paymentRequest.invoiceStatus === "PAID" ? "Payment received and course upgrade approved." : "Payment was not approved."}</p>}
+                            <div className="dashboard-actions">
+                              <button
+                                type="button"
+                                className="dashboard-primary-link dashboard-button"
+                                onClick={() =>
+                                  handlePaymentReview(
+                                    paymentRequest.id,
+                                    "approve",
+                                  )
+                                }
+                                disabled={paymentActionId === paymentRequest.id}
+                              >
+                                {paymentActionId === paymentRequest.id
+                                  ? "Receiving..."
+                                  : "Payment Received"}
+                              </button>
+                              <button
+                                type="button"
+                                className="dashboard-secondary-link dashboard-button"
+                                onClick={() =>
+                                  handlePaymentReview(
+                                    paymentRequest.id,
+                                    "reject",
+                                  )
+                                }
+                                disabled={paymentActionId === paymentRequest.id}
+                              >
+                                Reject Payment
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="dashboard-muted">
+                            {paymentRequest.invoiceStatus === "PAID"
+                              ? "Payment received and course upgrade approved."
+                              : "Payment was not approved."}
+                          </p>
+                        )}
                       </article>
                     );
                   })
@@ -3746,7 +4432,9 @@ export default function DashboardView() {
                   <p className="dashboard-section-kicker">User management</p>
                   <h2>Admin user list and access control</h2>
                 </div>
-                <span className="dashboard-chip">{filteredUsers.length} users</span>
+                <span className="dashboard-chip">
+                  {filteredUsers.length} users
+                </span>
               </div>
               <div className="dashboard-user-edit-grid">
                 <label className="auth-field">
@@ -3798,9 +4486,12 @@ export default function DashboardView() {
                     onChange={(event) =>
                       setCreateUserForm((current) => ({
                         ...current,
-                        role: event.target.value as CreateAdminUserPayload["role"],
+                        role: event.target
+                          .value as CreateAdminUserPayload["role"],
                         preferredLanguage:
-                          event.target.value === "LEARNER_BN" ? "bn" : current.preferredLanguage,
+                          event.target.value === "LEARNER_BN"
+                            ? "bn"
+                            : current.preferredLanguage,
                         accountState:
                           event.target.value === "ADMIN"
                             ? "PAID"
@@ -3823,7 +4514,9 @@ export default function DashboardView() {
                     onChange={(event) =>
                       setCreateUserForm((current) => ({
                         ...current,
-                        accountState: event.target.value as NonNullable<CreateAdminUserPayload["accountState"]>,
+                        accountState: event.target.value as NonNullable<
+                          CreateAdminUserPayload["accountState"]
+                        >,
                       }))
                     }
                   >
@@ -3840,7 +4533,9 @@ export default function DashboardView() {
                     onChange={(event) =>
                       setCreateUserForm((current) => ({
                         ...current,
-                        preferredLanguage: event.target.value as NonNullable<CreateAdminUserPayload["preferredLanguage"]>,
+                        preferredLanguage: event.target.value as NonNullable<
+                          CreateAdminUserPayload["preferredLanguage"]
+                        >,
                       }))
                     }
                   >
@@ -3869,13 +4564,17 @@ export default function DashboardView() {
                   onClick={handleCreateUser}
                   disabled={adminUserActionId === "create-user"}
                 >
-                  {adminUserActionId === "create-user" ? "Creating..." : "Create user"}
+                  {adminUserActionId === "create-user"
+                    ? "Creating..."
+                    : "Create user"}
                 </button>
               </div>
-              {adminUserCreateNotice ? <p className="dashboard-copy">{adminUserCreateNotice}</p> : null}
+              {adminUserCreateNotice ? (
+                <p className="dashboard-copy">{adminUserCreateNotice}</p>
+              ) : null}
               <p className="dashboard-copy">
-                Edit users, manually enroll learners, remove access, restore access, or delete
-                users from the admin dashboard.
+                Edit users, manually enroll learners, remove access, restore
+                access, or delete users from the admin dashboard.
               </p>
               <div className="dashboard-user-edit-grid">
                 <label className="auth-field">
@@ -3883,23 +4582,31 @@ export default function DashboardView() {
                   <select
                     className="dashboard-select"
                     value={adminCourseId ?? ""}
-                    onChange={(event) => setAdminCourseId(event.target.value || null)}
+                    onChange={(event) =>
+                      setAdminCourseId(event.target.value || null)
+                    }
                   >
                     <option value="">Select paid course</option>
                     {adminCourses.map((course) => {
-                      const expectedInvoiceAmounts = getExpectedInvoiceAmounts(course);
+                      const expectedInvoiceAmounts =
+                        getExpectedInvoiceAmounts(course);
 
                       return (
                         <option key={course.id} value={course.id}>
-                          {course.title} - {formatInvoiceMoney(course.priceBdt, "BDT")}
-                          {expectedInvoiceAmounts ? ` / ${formatInvoiceMoney(expectedInvoiceAmounts.totalAmountUsd, "USD")}` : ""}
+                          {course.title} -{" "}
+                          {formatInvoiceMoney(course.priceBdt, "BDT")}
+                          {expectedInvoiceAmounts
+                            ? ` / ${formatInvoiceMoney(expectedInvoiceAmounts.totalAmountUsd, "USD")}`
+                            : ""}
                         </option>
                       );
                     })}
                   </select>
                 </label>
               </div>
-              {adminUserNotice ? <p className="dashboard-copy">{adminUserNotice}</p> : null}
+              {adminUserNotice ? (
+                <p className="dashboard-copy">{adminUserNotice}</p>
+              ) : null}
               <div className="admin-console-user-grid">
                 {filteredUsers.map((managedUser) => {
                   const userEnrollments = adminEnrollments.filter(
@@ -3908,32 +4615,44 @@ export default function DashboardView() {
                       enrollment.status !== "REMOVED",
                   );
                   const userPaymentRequests = paymentRequests.filter(
-                    (paymentRequest) => paymentRequest.userId === managedUser.id,
+                    (paymentRequest) =>
+                      paymentRequest.userId === managedUser.id,
                   );
                   const pendingUserPayments = userPaymentRequests.filter(
-                    (paymentRequest) => paymentRequest.invoiceStatus === "PENDING",
+                    (paymentRequest) =>
+                      paymentRequest.invoiceStatus === "PENDING",
                   );
                   const paidUserPayments = userPaymentRequests.filter(
                     (paymentRequest) => paymentRequest.invoiceStatus === "PAID",
                   );
                   const latestUserPayment = userPaymentRequests[0] ?? null;
                   const activeCourseLabels = userEnrollments
-                    .map((enrollment) => courseMap.get(enrollment.courseId)?.title ?? enrollment.courseId)
+                    .map(
+                      (enrollment) =>
+                        courseMap.get(enrollment.courseId)?.title ??
+                        enrollment.courseId,
+                    )
                     .join(", ");
                   const latestPaymentCourse = latestUserPayment?.courseId
-                    ? courseMap.get(latestUserPayment.courseId) ?? null
+                    ? (courseMap.get(latestUserPayment.courseId) ?? null)
                     : null;
-                  const latestExpectedInvoiceAmounts = getExpectedInvoiceAmounts(latestPaymentCourse);
+                  const latestExpectedInvoiceAmounts =
+                    getExpectedInvoiceAmounts(latestPaymentCourse);
 
                   return (
-                    <article key={managedUser.id} className="admin-console-user-card">
+                    <article
+                      key={managedUser.id}
+                      className="admin-console-user-card"
+                    >
                       <div className="dashboard-user-head">
                         <div>
                           <strong>{managedUser.fullName}</strong>
                           <span>{managedUser.email}</span>
                         </div>
                         <span className="dashboard-chip">
-                          {managedUser.isSuspended ? "Access removed" : roleLabel(managedUser.role)}
+                          {managedUser.isSuspended
+                            ? "Access removed"
+                            : roleLabel(managedUser.role)}
                         </span>
                       </div>
 
@@ -3964,153 +4683,167 @@ export default function DashboardView() {
                         </div>
                       ) : null}
 
-                    {editingUserId === managedUser.id ? (
-                      <div className="dashboard-user-edit-grid">
-                        <label className="auth-field">
-                          <span>Full name</span>
-                          <input
-                            value={editForm.fullName ?? ""}
-                            onChange={(event) =>
-                              setEditForm((current) => ({
-                                ...current,
-                                fullName: event.target.value,
-                              }))
-                            }
-                          />
-                        </label>
-                        <label className="auth-field">
-                          <span>Role</span>
-                          <select
-                            className="dashboard-select"
-                            value={editForm.role ?? "LEARNER_EN"}
-                            onChange={(event) =>
-                              setEditForm((current) => ({
-                                ...current,
-                                role: event.target.value as UserRole,
-                              }))
-                            }
-                          >
-                            <option value="ADMIN">Admin</option>
-                            <option value="LEARNER_EN">Learner English</option>
-                            <option value="LEARNER_BN">Learner Bangla</option>
-                          </select>
-                        </label>
-                        <label className="auth-field">
-                          <span>Preferred language</span>
-                          <select
-                            className="dashboard-select"
-                            value={editForm.preferredLanguage ?? "en"}
-                            onChange={(event) =>
-                              setEditForm((current) => ({
-                                ...current,
-                                preferredLanguage: event.target.value as "en" | "bn",
-                              }))
-                            }
-                          >
-                            <option value="en">English</option>
-                            <option value="bn">Bangla</option>
-                          </select>
-                        </label>
-                        <label className="auth-field">
-                          <span>Account state</span>
-                          <select
-                            className="dashboard-select"
-                            value={editForm.accountState ?? "TRIAL"}
-                            onChange={(event) =>
-                              setEditForm((current) => ({
-                                ...current,
-                                accountState: event.target.value as "FREE" | "TRIAL" | "PAID",
-                              }))
-                            }
-                          >
-                            <option value="FREE">Free</option>
-                            <option value="TRIAL">Trial</option>
-                            <option value="PAID">Paid</option>
-                          </select>
-                        </label>
-                        <label className="dashboard-checkbox">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(editForm.isEmailVerified)}
-                            onChange={(event) =>
-                              setEditForm((current) => ({
-                                ...current,
-                                isEmailVerified: event.target.checked,
-                              }))
-                            }
-                          />
-                          <span>Email verified</span>
-                        </label>
-                      </div>
-                    ) : null}
-
-                    <div className="dashboard-actions">
                       {editingUserId === managedUser.id ? (
-                        <>
-                          <button
-                            type="button"
-                            className="dashboard-primary-link dashboard-button"
-                            onClick={() => handleSaveUser(managedUser.id)}
-                            disabled={adminUserActionId === managedUser.id}
-                          >
-                            {adminUserActionId === managedUser.id ? "Saving..." : "Save"}
-                          </button>
-                          <button
-                            type="button"
-                            className="dashboard-secondary-link dashboard-button"
-                            onClick={() => setEditingUserId(null)}
-                            disabled={adminUserActionId === managedUser.id}
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            type="button"
-                            className="dashboard-secondary-link dashboard-button"
-                            onClick={() => startEditingUser(managedUser)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            className="dashboard-secondary-link dashboard-button"
-                            onClick={() => handleManualEnroll(managedUser)}
-                            disabled={
-                              adminUserActionId === managedUser.id ||
-                              managedUser.role === "ADMIN" ||
-                              !adminCourseId
-                            }
-                          >
-                            {adminUserActionId === managedUser.id ? "Updating..." : "Manual enroll"}
-                          </button>
-                          <button
-                            type="button"
-                            className="dashboard-secondary-link dashboard-button"
-                            onClick={() => handleToggleAccess(managedUser)}
-                            disabled={adminUserActionId === managedUser.id}
-                          >
-                            {adminUserActionId === managedUser.id
-                              ? "Updating..."
-                              : managedUser.isSuspended
-                                ? "Restore access"
-                                : "Remove access"}
-                          </button>
-                          <button
-                            type="button"
-                            className="dashboard-secondary-link dashboard-button"
-                            onClick={() => handleDeleteUser(managedUser, user.id)}
-                            disabled={
-                              adminUserActionId === managedUser.id || managedUser.id === user.id
-                            }
-                          >
-                            Delete
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </article>
+                        <div className="dashboard-user-edit-grid">
+                          <label className="auth-field">
+                            <span>Full name</span>
+                            <input
+                              value={editForm.fullName ?? ""}
+                              onChange={(event) =>
+                                setEditForm((current) => ({
+                                  ...current,
+                                  fullName: event.target.value,
+                                }))
+                              }
+                            />
+                          </label>
+                          <label className="auth-field">
+                            <span>Role</span>
+                            <select
+                              className="dashboard-select"
+                              value={editForm.role ?? "LEARNER_EN"}
+                              onChange={(event) =>
+                                setEditForm((current) => ({
+                                  ...current,
+                                  role: event.target.value as UserRole,
+                                }))
+                              }
+                            >
+                              <option value="ADMIN">Admin</option>
+                              <option value="LEARNER_EN">
+                                Learner English
+                              </option>
+                              <option value="LEARNER_BN">Learner Bangla</option>
+                            </select>
+                          </label>
+                          <label className="auth-field">
+                            <span>Preferred language</span>
+                            <select
+                              className="dashboard-select"
+                              value={editForm.preferredLanguage ?? "en"}
+                              onChange={(event) =>
+                                setEditForm((current) => ({
+                                  ...current,
+                                  preferredLanguage: event.target.value as
+                                    | "en"
+                                    | "bn",
+                                }))
+                              }
+                            >
+                              <option value="en">English</option>
+                              <option value="bn">Bangla</option>
+                            </select>
+                          </label>
+                          <label className="auth-field">
+                            <span>Account state</span>
+                            <select
+                              className="dashboard-select"
+                              value={editForm.accountState ?? "TRIAL"}
+                              onChange={(event) =>
+                                setEditForm((current) => ({
+                                  ...current,
+                                  accountState: event.target.value as
+                                    | "FREE"
+                                    | "TRIAL"
+                                    | "PAID",
+                                }))
+                              }
+                            >
+                              <option value="FREE">Free</option>
+                              <option value="TRIAL">Trial</option>
+                              <option value="PAID">Paid</option>
+                            </select>
+                          </label>
+                          <label className="dashboard-checkbox">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(editForm.isEmailVerified)}
+                              onChange={(event) =>
+                                setEditForm((current) => ({
+                                  ...current,
+                                  isEmailVerified: event.target.checked,
+                                }))
+                              }
+                            />
+                            <span>Email verified</span>
+                          </label>
+                        </div>
+                      ) : null}
+
+                      <div className="dashboard-actions">
+                        {editingUserId === managedUser.id ? (
+                          <>
+                            <button
+                              type="button"
+                              className="dashboard-primary-link dashboard-button"
+                              onClick={() => handleSaveUser(managedUser.id)}
+                              disabled={adminUserActionId === managedUser.id}
+                            >
+                              {adminUserActionId === managedUser.id
+                                ? "Saving..."
+                                : "Save"}
+                            </button>
+                            <button
+                              type="button"
+                              className="dashboard-secondary-link dashboard-button"
+                              onClick={() => setEditingUserId(null)}
+                              disabled={adminUserActionId === managedUser.id}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              className="dashboard-secondary-link dashboard-button"
+                              onClick={() => startEditingUser(managedUser)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="dashboard-secondary-link dashboard-button"
+                              onClick={() => handleManualEnroll(managedUser)}
+                              disabled={
+                                adminUserActionId === managedUser.id ||
+                                managedUser.role === "ADMIN" ||
+                                !adminCourseId
+                              }
+                            >
+                              {adminUserActionId === managedUser.id
+                                ? "Updating..."
+                                : "Manual enroll"}
+                            </button>
+                            <button
+                              type="button"
+                              className="dashboard-secondary-link dashboard-button"
+                              onClick={() => handleToggleAccess(managedUser)}
+                              disabled={adminUserActionId === managedUser.id}
+                            >
+                              {adminUserActionId === managedUser.id
+                                ? "Updating..."
+                                : managedUser.isSuspended
+                                  ? "Restore access"
+                                  : "Remove access"}
+                            </button>
+                            <button
+                              type="button"
+                              className="dashboard-secondary-link dashboard-button"
+                              onClick={() =>
+                                handleDeleteUser(managedUser, user.id)
+                              }
+                              disabled={
+                                adminUserActionId === managedUser.id ||
+                                managedUser.id === user.id
+                              }
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </article>
                   );
                 })}
               </div>
@@ -4126,14 +4859,24 @@ export default function DashboardView() {
     const activeLearnerPlan =
       learnerSection === "dashboard"
         ? null
-        : learnerDashboardSections.find((section) => section.id === learnerSection) ?? null;
+        : (learnerDashboardSections.find(
+            (section) => section.id === learnerSection,
+          ) ?? null);
     const publishedLearnerLessons = [
       ...(basicsCourseAccess.course ? basicsCourseModules : []),
-      ...(industrialSensorCourseAccess.course ? industrialSensorCourseModules : []),
+      ...(industrialSensorCourseAccess.course
+        ? industrialSensorCourseModules
+        : []),
     ];
     const totalLearnerLessons = publishedLearnerLessons.length;
-    const completedLessons = Math.min(learnerData.passedAttempts, totalLearnerLessons);
-    const remainingLessons = Math.max(totalLearnerLessons - completedLessons, 0);
+    const completedLessons = Math.min(
+      learnerData.passedAttempts,
+      totalLearnerLessons,
+    );
+    const remainingLessons = Math.max(
+      totalLearnerLessons - completedLessons,
+      0,
+    );
     const completionRate = totalLearnerLessons
       ? Math.round((completedLessons / totalLearnerLessons) * 100)
       : 0;
@@ -4151,15 +4894,23 @@ export default function DashboardView() {
     );
     const streakDays = Math.min(
       7,
-      Math.max(1, Math.min(learnerData.results.length, completedLessons || learnerData.totalAttempts || 1)),
+      Math.max(
+        1,
+        Math.min(
+          learnerData.results.length,
+          completedLessons || learnerData.totalAttempts || 1,
+        ),
+      ),
     );
     const lessonProgressMap = new Map(
-      learnerData.lessonProgress.map((progress) => [progress.lessonPath, progress]),
+      learnerData.lessonProgress.map((progress) => [
+        progress.lessonPath,
+        progress,
+      ]),
     );
     const filteredLessons = publishedLearnerLessons.filter((lesson) =>
       matchesSearch([lesson.title, lesson.href], dashboardSearch),
     );
-    const canRequestUpgrade = user.accountState === "FREE";
     const learnerCourseCards = [
       {
         title: courseTitle,
@@ -4167,7 +4918,8 @@ export default function DashboardView() {
         invoiceHref: courseInvoiceLink,
         firstLessonHref: "/current-voltage-learning/1",
         lessons: basicsCourseModules.length,
-        description: "Core electronics and electrical fundamentals with practical project workspaces.",
+        description:
+          "Core electronics and electrical fundamentals with practical project workspaces.",
         progress: completionRate,
         isAvailable: Boolean(basicsCourseAccess.course),
         hasAccess: basicsCourseAccess.hasAccess,
@@ -4178,13 +4930,16 @@ export default function DashboardView() {
         invoiceHref: "/courses/industrial-sensor/invoice",
         firstLessonHref: "/industrial-sensor/proximity-sensor",
         lessons: industrialSensorCourseModules.length,
-        description: "PLC-focused simulator labs for industrial sensors, wiring, theory, and quizzes.",
+        description:
+          "PLC-focused simulator labs for industrial sensors, wiring, theory, and quizzes.",
         progress: 0,
         isAvailable: Boolean(industrialSensorCourseAccess.course),
         hasAccess: industrialSensorCourseAccess.hasAccess,
       },
     ].filter((courseCard) => courseCard.isAvailable);
-    const activeLearnerCourse = learnerCourseCards.find((courseCard) => courseCard.hasAccess);
+    const activeLearnerCourse = learnerCourseCards.find(
+      (courseCard) => courseCard.hasAccess,
+    );
     const canOpenCourse = Boolean(activeLearnerCourse);
     const renderLockedCourseAction = (
       className = "dashboard-secondary-link",
@@ -4224,7 +4979,7 @@ export default function DashboardView() {
         <main className="dashboard-page learner-console-page">
           <section className="learner-console-shell">
             <aside className="learner-console-sidebar">
-              <div className="learner-console-logo">ET LMS</div>
+              <div className="learner-console-logo">ML</div>
 
               <nav className="learner-console-nav">
                 {learnerSidebarItems.map((item) => (
@@ -4260,19 +5015,27 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search account details..."
                     />
                   </label>
                 </div>
 
                 <div className="learner-console-topbar-right">
-                  <div className="learner-console-indicator">{user.accountState}</div>
                   <div className="learner-console-indicator">
-                    {user.isEmailVerified ? "Email verified" : "Verification pending"}
+                    {user.accountState}
+                  </div>
+                  <div className="learner-console-indicator">
+                    {user.isEmailVerified
+                      ? "Email verified"
+                      : "Verification pending"}
                   </div>
                   <div className="learner-console-profile">
-                    <div className="learner-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="learner-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{user.fullName}</strong>
                       <span>{roleLabel(user.role)}</span>
@@ -4284,7 +5047,11 @@ export default function DashboardView() {
               <section className="learner-console-heading">
                 <div>
                   <h1>Settings</h1>
-                  <p>Review your learner account details, verification state, language preference, and quick dashboard shortcuts from one focused page.</p>
+                  <p>
+                    Review your learner account details, verification state,
+                    language preference, and quick dashboard shortcuts from one
+                    focused page.
+                  </p>
                 </div>
               </section>
 
@@ -4296,17 +5063,25 @@ export default function DashboardView() {
                 </article>
                 <article className="learner-console-stat-card">
                   <span>Language</span>
-                  <strong>{user.preferredLanguage === "bn" ? "Bangla" : "English"}</strong>
+                  <strong>
+                    {user.preferredLanguage === "bn" ? "Bangla" : "English"}
+                  </strong>
                   <small>Preferred learner interface language</small>
                 </article>
                 <article className="learner-console-stat-card">
                   <span>Email Status</span>
-                  <strong>{user.isEmailVerified ? "Verified" : "Pending"}</strong>
+                  <strong>
+                    {user.isEmailVerified ? "Verified" : "Pending"}
+                  </strong>
                   <small>Supabase auth email verification state</small>
                 </article>
                 <article className="learner-console-stat-card">
                   <span>Certificate Rules</span>
-                  <strong>{learnerData.certificateEligibility.eligible ? "Ready" : "In Progress"}</strong>
+                  <strong>
+                    {learnerData.certificateEligibility.eligible
+                      ? "Ready"
+                      : "In Progress"}
+                  </strong>
                   <small>{`${learnerData.certificateEligibility.completedLessons}/${learnerData.certificateEligibility.requiredCompletedLessons} lessons complete`}</small>
                 </article>
               </section>
@@ -4331,10 +5106,16 @@ export default function DashboardView() {
                   </p>
                 </div>
                 <div className="learner-console-feature-actions">
-                  <Link href="/User/my-courses" className="dashboard-primary-link">
+                  <Link
+                    href="/User/my-courses"
+                    className="dashboard-primary-link"
+                  >
                     Open My Courses
                   </Link>
-                  <Link href="/User/progress" className="dashboard-secondary-link">
+                  <Link
+                    href="/User/progress"
+                    className="dashboard-secondary-link"
+                  >
                     View Progress
                   </Link>
                 </div>
@@ -4347,7 +5128,9 @@ export default function DashboardView() {
                       <p className="dashboard-section-kicker">Profile</p>
                       <h2>Account identity</h2>
                     </div>
-                    <span className="dashboard-chip">{roleLabel(user.role)}</span>
+                    <span className="dashboard-chip">
+                      {roleLabel(user.role)}
+                    </span>
                   </div>
                   <div className="learner-console-activity-list">
                     <div className="learner-console-activity-item">
@@ -4364,7 +5147,9 @@ export default function DashboardView() {
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Preferred language</strong>
-                      <span>{user.preferredLanguage === "bn" ? "Bangla" : "English"}</span>
+                      <span>
+                        {user.preferredLanguage === "bn" ? "Bangla" : "English"}
+                      </span>
                     </div>
                   </div>
                 </article>
@@ -4402,19 +5187,29 @@ export default function DashboardView() {
                 <article className="learner-console-card">
                   <div className="learner-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Learning preferences</p>
+                      <p className="dashboard-section-kicker">
+                        Learning preferences
+                      </p>
                       <h2>Course readiness</h2>
                     </div>
-                    <span className="dashboard-chip">{paymentHistory.length} payments</span>
+                    <span className="dashboard-chip">
+                      {paymentHistory.length} payments
+                    </span>
                   </div>
                   <div className="learner-console-activity-list">
                     <div className="learner-console-activity-item">
                       <strong>Course library</strong>
-                      <span>{learnerCourseCards.map((courseCard) => courseCard.title).join(", ")}</span>
+                      <span>
+                        {learnerCourseCards
+                          .map((courseCard) => courseCard.title)
+                          .join(", ")}
+                      </span>
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Next lesson</strong>
-                      <span>{learnerData.nextLessonTitle ?? "Not assigned yet"}</span>
+                      <span>
+                        {learnerData.nextLessonTitle ?? "Not assigned yet"}
+                      </span>
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Certificate status</strong>
@@ -4422,7 +5217,10 @@ export default function DashboardView() {
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Latest payment state</strong>
-                      <span>{paymentHistory[0]?.status ?? "No payment request submitted"}</span>
+                      <span>
+                        {paymentHistory[0]?.status ??
+                          "No payment request submitted"}
+                      </span>
                     </div>
                   </div>
                 </article>
@@ -4438,25 +5236,37 @@ export default function DashboardView() {
                   <div className="learner-console-activity-list">
                     <div className="learner-console-activity-item">
                       <strong>Dashboard overview</strong>
-                      <Link href="/User/dashboard" className="dashboard-secondary-link">
+                      <Link
+                        href="/User/dashboard"
+                        className="dashboard-secondary-link"
+                      >
                         Open
                       </Link>
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Course lessons</strong>
-                      <Link href="/User/lessons" className="dashboard-secondary-link">
+                      <Link
+                        href="/User/lessons"
+                        className="dashboard-secondary-link"
+                      >
                         Open
                       </Link>
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Progress tracking</strong>
-                      <Link href="/User/progress" className="dashboard-secondary-link">
+                      <Link
+                        href="/User/progress"
+                        className="dashboard-secondary-link"
+                      >
                         Open
                       </Link>
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Settings</strong>
-                      <Link href="/User/settings" className="dashboard-secondary-link">
+                      <Link
+                        href="/User/settings"
+                        className="dashboard-secondary-link"
+                      >
                         Open
                       </Link>
                     </div>
@@ -4474,7 +5284,7 @@ export default function DashboardView() {
         <main className="dashboard-page learner-console-page">
           <section className="learner-console-shell">
             <aside className="learner-console-sidebar">
-              <div className="learner-console-logo">ET LMS</div>
+              <div className="learner-console-logo">ML</div>
 
               <nav className="learner-console-nav">
                 {learnerSidebarItems.map((item) => (
@@ -4510,17 +5320,25 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search results and progress..."
                     />
                   </label>
                 </div>
 
                 <div className="learner-console-topbar-right">
-                  <div className="learner-console-indicator">{completionRate}% complete</div>
-                  <div className="learner-console-indicator">{streakDays} day streak</div>
+                  <div className="learner-console-indicator">
+                    {completionRate}% complete
+                  </div>
+                  <div className="learner-console-indicator">
+                    {streakDays} day streak
+                  </div>
                   <div className="learner-console-profile">
-                    <div className="learner-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="learner-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{user.fullName}</strong>
                       <span>{roleLabel(user.role)}</span>
@@ -4532,7 +5350,11 @@ export default function DashboardView() {
               <section className="learner-console-heading">
                 <div>
                   <h1>Progress</h1>
-                  <p>Track your lesson completion, recent results, learning streak, and certificate readiness from one focused learner page.</p>
+                  <p>
+                    Track your lesson completion, recent results, learning
+                    streak, and certificate readiness from one focused learner
+                    page.
+                  </p>
                 </div>
               </section>
 
@@ -4579,10 +5401,16 @@ export default function DashboardView() {
                   </p>
                 </div>
                 <div className="learner-console-feature-actions">
-                  <Link href="/User/settings" className="dashboard-secondary-link">
+                  <Link
+                    href="/User/settings"
+                    className="dashboard-secondary-link"
+                  >
                     Open Settings
                   </Link>
-                  <Link href={coursePortalLink} className="dashboard-primary-link">
+                  <Link
+                    href={coursePortalLink}
+                    className="dashboard-primary-link"
+                  >
                     Open Course
                   </Link>
                 </div>
@@ -4592,21 +5420,30 @@ export default function DashboardView() {
                 <article className="learner-console-card">
                   <div className="learner-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Lesson progress</p>
+                      <p className="dashboard-section-kicker">
+                        Lesson progress
+                      </p>
                       <h2>Tracked lesson states</h2>
                     </div>
-                    <span className="dashboard-chip">{learnerData.lessonProgress.length} tracked</span>
+                    <span className="dashboard-chip">
+                      {learnerData.lessonProgress.length} tracked
+                    </span>
                   </div>
                   <div className="learner-console-activity-list">
                     {learnerData.lessonProgress.length ? (
                       learnerData.lessonProgress.map((progress) => (
-                        <div key={progress.id} className="learner-console-activity-item">
+                        <div
+                          key={progress.id}
+                          className="learner-console-activity-item"
+                        >
                           <strong>{progress.lessonTitle}</strong>
                           <span>{`${progress.status} • ${progress.progressPercent}% • ${formatShortDate(progress.lastViewedAt ?? progress.updatedAt)}`}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="dashboard-muted">No lesson progress tracked yet.</p>
+                      <p className="dashboard-muted">
+                        No lesson progress tracked yet.
+                      </p>
                     )}
                   </div>
                 </article>
@@ -4614,21 +5451,30 @@ export default function DashboardView() {
                 <article className="learner-console-card">
                   <div className="learner-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Assessment results</p>
+                      <p className="dashboard-section-kicker">
+                        Assessment results
+                      </p>
                       <h2>Recent attempts</h2>
                     </div>
-                    <span className="dashboard-chip">{filteredResults.length} results</span>
+                    <span className="dashboard-chip">
+                      {filteredResults.length} results
+                    </span>
                   </div>
                   <div className="learner-console-activity-list">
                     {filteredResults.length ? (
                       filteredResults.map((result) => (
-                        <div key={result.id} className="learner-console-activity-item">
+                        <div
+                          key={result.id}
+                          className="learner-console-activity-item"
+                        >
                           <strong>{`${result.attemptType} - ${result.percentage}%`}</strong>
                           <span>{`${result.passed ? "Passed" : "Needs review"} • ${formatShortDate(result.submittedAt)}`}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="dashboard-muted">No recent result found for the current search.</p>
+                      <p className="dashboard-muted">
+                        No recent result found for the current search.
+                      </p>
                     )}
                   </div>
                 </article>
@@ -4638,11 +5484,15 @@ export default function DashboardView() {
                 <article className="learner-console-card">
                   <div className="learner-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Certificate readiness</p>
+                      <p className="dashboard-section-kicker">
+                        Certificate readiness
+                      </p>
                       <h2>Eligibility summary</h2>
                     </div>
                     <span className="dashboard-chip">
-                      {learnerData.certificateEligibility.eligible ? "Eligible" : "In progress"}
+                      {learnerData.certificateEligibility.eligible
+                        ? "Eligible"
+                        : "In progress"}
                     </span>
                   </div>
                   <div className="learner-console-activity-list">
@@ -4672,7 +5522,7 @@ export default function DashboardView() {
         <main className="dashboard-page learner-console-page">
           <section className="learner-console-shell">
             <aside className="learner-console-sidebar">
-              <div className="learner-console-logo">ET LMS</div>
+              <div className="learner-console-logo">ML</div>
 
               <nav className="learner-console-nav">
                 {learnerSidebarItems.map((item) => (
@@ -4708,17 +5558,25 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search lesson title or route..."
                     />
                   </label>
                 </div>
 
                 <div className="learner-console-topbar-right">
-                  <div className="learner-console-indicator">{filteredLessons.length} lessons</div>
-                  <div className="learner-console-indicator">{completionRate}% complete</div>
+                  <div className="learner-console-indicator">
+                    {filteredLessons.length} lessons
+                  </div>
+                  <div className="learner-console-indicator">
+                    {completionRate}% complete
+                  </div>
                   <div className="learner-console-profile">
-                    <div className="learner-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="learner-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{user.fullName}</strong>
                       <span>{roleLabel(user.role)}</span>
@@ -4730,14 +5588,19 @@ export default function DashboardView() {
               <section className="learner-console-heading">
                 <div>
                   <h1>Lessons</h1>
-                  <p>Browse your lesson catalog, track progress state, and jump straight into the next lesson from one focused page.</p>
+                  <p>
+                    Browse your lesson catalog, track progress state, and jump
+                    straight into the next lesson from one focused page.
+                  </p>
                 </div>
               </section>
 
               <section className="learner-console-feature-card">
                 <div className="learner-console-feature-icon">Next</div>
                 <div className="learner-console-feature-body">
-                  <h2>{learnerData.nextLessonTitle ?? "Continue your lesson path"}</h2>
+                  <h2>
+                    {learnerData.nextLessonTitle ?? "Continue your lesson path"}
+                  </h2>
                   <div className="learner-console-progress-row">
                     <div className="learner-console-progress-track">
                       <div
@@ -4751,10 +5614,18 @@ export default function DashboardView() {
                 </div>
                 <div className="learner-console-feature-actions">
                   {canOpenCourse ? (
-                    <Link href={learnerData.nextLessonHref ?? "/current-voltage-learning/1"} className="dashboard-primary-link">
+                    <Link
+                      href={
+                        learnerData.nextLessonHref ??
+                        "/current-voltage-learning/1"
+                      }
+                      className="dashboard-primary-link"
+                    >
                       Open Next Lesson
                     </Link>
-                  ) : renderLockedCourseAction("dashboard-secondary-link")}
+                  ) : (
+                    renderLockedCourseAction("dashboard-secondary-link")
+                  )}
                   <Link href="/courses" className="dashboard-secondary-link">
                     Course directory
                   </Link>
@@ -4790,7 +5661,9 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">Lesson catalog</p>
                     <h2>All lessons in your course</h2>
                   </div>
-                  <span className="dashboard-chip">{filteredLessons.length} visible</span>
+                  <span className="dashboard-chip">
+                    {filteredLessons.length} visible
+                  </span>
                 </div>
 
                 <div className="learner-console-activity-list">
@@ -4798,7 +5671,10 @@ export default function DashboardView() {
                     const progress = lessonProgressMap.get(lesson.href);
 
                     return (
-                      <div key={lesson.href} className="learner-console-activity-item">
+                      <div
+                        key={lesson.href}
+                        className="learner-console-activity-item"
+                      >
                         <div>
                           <strong>{`${index + 1}. ${lesson.title}`}</strong>
                           <span>
@@ -4808,10 +5684,15 @@ export default function DashboardView() {
                           </span>
                         </div>
                         {canOpenCourse ? (
-                          <Link href={lesson.href} className="dashboard-secondary-link">
+                          <Link
+                            href={lesson.href}
+                            className="dashboard-secondary-link"
+                          >
                             Open
                           </Link>
-                        ) : renderLockedCourseAction("dashboard-secondary-link")}
+                        ) : (
+                          renderLockedCourseAction("dashboard-secondary-link")
+                        )}
                       </div>
                     );
                   })}
@@ -4828,7 +5709,7 @@ export default function DashboardView() {
         <main className="dashboard-page learner-console-page">
           <section className="learner-console-shell">
             <aside className="learner-console-sidebar">
-              <div className="learner-console-logo">ET LMS</div>
+              <div className="learner-console-logo">ML</div>
 
               <nav className="learner-console-nav">
                 {learnerSidebarItems.map((item) => (
@@ -4864,17 +5745,25 @@ export default function DashboardView() {
                     <input
                       type="text"
                       value={dashboardSearch}
-                      onChange={(event) => setDashboardSearch(event.target.value)}
+                      onChange={(event) =>
+                        setDashboardSearch(event.target.value)
+                      }
                       placeholder="Search your course progress..."
                     />
                   </label>
                 </div>
 
                 <div className="learner-console-topbar-right">
-                  <div className="learner-console-indicator">{user.accountState}</div>
-                  <div className="learner-console-indicator">{completedLessons}/{totalLearnerLessons} done</div>
+                  <div className="learner-console-indicator">
+                    {user.accountState}
+                  </div>
+                  <div className="learner-console-indicator">
+                    {completedLessons}/{totalLearnerLessons} done
+                  </div>
                   <div className="learner-console-profile">
-                    <div className="learner-console-avatar">{getInitials(user.fullName)}</div>
+                    <div className="learner-console-avatar">
+                      {getInitials(user.fullName)}
+                    </div>
                     <div>
                       <strong>{user.fullName}</strong>
                       <span>{roleLabel(user.role)}</span>
@@ -4886,7 +5775,10 @@ export default function DashboardView() {
               <section className="learner-console-heading">
                 <div>
                   <h1>My Courses</h1>
-                  <p>See your enrolled course progress, next lesson, access status, and payment/update path from one focused page.</p>
+                  <p>
+                    See your enrolled course progress, next lesson, access
+                    status, and payment/update path from one focused page.
+                  </p>
                 </div>
               </section>
 
@@ -4914,13 +5806,23 @@ export default function DashboardView() {
                     Open Course Directory
                   </Link>
                   {canOpenCourse ? (
-                    <Link href={activeLearnerCourse?.firstLessonHref ?? learnerData.nextLessonHref ?? coursePortalLink} className="dashboard-primary-link">
+                    <Link
+                      href={
+                        activeLearnerCourse?.firstLessonHref ??
+                        learnerData.nextLessonHref ??
+                        coursePortalLink
+                      }
+                      className="dashboard-primary-link"
+                    >
                       Continue Lesson
                     </Link>
                   ) : learnerCourseCards.length ? (
                     renderLockedCourseAction("dashboard-secondary-link")
                   ) : (
-                    <span className="dashboard-secondary-link" aria-disabled="true">
+                    <span
+                      className="dashboard-secondary-link"
+                      aria-disabled="true"
+                    >
                       No published courses
                     </span>
                   )}
@@ -4956,12 +5858,17 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">Course library</p>
                     <h2>Available learner courses</h2>
                   </div>
-                  <span className="dashboard-chip">{learnerCourseCards.length} courses</span>
+                  <span className="dashboard-chip">
+                    {learnerCourseCards.length} courses
+                  </span>
                 </div>
 
                 <div className="learner-console-course-list">
                   {learnerCourseCards.map((courseCard) => (
-                    <article key={courseCard.href} className="learner-console-course-item">
+                    <article
+                      key={courseCard.href}
+                      className="learner-console-course-item"
+                    >
                       <div className="learner-console-course-thumbnail" />
                       <div className="learner-console-course-body">
                         <strong>{courseCard.title}</strong>
@@ -4977,17 +5884,25 @@ export default function DashboardView() {
                         </div>
                       </div>
                       <div className="dashboard-actions">
-                        <Link href={courseCard.href} className="dashboard-secondary-link">
+                        <Link
+                          href={courseCard.href}
+                          className="dashboard-secondary-link"
+                        >
                           Course Page
                         </Link>
                         {courseCard.hasAccess ? (
-                          <Link href={courseCard.firstLessonHref} className="dashboard-primary-link">
+                          <Link
+                            href={courseCard.firstLessonHref}
+                            className="dashboard-primary-link"
+                          >
                             Start
                           </Link>
-                        ) : renderLockedCourseAction(
-                          "dashboard-secondary-link",
-                          courseCard.invoiceHref,
-                          courseCard.href,
+                        ) : (
+                          renderLockedCourseAction(
+                            "dashboard-secondary-link",
+                            courseCard.invoiceHref,
+                            courseCard.href,
+                          )
                         )}
                       </div>
                     </article>
@@ -5007,7 +5922,9 @@ export default function DashboardView() {
                   <div className="learner-console-activity-list">
                     <div className="learner-console-activity-item">
                       <strong>Preferred language</strong>
-                      <span>{user.preferredLanguage === "bn" ? "Bangla" : "English"}</span>
+                      <span>
+                        {user.preferredLanguage === "bn" ? "Bangla" : "English"}
+                      </span>
                     </div>
                     <div className="learner-console-activity-item">
                       <strong>Completion target</strong>
@@ -5027,20 +5944,27 @@ export default function DashboardView() {
                 <article className="learner-console-card">
                   <div className="learner-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Recent progress</p>
+                      <p className="dashboard-section-kicker">
+                        Recent progress
+                      </p>
                       <h2>Latest lesson updates</h2>
                     </div>
                   </div>
                   <div className="learner-console-activity-list">
                     {learnerData.lessonProgress.length ? (
                       learnerData.lessonProgress.slice(0, 4).map((progress) => (
-                        <div key={progress.id} className="learner-console-activity-item">
+                        <div
+                          key={progress.id}
+                          className="learner-console-activity-item"
+                        >
                           <strong>{progress.lessonTitle}</strong>
                           <span>{`${progress.status} • ${progress.progressPercent}% • ${formatShortDate(progress.lastViewedAt ?? progress.updatedAt)}`}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="dashboard-muted">No lesson progress tracked yet.</p>
+                      <p className="dashboard-muted">
+                        No lesson progress tracked yet.
+                      </p>
                     )}
                   </div>
                 </article>
@@ -5050,28 +5974,43 @@ export default function DashboardView() {
                 <article className="learner-console-card">
                   <div className="learner-console-card-head">
                     <div>
-                      <p className="dashboard-section-kicker">Upgrade and payments</p>
+                      <p className="dashboard-section-kicker">
+                        Upgrade and payments
+                      </p>
                       <h2>Course payment status</h2>
                     </div>
-                    <span className="dashboard-chip">{paymentHistory.length} requests</span>
+                    <span className="dashboard-chip">
+                      {paymentHistory.length} requests
+                    </span>
                   </div>
                   <div className="learner-console-activity-list">
                     {paymentHistory.length ? (
                       paymentHistory.slice(0, 4).map((paymentRequest) => (
-                        <div key={paymentRequest.id} className="learner-console-activity-item">
+                        <div
+                          key={paymentRequest.id}
+                          className="learner-console-activity-item"
+                        >
                           <strong>{`${paymentRequest.planName} - ${paymentRequest.status}`}</strong>
                           <span>{`${paymentRequest.amount} ${paymentRequest.currency} • ${paymentRequest.transactionId}`}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="dashboard-muted">No course upgrade request submitted yet.</p>
+                      <p className="dashboard-muted">
+                        No course upgrade request submitted yet.
+                      </p>
                     )}
                   </div>
                   <div className="dashboard-actions">
-                    <Link href="/User/dashboard" className="dashboard-secondary-link">
+                    <Link
+                      href="/User/dashboard"
+                      className="dashboard-secondary-link"
+                    >
                       Back to Dashboard
                     </Link>
-                    <Link href={coursePortalLink} className="dashboard-primary-link">
+                    <Link
+                      href={coursePortalLink}
+                      className="dashboard-primary-link"
+                    >
                       Open Course
                     </Link>
                   </div>
@@ -5087,7 +6026,7 @@ export default function DashboardView() {
       <main className="dashboard-page learner-console-page">
         <section className="learner-console-shell">
           <aside className="learner-console-sidebar">
-            <div className="learner-console-logo">ET LMS</div>
+            <div className="learner-console-logo">ML</div>
 
             <nav className="learner-console-nav">
               {learnerSidebarItems.map((item) => (
@@ -5133,7 +6072,9 @@ export default function DashboardView() {
                 <div className="learner-console-indicator">Alerts</div>
                 <div className="learner-console-indicator">Messages</div>
                 <div className="learner-console-profile">
-                  <div className="learner-console-avatar">{getInitials(user.fullName)}</div>
+                  <div className="learner-console-avatar">
+                    {getInitials(user.fullName)}
+                  </div>
                   <div>
                     <strong>{user.fullName}</strong>
                     <span>{roleLabel(user.role)}</span>
@@ -5145,45 +6086,51 @@ export default function DashboardView() {
             <section className="learner-console-heading">
               <div>
                 <h1>
-                  {activeLearnerPlan ? activeLearnerPlan.label : `Welcome back, ${user.fullName}.`}
+                  {activeLearnerPlan
+                    ? activeLearnerPlan.label
+                    : `Welcome back, ${user.fullName}.`}
                 </h1>
                 <p>
                   {activeLearnerPlan
                     ? activeLearnerPlan.summary
-                    : "Continue your learning journey today."}
+                    : "Continue your MechatronicsLAB electrical learning path today."}
                 </p>
               </div>
             </section>
 
             {activeLearnerPlan ? (
-              <section className="dashboard-surface-card">
+              <section className="dashboard-surface-card learner-section-card">
                 <div className="dashboard-card-head">
                   <div>
-                    <p className="dashboard-section-kicker">Planning Scaffold</p>
+                    <p className="dashboard-section-kicker">
+                      Learner workspace
+                    </p>
                     <h2>{activeLearnerPlan.label}</h2>
                   </div>
-                  <span className="dashboard-chip">Placeholder</span>
+                  <span className="dashboard-chip">MechatronicsLAB</span>
                 </div>
-                <p className="dashboard-copy">
-                  This learner dashboard section is now connected to a working route. Final UI,
-                  live data cards, and actions can be built here next.
-                </p>
+                <p className="dashboard-copy">{activeLearnerPlan.summary}</p>
                 <div className="dashboard-link-stack">
-                  <span className="dashboard-inline-link">Route: {activeLearnerPlan.route}</span>
-                  <Link href={coursePortalLink} className="dashboard-inline-link">
+                  <Link
+                    href={coursePortalLink}
+                    className="dashboard-inline-link"
+                  >
                     Open main course
                   </Link>
-                  <Link href="/User/dashboard" className="dashboard-inline-link">
+                  <Link
+                    href="/User/dashboard"
+                    className="dashboard-inline-link"
+                  >
                     Back to dashboard home
                   </Link>
                 </div>
                 <div className="dashboard-highlight-row">
                   <div className="dashboard-highlight">
-                    <span>Planned data sources</span>
+                    <span>Connected data sources</span>
                     <strong>{activeLearnerPlan.dataSources.length}</strong>
                   </div>
                   <div className="dashboard-highlight">
-                    <span>Implementation notes</span>
+                    <span>Learning controls</span>
                     <strong>{activeLearnerPlan.notes.length}</strong>
                   </div>
                 </div>
@@ -5191,12 +6138,15 @@ export default function DashboardView() {
                   {activeLearnerPlan.dataSources.map((source) => (
                     <div key={source} className="dashboard-activity-item">
                       <strong>{source}</strong>
-                      <span>Reserved API/data source for this learner section</span>
+                      <span>
+                        Used by this learner section for course status, lessons,
+                        and progress.
+                      </span>
                     </div>
                   ))}
                   {activeLearnerPlan.notes.map((note) => (
                     <div key={note} className="dashboard-activity-item">
-                      <strong>Implementation note</strong>
+                      <strong>Section focus</strong>
                       <span>{note}</span>
                     </div>
                   ))}
@@ -5206,315 +6156,283 @@ export default function DashboardView() {
 
             {!activeLearnerPlan ? (
               <>
-            <section className="learner-console-stats">
-              <article className="learner-console-stat-card">
-                <span>Total Lessons</span>
-                <strong>{totalLearnerLessons}</strong>
-                <small>View all lessons</small>
-              </article>
-              <article className="learner-console-stat-card">
-                <span>Completed Lessons</span>
-                <strong>{completedLessons}</strong>
-                <small>Passed or finished lesson checkpoints</small>
-              </article>
-              <article className="learner-console-stat-card">
-                <span>Completion Rate</span>
-                <strong>{completionRate}%</strong>
-                <small>Based on your completed lesson progress</small>
-              </article>
-              <article className="learner-console-stat-card">
-                <span>Remaining Lessons</span>
-                <strong>{remainingLessons}</strong>
-                <small>Keep moving through the numbered course path</small>
-              </article>
-            </section>
+                <section className="learner-console-stats">
+                  <article className="learner-console-stat-card">
+                    <span>Total Lessons</span>
+                    <strong>{totalLearnerLessons}</strong>
+                    <small>View all lessons</small>
+                  </article>
+                  <article className="learner-console-stat-card">
+                    <span>Completed Lessons</span>
+                    <strong>{completedLessons}</strong>
+                    <small>Passed or finished lesson checkpoints</small>
+                  </article>
+                  <article className="learner-console-stat-card">
+                    <span>Completion Rate</span>
+                    <strong>{completionRate}%</strong>
+                    <small>Based on your completed lesson progress</small>
+                  </article>
+                  <article className="learner-console-stat-card">
+                    <span>Remaining Lessons</span>
+                    <strong>{remainingLessons}</strong>
+                    <small>Keep moving through the numbered course path</small>
+                  </article>
+                </section>
 
-            <section className="learner-console-feature-card">
-              <div className="learner-console-feature-icon">Course</div>
-              <div className="learner-console-feature-body">
-                <h2>{courseTitle}</h2>
-                <div className="learner-console-progress-row">
-                  <div className="learner-console-progress-track">
-                    <div
-                      className="learner-console-progress-fill"
-                      style={{ width: `${completionRate}%` }}
-                    />
-                  </div>
-                  <strong>{completionRate}% Complete</strong>
-                </div>
-                <p>
-                  {lastResult
-                    ? `Last activity: ${lastResult.attemptType} • ${lastResult.percentage}% on ${formatShortDate(lastResult.submittedAt)}`
-                    : "Start from Lesson 1 Current and Voltage and continue through the full course track."}
-                </p>
-              </div>
-              <div className="learner-console-feature-actions">
-                <Link href={coursePortalLink} className="dashboard-secondary-link">
-                  Open My Course
-                </Link>
-                {canOpenCourse ? (
-                  <Link href="/current-voltage-learning/1" className="dashboard-primary-link">
-                    Resume Learning
-                  </Link>
-                ) : renderLockedCourseAction("dashboard-secondary-link")}
-              </div>
-            </section>
-
-            <section className="learner-console-grid">
-              {canRequestUpgrade ? (
-                <article className="learner-console-card">
-                <div className="learner-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">Upgrade request</p>
-                    <h2>Submit premium payment request</h2>
-                  </div>
-                  <span className="dashboard-chip">{user.accountState}</span>
-                </div>
-
-                <p className="dashboard-copy">
-                  Send your transaction ID, payment method, and amount for admin approval. Once
-                  approved, your account moves to paid access.
-                </p>
-                {upgradeNotice ? <p className="dashboard-copy">{upgradeNotice}</p> : null}
-
-                <div className="dashboard-user-edit-grid">
-                  <label className="auth-field">
-                    <span>Plan name</span>
-                    <input
-                      value={upgradeForm.planName}
-                      onChange={(event) =>
-                        setUpgradeForm((current) => ({
-                          ...current,
-                          planName: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <label className="auth-field">
-                    <span>Transaction ID</span>
-                    <input
-                      value={upgradeForm.transactionId}
-                      onChange={(event) =>
-                        setUpgradeForm((current) => ({
-                          ...current,
-                          transactionId: event.target.value,
-                        }))
-                      }
-                      placeholder="Enter your bKash/Nagad/bank transaction ID"
-                    />
-                  </label>
-                  <label className="auth-field">
-                    <span>Payment method</span>
-                    <input
-                      value={upgradeForm.paymentMethod}
-                      onChange={(event) =>
-                        setUpgradeForm((current) => ({
-                          ...current,
-                          paymentMethod: event.target.value,
-                        }))
-                      }
-                      placeholder="BANK_TRANSFER / bKash / Nagad"
-                    />
-                  </label>
-                  <label className="auth-field">
-                    <span>Amount (BDT)</span>
-                    <input
-                      type="number"
-                      min={0}
-                      value={upgradeForm.amount}
-                      onChange={(event) =>
-                        setUpgradeForm((current) => ({
-                          ...current,
-                          amount: Number(event.target.value || 0),
-                        }))
-                      }
-                    />
-                  </label>
-                </div>
-
-                <div className="dashboard-actions">
-                  <button
-                    type="button"
-                    className="dashboard-primary-link dashboard-button"
-                    onClick={() => handleUpgradeSubmit()}
-                    disabled={upgradeSubmitting}
-                  >
-                    {upgradeSubmitting ? "Submitting..." : "Submit upgrade request"}
-                  </button>
-                  <Link href={coursePortalLink} className="dashboard-secondary-link">
-                    Review course access
-                  </Link>
-                </div>
-                </article>
-              ) : null}
-
-              <article className="learner-console-card">
-                <div className="learner-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">My Courses</p>
-                    <h2>Continue inside your courses</h2>
-                  </div>
-                  <Link href="/User/my-courses" className="dashboard-secondary-link">
-                    View All
-                  </Link>
-                </div>
-
-                <div className="learner-console-course-list">
-                  {learnerEnrollNotice ? <p className="dashboard-copy">{learnerEnrollNotice}</p> : null}
-                  {learnerCourseCards.map((courseCard) => (
-                    <article key={courseCard.href} className="learner-console-course-item">
-                      <div className="learner-console-course-thumbnail" />
-                      <div className="learner-console-course-body">
-                        <strong>{courseCard.title}</strong>
-                        <span>{courseCard.description}</span>
-                        <div className="learner-console-progress-row">
-                          <div className="learner-console-progress-track">
-                            <div
-                              className="learner-console-progress-fill"
-                              style={{ width: `${courseCard.progress}%` }}
-                            />
-                          </div>
-                          <span>{courseCard.lessons} lessons</span>
-                        </div>
+                <section className="learner-console-feature-card">
+                  <div className="learner-console-feature-icon">ML</div>
+                  <div className="learner-console-feature-body">
+                    <h2>{courseTitle}</h2>
+                    <div className="learner-console-progress-row">
+                      <div className="learner-console-progress-track">
+                        <div
+                          className="learner-console-progress-fill"
+                          style={{ width: `${completionRate}%` }}
+                        />
                       </div>
-                      {canOpenCourse ? (
-                        <Link href={courseCard.href} className="dashboard-secondary-link">
-                          Continue
-                        </Link>
-                      ) : renderLockedCourseAction(
-                        "dashboard-secondary-link",
-                        courseCard.invoiceHref,
-                        courseCard.href,
-                      )}
-                    </article>
-                  ))}
-                </div>
-              </article>
-
-              <article className="learner-console-card">
-                <div className="learner-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">Recent Activity</p>
-                    <h2>Your latest progress</h2>
-                  </div>
-                </div>
-
-                <div className="learner-console-activity-list">
-                  {filteredResults.length ? (
-                    filteredResults.slice(0, 6).map((result) => (
-                      <div key={result.id} className="learner-console-activity-item">
-                        <div className="learner-console-activity-badge">
-                          {result.passed ? "Done" : "Run"}
-                        </div>
-                        <div>
-                          <strong>
-                            {result.passed ? "Completed" : "Started"}: {result.attemptType}
-                          </strong>
-                          <span>
-                            {result.percentage}% • {formatShortDate(result.submittedAt)}
-                          </span>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="dashboard-muted">
-                      No recent learner activity yet. Start the first lesson from your course page.
+                      <strong>{completionRate}% Complete</strong>
+                    </div>
+                    <p>
+                      {lastResult
+                        ? `Last activity: ${lastResult.attemptType} • ${lastResult.percentage}% on ${formatShortDate(lastResult.submittedAt)}`
+                        : "Start from Lesson 1 Current and Voltage and continue through the full course track."}
                     </p>
-                  )}
-                </div>
-              </article>
-
-              <article className="learner-console-card">
-                <div className="learner-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">Payment history</p>
-                    <h2>Your submitted upgrade requests</h2>
                   </div>
-                  <span className="dashboard-chip">{paymentHistory.length} total</span>
-                </div>
-
-                <div className="learner-console-activity-list">
-                  {paymentHistory.length ? (
-                    paymentHistory.slice(0, 6).map((paymentRequest) => (
-                      <div key={paymentRequest.id} className="learner-console-activity-item">
-                        <div className="learner-console-activity-badge">
-                          {paymentRequest.status === "APPROVED"
-                            ? "Paid"
-                            : paymentRequest.status === "REJECTED"
-                              ? "Fix"
-                              : "Wait"}
-                        </div>
-                        <div>
-                          <strong>
-                            {paymentRequest.planName} - {paymentRequest.amount}{" "}
-                            {paymentRequest.currency}
-                          </strong>
-                          <span>
-                            {paymentRequest.transactionId} - {paymentRequest.status} -{" "}
-                            {formatShortDate(paymentRequest.submittedAt)}
-                          </span>
-                          {paymentRequest.reviewNotes ? (
-                            <span>{`Review note: ${paymentRequest.reviewNotes}`}</span>
-                          ) : null}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="dashboard-muted">
-                      No payment requests yet. Submit your first upgrade request from this dashboard.
-                    </p>
-                  )}
-                </div>
-              </article>
-            </section>
-
-            <section className="learner-console-grid learner-console-grid-bottom">
-              <article className="learner-console-card">
-                <div className="learner-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">Learning Streak</p>
-                    <h2>{streakDays} days</h2>
-                  </div>
-                </div>
-
-                <div className="learner-console-streak">
-                  <p>Keep it up. Consistency is the key to success.</p>
-                  <div className="learner-console-streak-days">
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, index) => (
-                      <div key={day} className="learner-console-streak-day">
-                        <span>{day}</span>
-                        <strong className={index < streakDays ? "is-complete" : ""}>
-                          {index < streakDays ? "•" : "○"}
-                        </strong>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </article>
-
-              <article className="learner-console-card">
-                <div className="learner-console-card-head">
-                  <div>
-                    <p className="dashboard-section-kicker">Upcoming</p>
-                    <h2>Next step</h2>
-                  </div>
-                </div>
-
-                <div className="learner-console-upcoming">
-                  <strong>Continue your course library</strong>
-                  <span>
-                    {remainingLessons
-                      ? `${remainingLessons} lessons still remaining in your current track.`
-                      : "You have completed the currently tracked lesson sequence."}
-                  </span>
-                  {canOpenCourse ? (
-                    <Link href="/courses" className="dashboard-secondary-link">
-                      Open Courses
+                  <div className="learner-console-feature-actions">
+                    <Link
+                      href={coursePortalLink}
+                      className="dashboard-secondary-link"
+                    >
+                      Open My Course
                     </Link>
-                  ) : renderLockedCourseAction("dashboard-secondary-link")}
-                </div>
-              </article>
-            </section>
+                    {canOpenCourse ? (
+                      <Link
+                        href="/current-voltage-learning/1"
+                        className="dashboard-primary-link"
+                      >
+                        Resume Learning
+                      </Link>
+                    ) : (
+                      renderLockedCourseAction("dashboard-secondary-link")
+                    )}
+                  </div>
+                </section>
+
+                <section className="learner-console-grid">
+                  <article className="learner-console-card">
+                    <div className="learner-console-card-head">
+                      <div>
+                        <p className="dashboard-section-kicker">My Courses</p>
+                        <h2>Continue inside your courses</h2>
+                      </div>
+                      <Link
+                        href="/User/my-courses"
+                        className="dashboard-secondary-link"
+                      >
+                        View All
+                      </Link>
+                    </div>
+
+                    <div className="learner-console-course-list">
+                      {learnerEnrollNotice ? (
+                        <p className="dashboard-copy">{learnerEnrollNotice}</p>
+                      ) : null}
+                      {learnerCourseCards.map((courseCard) => (
+                        <article
+                          key={courseCard.href}
+                          className="learner-console-course-item"
+                        >
+                          <div className="learner-console-course-thumbnail" />
+                          <div className="learner-console-course-body">
+                            <strong>{courseCard.title}</strong>
+                            <span>{courseCard.description}</span>
+                            <div className="learner-console-progress-row">
+                              <div className="learner-console-progress-track">
+                                <div
+                                  className="learner-console-progress-fill"
+                                  style={{ width: `${courseCard.progress}%` }}
+                                />
+                              </div>
+                              <span>{courseCard.lessons} lessons</span>
+                            </div>
+                          </div>
+                          {canOpenCourse ? (
+                            <Link
+                              href={courseCard.href}
+                              className="dashboard-secondary-link"
+                            >
+                              Continue
+                            </Link>
+                          ) : (
+                            renderLockedCourseAction(
+                              "dashboard-secondary-link",
+                              courseCard.invoiceHref,
+                              courseCard.href,
+                            )
+                          )}
+                        </article>
+                      ))}
+                    </div>
+                  </article>
+
+                  <article className="learner-console-card">
+                    <div className="learner-console-card-head">
+                      <div>
+                        <p className="dashboard-section-kicker">
+                          Recent Activity
+                        </p>
+                        <h2>Your latest progress</h2>
+                      </div>
+                    </div>
+
+                    <div className="learner-console-activity-list">
+                      {filteredResults.length ? (
+                        filteredResults.slice(0, 6).map((result) => (
+                          <div
+                            key={result.id}
+                            className="learner-console-activity-item"
+                          >
+                            <div className="learner-console-activity-badge">
+                              {result.passed ? "Done" : "Run"}
+                            </div>
+                            <div>
+                              <strong>
+                                {result.passed ? "Completed" : "Started"}:{" "}
+                                {result.attemptType}
+                              </strong>
+                              <span>
+                                {result.percentage}% •{" "}
+                                {formatShortDate(result.submittedAt)}
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="dashboard-muted">
+                          No recent learner activity yet. Start the first lesson
+                          from your course page.
+                        </p>
+                      )}
+                    </div>
+                  </article>
+
+                  <article className="learner-console-card">
+                    <div className="learner-console-card-head">
+                      <div>
+                        <p className="dashboard-section-kicker">
+                          Payment history
+                        </p>
+                        <h2>Your submitted upgrade requests</h2>
+                      </div>
+                      <span className="dashboard-chip">
+                        {paymentHistory.length} total
+                      </span>
+                    </div>
+
+                    <div className="learner-console-activity-list">
+                      {paymentHistory.length ? (
+                        paymentHistory.slice(0, 6).map((paymentRequest) => (
+                          <div
+                            key={paymentRequest.id}
+                            className="learner-console-activity-item"
+                          >
+                            <div className="learner-console-activity-badge">
+                              {paymentRequest.status === "APPROVED"
+                                ? "Paid"
+                                : paymentRequest.status === "REJECTED"
+                                  ? "Fix"
+                                  : "Wait"}
+                            </div>
+                            <div>
+                              <strong>
+                                {paymentRequest.planName} -{" "}
+                                {paymentRequest.amount}{" "}
+                                {paymentRequest.currency}
+                              </strong>
+                              <span>
+                                {paymentRequest.transactionId} -{" "}
+                                {paymentRequest.status} -{" "}
+                                {formatShortDate(paymentRequest.submittedAt)}
+                              </span>
+                              {paymentRequest.reviewNotes ? (
+                                <span>{`Review note: ${paymentRequest.reviewNotes}`}</span>
+                              ) : null}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="dashboard-muted">
+                          No payment requests yet. Submit your first upgrade
+                          request from this dashboard.
+                        </p>
+                      )}
+                    </div>
+                  </article>
+                </section>
+
+                <section className="learner-console-grid learner-console-grid-bottom">
+                  <article className="learner-console-card">
+                    <div className="learner-console-card-head">
+                      <div>
+                        <p className="dashboard-section-kicker">
+                          Learning Streak
+                        </p>
+                        <h2>{streakDays} days</h2>
+                      </div>
+                    </div>
+
+                    <div className="learner-console-streak">
+                      <p>Keep it up. Consistency is the key to success.</p>
+                      <div className="learner-console-streak-days">
+                        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                          (day, index) => (
+                            <div
+                              key={day}
+                              className="learner-console-streak-day"
+                            >
+                              <span>{day}</span>
+                              <strong
+                                className={
+                                  index < streakDays ? "is-complete" : ""
+                                }
+                              >
+                                {index < streakDays ? "•" : "○"}
+                              </strong>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  </article>
+
+                  <article className="learner-console-card">
+                    <div className="learner-console-card-head">
+                      <div>
+                        <p className="dashboard-section-kicker">Upcoming</p>
+                        <h2>Next step</h2>
+                      </div>
+                    </div>
+
+                    <div className="learner-console-upcoming">
+                      <strong>Continue your course library</strong>
+                      <span>
+                        {remainingLessons
+                          ? `${remainingLessons} lessons still remaining in your current track.`
+                          : "You have completed the currently tracked lesson sequence."}
+                      </span>
+                      {canOpenCourse ? (
+                        <Link
+                          href="/courses"
+                          className="dashboard-secondary-link"
+                        >
+                          Open Courses
+                        </Link>
+                      ) : (
+                        renderLockedCourseAction("dashboard-secondary-link")
+                      )}
+                    </div>
+                  </article>
+                </section>
               </>
             ) : null}
           </div>
@@ -5535,8 +6453,8 @@ export default function DashboardView() {
             </p>
             {isDisconnected ? (
               <p className="dashboard-copy">
-                Frontend preview mode is active. Backend calls are bypassed and protected routes
-                are unlocked locally.
+                Frontend preview mode is active. Backend calls are bypassed and
+                protected routes are unlocked locally.
               </p>
             ) : null}
           </div>
@@ -5554,7 +6472,10 @@ export default function DashboardView() {
                 Reconnect backend
               </button>
             ) : null}
-            <Link href={dashboardIntro.actionHref} className="dashboard-secondary-link">
+            <Link
+              href={dashboardIntro.actionHref}
+              className="dashboard-secondary-link"
+            >
               {dashboardIntro.actionLabel}
             </Link>
             <button
@@ -5574,23 +6495,35 @@ export default function DashboardView() {
               <article className="dashboard-surface-card admin-dashboard-hero-card">
                 <div className="dashboard-card-head">
                   <div>
-                    <p className="dashboard-section-kicker">Course command center</p>
+                    <p className="dashboard-section-kicker">
+                      Course command center
+                    </p>
                     <h2>{courseTitle}</h2>
                   </div>
                   <span className="dashboard-chip">Admin control</span>
                 </div>
                 <p className="dashboard-copy">
-                  Manage the single live LMS course, review lesson coverage, open project
-                  workspaces, and keep learner access under one admin dashboard.
+                  Manage the single live LMS course, review lesson coverage,
+                  open project workspaces, and keep learner access under one
+                  admin dashboard.
                 </p>
                 <div className="admin-dashboard-link-row">
-                  <Link href={coursePortalLink} className="dashboard-primary-link">
+                  <Link
+                    href={coursePortalLink}
+                    className="dashboard-primary-link"
+                  >
                     Open course page
                   </Link>
-                  <Link href={courseProjectsLink} className="dashboard-secondary-link">
+                  <Link
+                    href={courseProjectsLink}
+                    className="dashboard-secondary-link"
+                  >
                     Open projects
                   </Link>
-                  <Link href="/current-voltage-learning/1" className="dashboard-secondary-link">
+                  <Link
+                    href="/current-voltage-learning/1"
+                    className="dashboard-secondary-link"
+                  >
                     Open Lesson 1
                   </Link>
                 </div>
@@ -5650,7 +6583,9 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">Lesson catalog</p>
                     <h2>All lessons under {courseTitle}</h2>
                   </div>
-                  <span className="dashboard-chip">{basicsCourseModules.length} lessons</span>
+                  <span className="dashboard-chip">
+                    {basicsCourseModules.length} lessons
+                  </span>
                 </div>
                 <div className="admin-dashboard-list">
                   {basicsCourseModules.map((lesson) => (
@@ -5672,10 +6607,12 @@ export default function DashboardView() {
                     <p className="dashboard-section-kicker">Project catalog</p>
                     <h2>Course project workspaces</h2>
                   </div>
-                  <span className="dashboard-chip">{basicsCourseProjects.length} projects</span>
+                  <span className="dashboard-chip">
+                    {basicsCourseProjects.length} projects
+                  </span>
                 </div>
                 <div className="admin-dashboard-list">
-                  {basicsCourseProjects.map((project) => (
+                  {basicsCourseProjects.map((project) =>
                     project.href ? (
                       <Link
                         key={project.title}
@@ -5686,12 +6623,15 @@ export default function DashboardView() {
                         <span>Open project workspace</span>
                       </Link>
                     ) : (
-                      <div key={project.title} className="admin-dashboard-list-item">
+                      <div
+                        key={project.title}
+                        className="admin-dashboard-list-item"
+                      >
                         <strong>{project.title}</strong>
                         <span>Project folder ready for next wiring phase</span>
                       </div>
-                    )
-                  ))}
+                    ),
+                  )}
                 </div>
               </article>
             </section>
@@ -5702,23 +6642,32 @@ export default function DashboardView() {
                   <p className="dashboard-section-kicker">User management</p>
                   <h2>Admin user list and access control</h2>
                 </div>
-                <span className="dashboard-chip">{adminUsers.length} users</span>
+                <span className="dashboard-chip">
+                  {adminUsers.length} users
+                </span>
               </div>
               <p className="dashboard-copy">
-                Edit users, manually enroll learners, remove access, restore access, or delete
-                users from the admin dashboard.
+                Edit users, manually enroll learners, remove access, restore
+                access, or delete users from the admin dashboard.
               </p>
-              {adminUserNotice ? <p className="dashboard-copy">{adminUserNotice}</p> : null}
+              {adminUserNotice ? (
+                <p className="dashboard-copy">{adminUserNotice}</p>
+              ) : null}
               <div className="admin-dashboard-user-table">
                 {adminUsers.map((managedUser) => (
-                  <article key={managedUser.id} className="dashboard-user-card admin-dashboard-user-card">
+                  <article
+                    key={managedUser.id}
+                    className="dashboard-user-card admin-dashboard-user-card"
+                  >
                     <div className="dashboard-user-head">
                       <div>
                         <strong>{managedUser.fullName}</strong>
                         <span>{managedUser.email}</span>
                       </div>
                       <span className="dashboard-chip">
-                        {managedUser.isSuspended ? "Access removed" : roleLabel(managedUser.role)}
+                        {managedUser.isSuspended
+                          ? "Access removed"
+                          : roleLabel(managedUser.role)}
                       </span>
                     </div>
 
@@ -5768,7 +6717,9 @@ export default function DashboardView() {
                             onChange={(event) =>
                               setEditForm((current) => ({
                                 ...current,
-                                preferredLanguage: event.target.value as "en" | "bn",
+                                preferredLanguage: event.target.value as
+                                  | "en"
+                                  | "bn",
                               }))
                             }
                           >
@@ -5801,7 +6752,9 @@ export default function DashboardView() {
                             onClick={() => handleSaveUser(managedUser.id)}
                             disabled={adminUserActionId === managedUser.id}
                           >
-                            {adminUserActionId === managedUser.id ? "Saving..." : "Save"}
+                            {adminUserActionId === managedUser.id
+                              ? "Saving..."
+                              : "Save"}
                           </button>
                           <button
                             type="button"
@@ -5831,7 +6784,9 @@ export default function DashboardView() {
                               !adminCourseId
                             }
                           >
-                            {adminUserActionId === managedUser.id ? "Updating..." : "Manual enroll"}
+                            {adminUserActionId === managedUser.id
+                              ? "Updating..."
+                              : "Manual enroll"}
                           </button>
                           <button
                             type="button"
@@ -5848,9 +6803,12 @@ export default function DashboardView() {
                           <button
                             type="button"
                             className="dashboard-secondary-link dashboard-button"
-                            onClick={() => handleDeleteUser(managedUser, user.id)}
+                            onClick={() =>
+                              handleDeleteUser(managedUser, user.id)
+                            }
                             disabled={
-                              adminUserActionId === managedUser.id || managedUser.id === user.id
+                              adminUserActionId === managedUser.id ||
+                              managedUser.id === user.id
                             }
                           >
                             Delete
@@ -5891,17 +6849,26 @@ export default function DashboardView() {
                 <span className="dashboard-chip">My course</span>
                 <h2>{courseTitle}</h2>
                 <p>
-                  Open your main course page and continue with the lesson modules inside Basics
-                  Electronics and Electrical.
+                  Open your main course page and continue with the lesson
+                  modules inside Basics Electronics and Electrical.
                 </p>
                 <div className="dashboard-link-stack">
-                  <Link href={coursePortalLink} className="dashboard-inline-link">
+                  <Link
+                    href={coursePortalLink}
+                    className="dashboard-inline-link"
+                  >
                     Open my course
                   </Link>
-                  <Link href={courseProjectsLink} className="dashboard-inline-link">
+                  <Link
+                    href={courseProjectsLink}
+                    className="dashboard-inline-link"
+                  >
                     Open course projects
                   </Link>
-                  <Link href="/current-voltage-learning/1" className="dashboard-inline-link">
+                  <Link
+                    href="/current-voltage-learning/1"
+                    className="dashboard-inline-link"
+                  >
                     Start from Lesson 1
                   </Link>
                 </div>
@@ -5927,12 +6894,15 @@ export default function DashboardView() {
               <article className="dashboard-surface-card">
                 <div className="dashboard-card-head">
                   <div>
-                    <p className="dashboard-section-kicker">Performance summary</p>
+                    <p className="dashboard-section-kicker">
+                      Performance summary
+                    </p>
                     <h2>Quiz performance</h2>
                   </div>
                 </div>
                 <p className="dashboard-copy">
-                  This section is connected to the real learner performance API in the backend.
+                  This section is connected to the real learner performance API
+                  in the backend.
                 </p>
                 <div className="dashboard-highlight-row">
                   <div className="dashboard-highlight">
@@ -5940,7 +6910,9 @@ export default function DashboardView() {
                     <strong>
                       {learnerData.totalAttempts
                         ? Math.round(
-                            (learnerData.passedAttempts / learnerData.totalAttempts) * 100,
+                            (learnerData.passedAttempts /
+                              learnerData.totalAttempts) *
+                              100,
                           )
                         : 0}
                       %
@@ -5979,7 +6951,8 @@ export default function DashboardView() {
                     ))
                   ) : (
                     <p className="dashboard-muted">
-                      No learner attempts yet. Start a lesson and quiz flow from the training pages.
+                      No learner attempts yet. Start a lesson and quiz flow from
+                      the training pages.
                     </p>
                   )}
                 </div>
