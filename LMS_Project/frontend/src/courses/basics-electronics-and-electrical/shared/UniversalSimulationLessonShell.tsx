@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useMemo } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthorizedLessonTabs } from "@/src/auth/lesson-variant-access";
 
@@ -21,19 +21,28 @@ const simulationHeaderTabs = [
   { id: "lesson", label: "Simulation" },
 ] as const;
 
+type UniversalSimulationLessonTab = (typeof simulationHeaderTabs)[number]["id"];
+
 export default function UniversalSimulationLessonShell({
   children,
   lessonLabel,
   currentLessonId,
   track,
+  lessonContent,
+  tabs: customTabs,
 }: {
   children: ReactNode;
   lessonLabel: string;
   currentLessonId?: number;
   track?: LessonTrackId;
+  lessonContent?: Partial<Record<UniversalSimulationLessonTab, ReactNode>>;
+  tabs?: readonly { id: UniversalSimulationLessonTab; label: string }[];
 }) {
-  const { tabs } = useAuthorizedLessonTabs(simulationHeaderTabs, "lesson");
+  const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const availableTabs = customTabs ?? simulationHeaderTabs;
+  const { tabs } = useAuthorizedLessonTabs(availableTabs, "lesson");
 
   const resolvedTrack = useMemo(() => {
     if (track) {
@@ -51,6 +60,31 @@ export default function UniversalSimulationLessonShell({
     const match = pathname.match(/\/(\d+)$/);
     return match ? Number(match[1]) : null;
   }, [currentLessonId, pathname]);
+
+  const requestedTab = searchParams.get("tab");
+  const visibleTabIds = tabs.map((tab) => tab.id);
+  const defaultTab = visibleTabIds.includes("lesson")
+    ? "lesson"
+    : (visibleTabIds[0] ?? "lesson");
+  const activeTab =
+    requestedTab && visibleTabIds.includes(requestedTab as UniversalSimulationLessonTab)
+      ? (requestedTab as UniversalSimulationLessonTab)
+      : defaultTab;
+  const renderedContent =
+    lessonContent?.[activeTab] ?? (activeTab === "lesson" ? children : null);
+
+  function handleTabChange(tabId: UniversalSimulationLessonTab) {
+    const nextParams = new URLSearchParams(searchParams.toString());
+
+    if (tabId === "lesson") {
+      nextParams.delete("tab");
+    } else {
+      nextParams.set("tab", tabId);
+    }
+
+    const queryString = nextParams.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname);
+  }
 
   return (
     <main
@@ -72,7 +106,8 @@ export default function UniversalSimulationLessonShell({
         <UniversalLessonHeader
           lessonLabel={lessonLabel}
           tabs={tabs}
-          activeTab="lesson"
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
 
         {resolvedTrack && resolvedLessonId ? (
@@ -114,7 +149,7 @@ export default function UniversalSimulationLessonShell({
             >
               Simulation
             </div>
-            {children}
+            {renderedContent}
           </div>
         </section>
       </div>

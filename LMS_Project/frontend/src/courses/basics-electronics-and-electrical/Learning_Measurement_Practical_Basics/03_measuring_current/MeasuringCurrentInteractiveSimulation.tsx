@@ -139,10 +139,14 @@ export default function MeasuringCurrentInteractiveSimulation() {
 
           <div className="space-y-4">
             <CurrentSeriesWorkbench
+              blackLeadJack={blackLeadJack}
               blackProbeTarget={currentScenario.blackProbeTarget}
               clearProbeTargets={currentScenario.clearProbeTargets}
+              displayValue={currentScenario.measuredDisplayValue}
+              redLeadJack={redLeadJack}
               redProbeTarget={currentScenario.redProbeTarget}
               scenario={currentScenario.scenario}
+              selectedDialStopId={selectedDialStopId}
               setProbeTarget={currentScenario.setProbeTarget}
             />
 

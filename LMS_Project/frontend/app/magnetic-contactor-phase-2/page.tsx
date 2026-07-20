@@ -1,4 +1,4 @@
-import ContactorCutawayView from "../../src/Magnetic Contactor simulation/Phase 2 – Internal Construction/ContactorCutawayView";
+import ContactorCutawayView from "../../src/courses/basics-electronics-and-electrical/Learning Magnetic Contactor/Internal Construction/ContactorCutawayView";
 
 export default function MagneticContactorPhase2Page() {
   return (

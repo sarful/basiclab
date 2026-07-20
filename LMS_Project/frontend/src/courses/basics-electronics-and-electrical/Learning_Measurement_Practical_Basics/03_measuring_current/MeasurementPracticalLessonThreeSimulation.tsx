@@ -1,8 +1,7 @@
 "use client";
 
-import MeasuringCurrentInteractiveSimulation from "./MeasuringCurrentInteractiveSimulation";
+import AmmeterCircuitSketch from "./AmmeterCircuitSketch";
 
 export default function MeasurementPracticalLessonThreeSimulation() {
-  return <MeasuringCurrentInteractiveSimulation />;
+  return <AmmeterCircuitSketch />;
 }
-

@@ -1,7 +1,13 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+import { BeginnerSummarySection } from "./BeginnerSummarySection";
+import { CircuitSimulation } from "./CircuitSimulation";
+import { ComparisonCard } from "./ComparisonCard";
+import { ControlPanelSection } from "./ControlPanelSection";
+import { LiveRelationSection } from "./LiveRelationSection";
+import { ArrowRightLeft, Info, Pause, Play, RotateCcw } from "./icons";
 import {
   DEFAULT_RESISTANCE,
   DEFAULT_VOLTAGE,
@@ -11,13 +17,6 @@ import {
   getVoltageLevel,
   getVoltagePercent,
 } from "./logic";
-import { BeginnerSummarySection } from "./BeginnerSummarySection";
-import { CircuitSimulation } from "./CircuitSimulation";
-import { ComparisonCard } from "./ComparisonCard";
-import { ControlPanelSection } from "./ControlPanelSection";
-import { LiveRelationSection } from "./LiveRelationSection";
-import { ArrowRightLeft, Info, Pause, Play, RotateCcw } from "./icons";
-import { StatusCard } from "./ui";
 import type { SimulationMode } from "./types";
 
 export default function WhatIsVoltageVsCurrentComparisonInteractiveSimulation() {
@@ -44,7 +43,7 @@ export default function WhatIsVoltageVsCurrentComparisonInteractiveSimulation() 
   return (
     <div className="min-h-screen bg-slate-100 p-3 text-slate-900 md:p-8">
       <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-[36px] border border-slate-200 bg-white p-6 shadow-[0_18px_44px_rgba(15,23,42,0.08)] md:p-8">
+        {/* <header className="rounded-[36px] border border-slate-200 bg-white p-6 shadow-[0_18px_44px_rgba(15,23,42,0.08)] md:p-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.26em] text-blue-700">
@@ -70,7 +69,7 @@ export default function WhatIsVoltageVsCurrentComparisonInteractiveSimulation() 
               />
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-[32px] border border-amber-200 bg-amber-50/80 p-4 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -79,10 +78,12 @@ export default function WhatIsVoltageVsCurrentComparisonInteractiveSimulation() 
                 <Info className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-amber-900">Core idea</p>
+                <p className="text-sm font-semibold text-amber-900">
+                  Core idea
+                </p>
                 <p className="mt-1 text-sm leading-6 text-amber-800">
-                  Voltage is the electrical pressure that pushes charge. Current is
-                  the actual flow of charge through the wire.
+                  Voltage is the electrical pressure that pushes charge. Current
+                  is the actual flow of charge through the wire.
                 </p>
               </div>
             </div>
@@ -122,8 +123,9 @@ export default function WhatIsVoltageVsCurrentComparisonInteractiveSimulation() 
                     Watch the push and the flow together
                   </h2>
                   <p className="mt-2 max-w-2xl text-base leading-7 text-slate-600">
-                    Voltage tells us how hard the source is pushing. Current shows
-                    how much charge is actually moving through the same circuit.
+                    Voltage tells us how hard the source is pushing. Current
+                    shows how much charge is actually moving through the same
+                    circuit.
                   </p>
                 </div>
               </div>

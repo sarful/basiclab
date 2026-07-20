@@ -1,4 +1,4 @@
-import ElectromagneticOperationScene from "../../src/Magnetic Contactor simulation/Phase 3 — Electromagnetic Operation/ElectromagneticOperationScene";
+import ElectromagneticOperationScene from "../../src/courses/basics-electronics-and-electrical/Learning Magnetic Contactor/Electromagnetic Operation/ElectromagneticOperationScene";
 
 export default function MagneticContactorPhase3Page() {
   return (

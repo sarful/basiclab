@@ -26,10 +26,10 @@ export default function UniversalLessonHeader<T extends string>({
   navItems = defaultNavItems,
 }: {
   lessonLabel: string;
-  tabs: HeaderTab<T>[];
+  tabs: readonly HeaderTab<T>[];
   activeTab: T;
   onTabChange?: (tabId: T) => void;
-  navItems?: HeaderNavItem[];
+  navItems?: readonly HeaderNavItem[];
 }) {
   return (
     <section

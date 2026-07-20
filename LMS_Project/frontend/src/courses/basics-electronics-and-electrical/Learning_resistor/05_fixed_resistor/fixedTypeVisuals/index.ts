@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactElement } from "react";
+
 import { CarbonFixedResistorVisual } from "./CarbonFixedResistorVisual";
 import { MetalFilmFixedResistorVisual } from "./MetalFilmFixedResistorVisual";
 import type { FixedTypeVisualProps } from "./types";
@@ -9,4 +11,4 @@ export const fixedTypeVisuals = {
   carbon: CarbonFixedResistorVisual,
   metalFilm: MetalFilmFixedResistorVisual,
   wireWound: WireWoundFixedResistorVisual,
-} satisfies Record<string, (props: FixedTypeVisualProps) => JSX.Element>;
+} satisfies Record<string, (props: FixedTypeVisualProps) => ReactElement>;

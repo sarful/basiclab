@@ -1,32 +1,89 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-import BreadboardInfoCard from "./components/BreadboardInfoCard";
+import BreadboardPracticeCanvas from "./components/BreadboardPracticeCanvas";
 import BreadboardSimulatorToolbar from "./components/BreadboardSimulatorToolbar";
 import {
-  breadboardCanvasSize,
+  createConnectionKey,
+  simulatorOneChallenges,
+  validateChallengeAction,
+  type ValidationFeedback,
+} from "./simulatorOneChallenges";
+import {
   breadboardWireColors,
   createSimulatorOneHoles,
-  simulatorOneColX,
-  simulatorOneRowsBottom,
-  simulatorOneRowsTop,
   type BreadboardHole,
   type BreadboardWire,
 } from "./simulatorOneData";
-import {
-  SimulatorOneFeatureLabel,
-  SimulatorOnePowerLines,
-  SimulatorOnePowerSigns,
-  SimulatorOneRailBox,
-} from "./simulatorOneSvgParts";
+
+const AUTO_ADVANCE_DELAY_MS = 1800;
+
+const colorOptions = [
+  { label: "Red jumper", value: breadboardWireColors[0] },
+  { label: "Blue jumper", value: breadboardWireColors[1] },
+  { label: "Green jumper", value: breadboardWireColors[2] },
+  { label: "Yellow jumper", value: breadboardWireColors[3] },
+  { label: "Black jumper", value: breadboardWireColors[4] },
+] as const;
+
+function createReadyFeedback(taskIndex: number): ValidationFeedback {
+  return {
+    allowCommit: false,
+    detail: simulatorOneChallenges[taskIndex].detail,
+    ok: false,
+    title: "Ready to practice",
+    tone: "info",
+  };
+}
+
+function getNearestIncompleteTaskIndex(currentIndex: number, completedTaskIds: Set<string>) {
+  for (let offset = 1; offset <= simulatorOneChallenges.length; offset += 1) {
+    const candidateIndex = (currentIndex + offset) % simulatorOneChallenges.length;
+    if (!completedTaskIds.has(simulatorOneChallenges[candidateIndex].id)) {
+      return candidateIndex;
+    }
+  }
+
+  return currentIndex;
+}
+
+function createStartSelectionFeedback(currentTaskInstruction: string, targetHoleLabel: string, isExpectedStart: boolean) {
+  if (isExpectedStart) {
+    return {
+      allowCommit: false,
+      detail: `Good start. Move to the next hole to complete this action: ${currentTaskInstruction.toLowerCase()}`,
+      ok: false,
+      title: "Start hole selected",
+      tone: "info",
+    } satisfies ValidationFeedback;
+  }
+
+  return {
+    allowCommit: false,
+    detail: `Selected ${targetHoleLabel}. For this task, begin from the highlighted start hole first.`,
+    ok: false,
+    title: "Check the start point",
+    tone: "warning",
+  } satisfies ValidationFeedback;
+}
 
 export default function BreadboardInteractiveSimulator() {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [wires, setWires] = useState<BreadboardWire[]>([]);
-  const [wireColor, setWireColor] = useState<string>(breadboardWireColors[0]);
+  const [selectedHoleId, setSelectedHoleId] = useState<string | null>(null);
+  const [hoveredHoleId, setHoveredHoleId] = useState<string | null>(null);
+  const [wireColor, setWireColor] = useState<string>(colorOptions[0].value);
   const [showGroups, setShowGroups] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
+  const [zoom, setZoom] = useState(1);
+  const [isCompactLayout, setIsCompactLayout] = useState(false);
+  const [feedback, setFeedback] = useState<ValidationFeedback>(createReadyFeedback(0));
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+  const [showHint, setShowHint] = useState(false);
+  const [pendingAdvanceTaskId, setPendingAdvanceTaskId] = useState<string | null>(null);
+  const [recentlyCompletedTaskId, setRecentlyCompletedTaskId] = useState<string | null>(null);
+  const [identifiedTaskIds, setIdentifiedTaskIds] = useState<string[]>([]);
+  const [history, setHistory] = useState<BreadboardWire[][]>([[]]);
+  const [historyIndex, setHistoryIndex] = useState(0);
 
   const holes = useMemo(() => createSimulatorOneHoles(), []);
 
@@ -36,207 +93,297 @@ export default function BreadboardInteractiveSimulator() {
     return map;
   }, [holes]);
 
-  function onHoleClick(id: string) {
-    if (!selected) {
-      setSelected(id);
+  const wires = useMemo(() => history[historyIndex] ?? [], [history, historyIndex]);
+  const currentTask = simulatorOneChallenges[currentTaskIndex];
+  const selectedHole = selectedHoleId ? holeMap.get(selectedHoleId) ?? null : null;
+  const hoveredHole = hoveredHoleId ? holeMap.get(hoveredHoleId) ?? null : null;
+  const activeHole = hoveredHole ?? selectedHole;
+
+  const connectedTaskIds = useMemo(
+    () =>
+      wires.reduce<Set<string>>((taskIds, wire) => {
+        if (wire.taskId) taskIds.add(wire.taskId);
+        return taskIds;
+      }, new Set<string>()),
+    [wires]
+  );
+
+  const completedTaskIds = useMemo(() => {
+    const taskIds = new Set<string>(identifiedTaskIds);
+    connectedTaskIds.forEach((taskId) => taskIds.add(taskId));
+    return taskIds;
+  }, [connectedTaskIds, identifiedTaskIds]);
+
+  const activeGroupHoles = useMemo(() => {
+    if (!activeHole || !showGroups) return [];
+    return holes.filter((hole) => hole.group === activeHole.group);
+  }, [activeHole, holes, showGroups]);
+
+  const allTasksComplete = completedTaskIds.size === simulatorOneChallenges.length;
+  const currentTaskComplete = completedTaskIds.has(currentTask.id);
+  const score = completedTaskIds.size * 25;
+
+  useEffect(() => {
+    setWireColor(currentTask.preferredColor);
+    setFeedback((currentValue) =>
+      currentTaskComplete && currentValue.tone === "success" ? currentValue : createReadyFeedback(currentTaskIndex)
+    );
+    setShowHint(false);
+    setSelectedHoleId(null);
+    setHoveredHoleId(null);
+  }, [currentTask.id, currentTask.preferredColor, currentTaskIndex, currentTaskComplete]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(max-width: 640px)");
+
+    function applyCompactState(matches: boolean) {
+      setIsCompactLayout(matches);
+      setShowLabels((currentValue) => (matches ? false : currentValue));
+      setZoom((currentValue) => {
+        if (matches) return currentValue > 0.88 ? 0.88 : currentValue;
+        return currentValue < 1 ? 1 : currentValue;
+      });
+    }
+
+    applyCompactState(mediaQuery.matches);
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      applyCompactState(event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (!pendingAdvanceTaskId || !completedTaskIds.has(pendingAdvanceTaskId) || allTasksComplete) {
       return;
     }
 
-    if (selected === id) {
-      setSelected(null);
+    const timeoutId = window.setTimeout(() => {
+      setPendingAdvanceTaskId(null);
+      setCurrentTaskIndex((index) => getNearestIncompleteTaskIndex(index, completedTaskIds));
+      setRecentlyCompletedTaskId(null);
+    }, AUTO_ADVANCE_DELAY_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [allTasksComplete, completedTaskIds, pendingAdvanceTaskId]);
+
+  function pushWireHistory(nextWires: BreadboardWire[]) {
+    const nextHistory = history.slice(0, historyIndex + 1);
+    nextHistory.push(nextWires);
+    setHistory(nextHistory);
+    setHistoryIndex(nextHistory.length - 1);
+  }
+
+  function clearAdvanceState() {
+    setPendingAdvanceTaskId(null);
+    setRecentlyCompletedTaskId(null);
+  }
+
+  function completeCurrentTask(validation: ValidationFeedback, nextWire?: BreadboardWire) {
+    if (currentTask.type === "identify-connected") {
+      setIdentifiedTaskIds((previous) =>
+        previous.includes(currentTask.id) ? previous : [...previous, currentTask.id]
+      );
+    } else if (nextWire) {
+      pushWireHistory([...wires, nextWire]);
+    }
+
+    setFeedback(validation);
+    setSelectedHoleId(null);
+    setHoveredHoleId(null);
+    setShowHint(false);
+    setRecentlyCompletedTaskId(currentTask.id);
+
+    if (validation.autoAdvance && !allTasksComplete) {
+      setPendingAdvanceTaskId(currentTask.id);
+    }
+  }
+
+  function handleHoleSelection(id: string) {
+    const hole = holeMap.get(id);
+    if (!hole) return;
+
+    clearAdvanceState();
+
+    if (!selectedHole) {
+      setSelectedHoleId(id);
+      setFeedback(createStartSelectionFeedback(currentTask.instruction, hole.label, id === currentTask.startHole));
       return;
     }
 
-    setWires((previous) => [
-      ...previous,
-      { color: wireColor, from: selected, to: id },
-    ]);
-    setSelected(null);
+    const validation = validateChallengeAction({
+      fromHole: selectedHole,
+      task: currentTask,
+      toHole: hole,
+      wires,
+    });
+
+    if (!validation.ok) {
+      setFeedback(validation);
+      return;
+    }
+
+    if (validation.allowCommit) {
+      const nextWireKey = createConnectionKey(selectedHole.id, hole.id);
+      const nextWire: BreadboardWire = {
+        color: wireColor,
+        from: selectedHole.id,
+        id: `${currentTask.id}-${nextWireKey}`,
+        taskId: currentTask.id,
+        to: hole.id,
+      };
+
+      completeCurrentTask(validation, nextWire);
+      return;
+    }
+
+    completeCurrentTask(validation);
   }
 
-  function clearAll() {
-    setSelected(null);
-    setWires([]);
+  function onUndo() {
+    clearAdvanceState();
+    if (historyIndex === 0) return;
+    setHistoryIndex((value) => value - 1);
+    setSelectedHoleId(null);
+    setHoveredHoleId(null);
+    setFeedback({
+      allowCommit: false,
+      detail: "The last jumper action was undone.",
+      ok: false,
+      title: "Undo complete",
+      tone: "info",
+    });
   }
+
+  function onRedo() {
+    clearAdvanceState();
+    if (historyIndex >= history.length - 1) return;
+    setHistoryIndex((value) => value + 1);
+    setSelectedHoleId(null);
+    setHoveredHoleId(null);
+    setFeedback({
+      allowCommit: false,
+      detail: "The previous jumper action was restored.",
+      ok: false,
+      title: "Redo complete",
+      tone: "info",
+    });
+  }
+
+  function onClear() {
+    clearAdvanceState();
+    if (wires.length > 0) {
+      pushWireHistory([]);
+    }
+    setIdentifiedTaskIds([]);
+    setSelectedHoleId(null);
+    setHoveredHoleId(null);
+    setShowHint(false);
+    setFeedback({
+      allowCommit: false,
+      detail: "All jumper wires and completed challenge states were cleared.",
+      ok: false,
+      title: "Workspace reset",
+      tone: "info",
+    });
+  }
+
+  function onResetTask() {
+    clearAdvanceState();
+    const filteredWires = wires.filter((wire) => wire.taskId !== currentTask.id);
+    if (filteredWires.length !== wires.length) {
+      pushWireHistory(filteredWires);
+    }
+
+    setIdentifiedTaskIds((previous) => previous.filter((taskId) => taskId !== currentTask.id));
+    setSelectedHoleId(null);
+    setHoveredHoleId(null);
+    setShowHint(false);
+    setFeedback({
+      allowCommit: false,
+      detail: `The progress for ${currentTask.title.toLowerCase()} was reset. Try it again from ${currentTask.startHole}.`,
+      ok: false,
+      title: "Current task reset",
+      tone: "info",
+    });
+  }
+
+  function onNextTask() {
+    clearAdvanceState();
+    if (allTasksComplete) {
+      return;
+    }
+
+    setCurrentTaskIndex(getNearestIncompleteTaskIndex(currentTaskIndex, completedTaskIds));
+  }
+
+  const statusBanner =
+    feedback.tone === "success" ? (
+      <div className="mb-4 rounded-[22px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-[0.18em]">Success</div>
+            <div className="mt-1 text-sm font-semibold sm:text-base">{feedback.title}</div>
+            <div className="mt-1 text-sm leading-6">{feedback.detail}</div>
+          </div>
+          {currentTaskComplete ? (
+            <button
+              type="button"
+              onClick={onNextTask}
+              className="rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+            >
+              {allTasksComplete ? "View summary" : "Continue"}
+            </button>
+          ) : null}
+        </div>
+      </div>
+    ) : null;
 
   return (
-    <div className="min-h-screen w-full bg-slate-100 p-4 text-slate-900">
-      <div className="mx-auto max-w-7xl rounded-2xl bg-white p-4 shadow-xl">
-        <BreadboardSimulatorToolbar
-          colors={[...breadboardWireColors]}
-          description="Click two holes to connect a jumper wire."
-          primaryToggleLabel={showGroups ? "Hide Groups" : "Show Groups"}
-          secondaryToggleLabel={showLabels ? "Hide Labels" : "Show Labels"}
-          selectedColor={wireColor}
-          title="Interactive Breadboard Simulator"
-          onClear={clearAll}
-          onSelectColor={setWireColor}
-          onTogglePrimary={() => setShowGroups((value) => !value)}
-          onToggleSecondary={() => setShowLabels((value) => !value)}
-        />
-
-        <div className="overflow-auto rounded-xl border bg-slate-50 p-3">
-          <svg
-            viewBox={`0 0 ${breadboardCanvasSize.width} ${breadboardCanvasSize.height}`}
-            className="h-auto w-full min-w-[1000px]"
-          >
-            <defs>
-              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="5" stdDeviation="5" floodOpacity="0.18" />
-              </filter>
-
-              <linearGradient id="boardGrad" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#f7f3e8" />
-                <stop offset="100%" stopColor="#e8e1d3" />
-              </linearGradient>
-            </defs>
-
-            <rect
-              x="30"
-              y="35"
-              width="1140"
-              height="545"
-              rx="10"
-              fill="url(#boardGrad)"
-              stroke="#d3ccbd"
-              filter="url(#softShadow)"
+    <div className="w-full text-slate-900">
+      <div className="mx-auto max-w-7xl space-y-3 md:space-y-4">
+        <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.08)]">
+          <div className="border-b border-slate-200 px-4 py-4 sm:px-5 md:px-6 md:py-5">
+            <BreadboardSimulatorToolbar
+              layout="top"
+              primaryToggleLabel={showGroups ? "Hide connected groups" : "Show connected groups"}
+              secondaryToggleLabel={showLabels ? "Hide guide labels" : "Show guide labels"}
+              onClear={onClear}
+              onTogglePrimary={() => setShowGroups((value) => !value)}
+              onToggleSecondary={() => setShowLabels((value) => !value)}
+              onZoomIn={() => setZoom((value) => Math.min(1.8, Number((value + 0.15).toFixed(2))))}
+              onZoomOut={() => setZoom((value) => Math.max(0.75, Number((value - 0.15).toFixed(2))))}
+              onZoomReset={() => setZoom(1)}
             />
+          </div>
 
-            <SimulatorOneRailBox y={45} />
-            <SimulatorOneRailBox y={495} />
+          <div className="px-2 py-3 sm:px-4 sm:py-4 md:px-5 md:py-5">
+            {statusBanner}
 
-            <rect x="30" y="155" width="1140" height="155" rx="6" fill="#f5efe2" />
-            <rect x="30" y="340" width="1140" height="155" rx="6" fill="#f5efe2" />
-
-            <rect x="30" y="315" width="1140" height="20" fill="#ded8c9" opacity="0.85" />
-            <line x1="65" y1="325" x2="1135" y2="325" stroke="#c7bca8" strokeDasharray="8 8" />
-
-            <SimulatorOnePowerLines y={65} top />
-            <SimulatorOnePowerLines y={515} />
-
-            {[1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60].map((number) => {
-              const x = simulatorOneColX(number);
-              return (
-                <g key={`num-${number}`}>
-                  <text x={x} y={150} textAnchor="middle" className="fill-black text-[18px] font-semibold">
-                    {number}
-                  </text>
-                  <text x={x} y={490} textAnchor="middle" className="fill-black text-[18px] font-semibold">
-                    {number}
-                  </text>
-                </g>
-              );
-            })}
-
-            {simulatorOneRowsTop.map((row, index) => (
-              <React.Fragment key={row}>
-                <text x="48" y={185 + index * 24} textAnchor="middle" className="fill-black text-[19px] font-bold">
-                  {row}
-                </text>
-                <text x="1152" y={185 + index * 24} textAnchor="middle" className="fill-black text-[19px] font-bold">
-                  {row}
-                </text>
-              </React.Fragment>
-            ))}
-
-            {simulatorOneRowsBottom.map((row, index) => (
-              <React.Fragment key={row}>
-                <text x="48" y={375 + index * 24} textAnchor="middle" className="fill-black text-[19px] font-bold">
-                  {row}
-                </text>
-                <text x="1152" y={375 + index * 24} textAnchor="middle" className="fill-black text-[19px] font-bold">
-                  {row}
-                </text>
-              </React.Fragment>
-            ))}
-
-            {showGroups &&
-              selected &&
-              holes
-                .filter((hole) => hole.group === holeMap.get(selected)?.group)
-                .map((hole) => (
-                  <circle key={`hi-${hole.id}`} cx={hole.x} cy={hole.y} r="9" fill="#fde68a" opacity="0.7" />
-                ))}
-
-            {wires.map((wire, index) => {
-              const fromHole = holeMap.get(wire.from);
-              const toHole = holeMap.get(wire.to);
-              if (!fromHole || !toHole) return null;
-
-              const midY = Math.min(fromHole.y, toHole.y) - 40;
-
-              return (
-                <path
-                  key={`${wire.from}-${wire.to}-${index}`}
-                  d={`M ${fromHole.x} ${fromHole.y} C ${fromHole.x} ${midY}, ${toHole.x} ${midY}, ${toHole.x} ${toHole.y}`}
-                  fill="none"
-                  stroke={wire.color}
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  opacity="0.9"
-                />
-              );
-            })}
-
-            {holes.map((hole) => {
-              const isSelected = selected === hole.id;
-
-              return (
-                <g key={hole.id} onClick={() => onHoleClick(hole.id)} className="cursor-pointer">
-                  <rect
-                    x={hole.x - 4.5}
-                    y={hole.y - 4.5}
-                    width="9"
-                    height="9"
-                    rx="1.2"
-                    fill={isSelected ? "#facc15" : "#211f1a"}
-                    stroke={isSelected ? "#000" : "#8a8170"}
-                    strokeWidth={isSelected ? 2 : 0.7}
-                  />
-                  <title>{hole.label}</title>
-                </g>
-              );
-            })}
-
-            <SimulatorOnePowerSigns y={68} />
-            <SimulatorOnePowerSigns y={538} reverse />
-
-            {showLabels && (
-              <>
-                <SimulatorOneFeatureLabel
-                  x={880}
-                  y={185}
-                  title="Terminal Strips"
-                  text="Main connection area: A-E and F-J holes"
-                />
-                <SimulatorOneFeatureLabel
-                  x={830}
-                  y={75}
-                  title="Power Rails"
-                  text="+ and - rails distribute VCC and GND"
-                />
-                <SimulatorOneFeatureLabel
-                  x={470}
-                  y={330}
-                  title="DIP Support"
-                  text="Center gap supports IC / DIP chip placement"
-                />
-                <SimulatorOneFeatureLabel
-                  x={140}
-                  y={255}
-                  title="Rows & Columns"
-                  text="Rows A-J and columns 1-60 locate holes"
-                />
-              </>
-            )}
-          </svg>
-        </div>
-
-        <div className="mt-4 grid gap-3 md:grid-cols-4">
-          <BreadboardInfoCard title="Terminal Strips" text="Main working area where components are inserted." />
-          <BreadboardInfoCard title="Power Rails" text="Used for positive and negative supply lines." />
-          <BreadboardInfoCard title="DIP Support" text="Center gap allows IC chips to sit safely." />
-          <BreadboardInfoCard title="Rows & Columns" text="Labels help locate exact connection points." />
+            <BreadboardPracticeCanvas
+              activeGroupHoles={activeGroupHoles}
+              currentTask={currentTask}
+              hoveredHoleId={hoveredHoleId}
+              holeMap={holeMap}
+              holes={holes}
+              isCompactLayout={isCompactLayout}
+              recentlyCompletedTaskId={recentlyCompletedTaskId}
+              selectedHoleId={selectedHoleId}
+              showLabels={showLabels}
+              wireColor={wireColor}
+              wires={wires}
+              zoom={zoom}
+              onHoleActivate={handleHoleSelection}
+              onHoleHover={setHoveredHoleId}
+              onHoleLeave={(holeId) =>
+                setHoveredHoleId((currentValue) => (currentValue === holeId ? null : currentValue))
+              }
+            />
+          </div>
         </div>
       </div>
     </div>

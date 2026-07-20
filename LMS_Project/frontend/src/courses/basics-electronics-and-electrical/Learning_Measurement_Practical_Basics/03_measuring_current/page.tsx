@@ -1,6 +1,10 @@
 "use client";
 
-import MeasurementPracticalLessonThreeSimulation from "./MeasurementPracticalLessonThreeSimulation";
+import AmmeterCircuitSketch from "./AmmeterCircuitSketch";
+import LogicTheoryBanglaTab from "./LogicTheoryBanglaTab";
+import LogicTheoryTab from "./LogicTheoryTab";
+import UdemyScriptNoteBanglaTab from "./UdemyScriptNoteBanglaTab";
+import UdemyScriptNoteEnglishTab from "./UdemyScriptNoteEnglishTab";
 import MeasurementPracticalLessonScaffold from "../shared/MeasurementPracticalLessonScaffold";
 
 export default function MeasurementPracticalLessonThreePage() {
@@ -10,7 +14,11 @@ export default function MeasurementPracticalLessonThreePage() {
       lessonLabel="Lesson 03"
       lessonTitle="Measuring Current"
       lessonContent={{
-        lesson: <MeasurementPracticalLessonThreeSimulation />,
+        logic: <LogicTheoryTab />,
+        logic_bn: <LogicTheoryBanglaTab />,
+        english: <UdemyScriptNoteEnglishTab />,
+        bangla: <UdemyScriptNoteBanglaTab />,
+        lesson: <AmmeterCircuitSketch />,
       }}
     />
   );

@@ -11,7 +11,7 @@ import {
   ProbeTargets,
   SemiconductorDensityShader,
   Terminal,
-} from "./DiagramPieces.tsx";
+} from "./DiagramPieces";
 import type { LayerView, ProbeTarget } from "./types";
 
 const ACTIVE_MODE: Record<LayerView, string> = {

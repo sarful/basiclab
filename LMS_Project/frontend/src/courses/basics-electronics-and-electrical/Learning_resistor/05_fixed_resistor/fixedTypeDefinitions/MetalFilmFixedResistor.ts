@@ -1,3 +1,5 @@
+import type { FixedType } from "../types";
+
 export const metalFilmFixedResistor: FixedType = {
   key: "metalFilm",
   name: "Metal Film",

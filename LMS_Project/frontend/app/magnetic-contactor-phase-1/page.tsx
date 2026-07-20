@@ -1,4 +1,4 @@
-import MagneticContactor from "../../src/Magnetic Contactor simulation/Phase 1 — Anatomy Components/MagneticContactor";
+import MagneticContactor from "../../src/courses/basics-electronics-and-electrical/Learning Magnetic Contactor/Anatomy Components/MagneticContactor";
 
 export default function MagneticContactorPhase1Page() {
   return (

@@ -620,12 +620,15 @@ async function ensureDefaultBasicsCourse() {
 }
 
 async function ensureDefaultFrontendCourse(defaultCourse: (typeof DEFAULT_FRONTEND_COURSES)[number]) {
-  const admin = getSupabaseAdminClient();
-  const existingResponse = await admin
+  const admin = getSupabaseAdminClient() as any;
+  const existingResponse = (await admin
     .from("courses")
     .select("*")
     .eq("slug", defaultCourse.slug)
-    .maybeSingle();
+    .maybeSingle()) as {
+      data: SupabaseCourseRow | null;
+      error: { message?: string } | null;
+    };
 
   if (existingResponse.error) {
     if (isMissingTableError(existingResponse.error)) {
@@ -640,11 +643,14 @@ async function ensureDefaultFrontendCourse(defaultCourse: (typeof DEFAULT_FRONTE
     return normalizeCourse(existingResponse.data as SupabaseCourseRow);
   }
 
-  const insertResponse = await admin
+  const insertResponse = (await admin
     .from("courses")
     .insert(defaultCourse)
     .select("*")
-    .single();
+    .single()) as {
+      data: SupabaseCourseRow;
+      error: { message?: string } | null;
+    };
 
   if (insertResponse.error) {
     if (isMissingTableError(insertResponse.error)) {
@@ -1443,7 +1449,7 @@ export async function getPublicCourseStats(slug: string) {
     throw new Error(toReadableSupabaseError(courseResponse.error));
   }
 
-  if (!courseResponse.data && isDefaultBasicsCourseSlug(slug)) {
+  if (!courseResponse.data && isDefaultFrontendCourseSlug(slug)) {
     const course = await ensureDefaultBasicsCourse();
     if (course.status !== "PUBLISHED") {
       throw new Error("Course is not published.");

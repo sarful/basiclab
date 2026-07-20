@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactElement } from "react";
+
 import { CarbonCompositionResistorVisual } from "./CarbonCompositionResistorVisual";
 import { LightDependentResistorVisual } from "./LightDependentResistorVisual";
 import { MetalFilmResistorVisual } from "./MetalFilmResistorVisual";
@@ -15,4 +17,4 @@ export const resistorTypeVisuals = {
   potentiometer: PotentiometerVisual,
   thermistor: ThermistorVisual,
   ldr: LightDependentResistorVisual,
-} satisfies Record<string, (props: ResistorTypeVisualProps) => JSX.Element>;
+} satisfies Record<string, (props: ResistorTypeVisualProps) => ReactElement>;

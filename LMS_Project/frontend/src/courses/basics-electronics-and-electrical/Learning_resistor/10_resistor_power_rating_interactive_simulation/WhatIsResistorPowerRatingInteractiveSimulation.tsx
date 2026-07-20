@@ -27,6 +27,11 @@ export default function WhatIsResistorPowerRatingInteractiveSimulation({
             <ControlPanelSection
               voltage={simulation.voltage}
               resistance={simulation.resistance}
+              current={simulation.current}
+              power={simulation.power}
+              powerByI2R={simulation.powerByI2R}
+              powerByV2R={simulation.powerByV2R}
+              safetyMargin={simulation.safetyMargin}
               rating={simulation.rating}
               selectedPackageLabel={simulation.selectedPackage.label}
               statusMessage={simulation.status.message}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { AmmeterSection } from "./AmmeterSection";
 import { BeginnerExplanationSection } from "./BeginnerExplanationSection";
@@ -15,11 +15,7 @@ import {
   getCurrentPercent,
 } from "./logic";
 import type { SimulationMode } from "./types";
-import {
-  IndustrialLabel,
-  MetricCard,
-  StatusBox,
-} from "./ui";
+import { MetricCard } from "./ui";
 
 export default function WhatIsCurrentInteractiveSimulation() {
   const [mode] = useState<SimulationMode>("playing");
@@ -37,7 +33,7 @@ export default function WhatIsCurrentInteractiveSimulation() {
   return (
     <div className="w-full text-slate-900">
       <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-5">
+        {/* <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <IndustrialLabel code="SIM-03" label="Interactive Electrical Lab" />
@@ -69,7 +65,7 @@ export default function WhatIsCurrentInteractiveSimulation() {
               />
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-3xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

@@ -2,10 +2,10 @@
 
 import BackgroundPixelGred from "../library/background_pixel_gred";
 import LEDSymbol from "../library/electronics-symbol-library/diodes/LEDSymbol";
-import NChannelMosfetSymbol from "../library/electronics-symbol-library/mosfets/NChannelMosfetSymbol";
 import ResistorSymbol from "../library/electronics-symbol-library/passive/ResistorSymbol";
 import DCVoltageSourceV1Symbol from "../library/electronics-symbol-library/sources/DCVoltageSourceV1Symbol";
 import SPSTSwitchSymbol from "../library/electronics-symbol-library/switch-topology/SPSTSwitchSymbol";
+import JFETNChannelSymbol from "../../../../library/electronics-symbol-library/jfets/JFETNChannelSymbol";
 
 const VIEW_BOX_WIDTH = 760;
 const VIEW_BOX_HEIGHT = 700;
@@ -497,10 +497,10 @@ function MosfetBlock() {
         viewBox={`0 0 ${COMPONENT.mosfet.width} ${COMPONENT.mosfet.height}`}
         overflow="visible"
       >
-        <NChannelMosfetSymbol
+        <JFETNChannelSymbol
           width={COMPONENT.mosfet.width}
           height={COMPONENT.mosfet.height}
-          label="Q1 N-Channel MOSFET"
+          label="Q1 N-Channel JFET"
         />
       </svg>
 
@@ -521,7 +521,7 @@ function MosfetBlock() {
         fontWeight="700"
         fill={STYLE.text}
       >
-        MOSFET N
+        JFET N
       </text>
     </g>
   );

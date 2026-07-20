@@ -116,7 +116,7 @@ export function getEducationalExplanation(
 
 export function getBiasResult(
   bias: BiasMode,
-  voltage = DIODE_CONSTANTS.DEFAULT_SUPPLY_VOLTAGE,
+  voltage: number = DIODE_CONSTANTS.DEFAULT_SUPPLY_VOLTAGE,
 ): BiasResult {
   const led = getLedState(bias, voltage);
 

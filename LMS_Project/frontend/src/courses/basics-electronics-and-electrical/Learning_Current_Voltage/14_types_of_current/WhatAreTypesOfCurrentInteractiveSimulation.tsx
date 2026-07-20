@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+import { AcCurrentSection } from "./AcCurrentSection";
+import { DcCurrentSection } from "./DcCurrentSection";
 import {
   calculateRmsCurrent,
   DEFAULT_AC_PEAK_CURRENT,
@@ -9,28 +11,36 @@ import {
   DEFAULT_FREQUENCY,
   getCurrentStrengthPercent,
 } from "./logic";
-import { AcCurrentSection } from "./AcCurrentSection";
-import { CoreIdeaBanner } from "./ui";
-import { DcCurrentSection } from "./DcCurrentSection";
 import { QuickComparisonSection } from "./QuickComparisonSection";
-import { IndustrialLabel, StatusBox } from "./ui";
 import type { SimulationMode } from "./types";
+import { CoreIdeaBanner } from "./ui";
 
 export default function WhatAreTypesOfCurrentInteractiveSimulation() {
   const [mode, setMode] = useState<SimulationMode>("playing");
   const [dcCurrent, setDcCurrent] = useState<number>(DEFAULT_DC_CURRENT);
-  const [acPeakCurrent, setAcPeakCurrent] = useState<number>(DEFAULT_AC_PEAK_CURRENT);
+  const [acPeakCurrent, setAcPeakCurrent] = useState<number>(
+    DEFAULT_AC_PEAK_CURRENT,
+  );
   const [frequency, setFrequency] = useState<number>(DEFAULT_FREQUENCY);
 
-  const acRmsCurrent = useMemo(() => calculateRmsCurrent(acPeakCurrent), [acPeakCurrent]);
-  const dcStrength = useMemo(() => getCurrentStrengthPercent(dcCurrent), [dcCurrent]);
-  const acStrength = useMemo(() => getCurrentStrengthPercent(acPeakCurrent), [acPeakCurrent]);
+  const acRmsCurrent = useMemo(
+    () => calculateRmsCurrent(acPeakCurrent),
+    [acPeakCurrent],
+  );
+  const dcStrength = useMemo(
+    () => getCurrentStrengthPercent(dcCurrent),
+    [dcCurrent],
+  );
+  const acStrength = useMemo(
+    () => getCurrentStrengthPercent(acPeakCurrent),
+    [acPeakCurrent],
+  );
   const isPlaying = mode === "playing";
 
   return (
     <div className="min-h-screen w-full bg-slate-100 p-3 text-slate-900 sm:p-4 md:p-6">
       <div className="mx-auto max-w-7xl space-y-5">
-        <header className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_40px_rgba(15,23,42,0.08)] md:p-6">
+        {/* <header className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_18px_40px_rgba(15,23,42,0.08)] md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <IndustrialLabel code="SIMULATION" label="Current Comparison" />
@@ -50,7 +60,7 @@ export default function WhatAreTypesOfCurrentInteractiveSimulation() {
               <StatusBox label="AC RMS" value={`${acRmsCurrent.toFixed(2)} A`} tone="blue" />
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="grid gap-4 xl:grid-cols-[1.45fr_0.95fr]">
           <CoreIdeaBanner />

@@ -26,7 +26,7 @@ export default function WhatIsAcVsDcBasicsInteractiveSimulation() {
   return (
     <div className="w-full text-slate-900">
       <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-5">
+        {/* <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-700">
@@ -77,7 +77,7 @@ export default function WhatIsAcVsDcBasicsInteractiveSimulation() {
               </div>
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-3xl border border-blue-200 bg-blue-50/80 p-4 shadow-sm">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -141,7 +141,9 @@ export default function WhatIsAcVsDcBasicsInteractiveSimulation() {
                   <h3 className="text-sm font-bold uppercase tracking-[0.18em] text-green-700">
                     DC Behavior
                   </h3>
-                  <p className="mt-3 text-3xl font-black text-green-700">Steady</p>
+                  <p className="mt-3 text-3xl font-black text-green-700">
+                    Steady
+                  </p>
                   <p className="mt-2 text-sm text-slate-600">
                     Direct current keeps the same direction and level unless the
                     source changes.

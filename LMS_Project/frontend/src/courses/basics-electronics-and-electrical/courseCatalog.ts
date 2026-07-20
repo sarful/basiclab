@@ -6,12 +6,13 @@ export const basicsCourseModules = [
   { href: "/diode-learning/1", title: "Lesson 5 Diode Learning" },
   { href: "/transformer-learning/1", title: "Lesson 6 Transformer Learning" },
   { href: "/fuse-learning/1", title: "Lesson 7 Fuse Learning" },
-  { href: "/optocoupler-learning/1", title: "Lesson 8 Optocoupler Learning" },
-  { href: "/pushbutton-learning/1", title: "Lesson 9 Pushbutton Learning" },
-  { href: "/relay-learning/1", title: "Lesson 10 Relay Learning" },
-  { href: "/transistor-learning/1", title: "Lesson 11 Transistor Learning" },
-  { href: "/voltage-regulator-learning/1", title: "Lesson 12 Voltage Regulator Learning" },
-  { href: "/water-flow-analogy", title: "Lesson 13 Water Flow Analogy" },
+  { href: "/magnetic-contactor-learning", title: "Lesson 8 Magnetic Contactor Learning" },
+  { href: "/optocoupler-learning/1", title: "Lesson 9 Optocoupler Learning" },
+  { href: "/pushbutton-learning/1", title: "Lesson 10 Pushbutton Learning" },
+  { href: "/relay-learning/1", title: "Lesson 11 Relay Learning" },
+  { href: "/transistor-learning/1", title: "Lesson 12 Transistor Learning" },
+  { href: "/voltage-regulator-learning/1", title: "Lesson 13 Voltage Regulator Learning" },
+  { href: "/water-flow-analogy", title: "Lesson 14 Water Flow Analogy" },
 ];
 
 export const basicsCourseProjects = [

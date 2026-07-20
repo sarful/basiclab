@@ -3,14 +3,22 @@ type ThermalOverloadNCProps = {
   y?: number;
   scale?: number;
   tripped?: boolean;
+  closed?: boolean;
   label?: string;
   className?: string;
   standalone?: boolean;
   strokeColor?: string;
+  terminalA?: string;
+  terminalB?: string;
   orientation?: "horizontal" | "vertical";
   wireStroke?: number;
   textSize?: number;
   showTerminals?: boolean;
+  width?: number;
+  height?: number;
+  strokeWidth?: number;
+  leftLabel?: string;
+  rightLabel?: string;
 };
 
 export default function ThermalOverloadNC({
@@ -18,73 +26,88 @@ export default function ThermalOverloadNC({
   y = 0,
   scale = 1,
   tripped = false,
-  label = "O/L",
+  closed,
+  label = "",
   className = "",
   standalone = true,
-  strokeColor,
+  strokeColor = "#111111",
+  terminalA,
+  terminalB,
   orientation = "horizontal",
-  wireStroke = 0.5,
-  textSize = 5,
+  wireStroke,
+  textSize = 0.5,
   showTerminals = true,
+  width,
+  height,
+  strokeWidth,
+  leftLabel,
+  rightLabel,
 }: ThermalOverloadNCProps) {
-  const overloadStroke = strokeColor ?? "#111111";
+  const cableStroke = wireStroke ?? strokeWidth ?? 0.5;
   const textColor = "#111111";
-  const cableStroke = wireStroke;
+  const resolvedTerminalA = terminalA ?? leftLabel ?? "95";
+  const resolvedTerminalB = terminalB ?? rightLabel ?? "96";
+  const isClosed = closed ?? !tripped;
   const transformParts = [`translate(${x}, ${y})`, `scale(${scale})`];
-  const standaloneViewBox =
-    orientation === "vertical" ? "-12 -15 74 56" : "-10 -10 71 55";
+  const rotationCenterX = 25;
+  const rotationCenterY = 10;
 
   if (orientation === "vertical") {
-    transformParts.push("rotate(-90 25 10)");
+    transformParts.push(`rotate(-90 ${rotationCenterX} ${rotationCenterY})`);
   }
 
   const symbol = (
     <g
       transform={transformParts.join(" ")}
-      fill="none"
-      stroke={overloadStroke}
+      fill="#ffffff"
+      fillRule="evenodd"
+      stroke={strokeColor}
       strokeLinecap="round"
       strokeLinejoin="round"
+      fontFamily="Arial, Helvetica, sans-serif"
     >
-      <path d="M0 10h12.5" strokeWidth={cableStroke} />
-      <path d="M50 10H37.5" strokeWidth={cableStroke} />
+      {label ? (
+        <text
+          x={rotationCenterX}
+          y="39"
+          textAnchor="middle"
+          fontSize={textSize}
+          fill={textColor}
+          stroke="none"
+        >
+          {label}
+        </text>
+      ) : null}
+
+      <path d="M0 10h12.5" strokeWidth={cableStroke} fill="none" />
+      <path d="M50 10H37.5" strokeWidth={cableStroke} fill="none" />
       <circle cx="15" cy="10" r="2.5" fill="white" strokeWidth={cableStroke} />
       <circle cx="35" cy="10" r="2.5" fill="white" strokeWidth={cableStroke} />
-      {tripped ? (
+
+      {isClosed ? (
         <>
-          <path d="M15 15h20" strokeWidth={cableStroke} />
-          <path d="M25 0v15" strokeWidth={cableStroke} />
+          <path d="M15 13h20" strokeWidth={cableStroke} fill="none" />
+          <path d="M25 8v5" strokeWidth={cableStroke} fill="none" />
         </>
       ) : (
         <>
-          <path d="M15 5h20" strokeWidth={cableStroke} />
-          <path d="M25 0v5" strokeWidth={cableStroke} />
+          <path d="M15 5h20" strokeWidth={cableStroke} fill="none" />
+          <path d="M25 0v5" strokeWidth={cableStroke} fill="none" />
         </>
       )}
 
+      <path d="M21 1l8 8" strokeWidth={cableStroke} fill="none" />
+      <path d="M29 1l-8 8" strokeWidth={cableStroke} fill="none" />
+
       {showTerminals ? (
-        <>
-          <text
-            x="2"
-            y="6.81"
-            textAnchor="start"
-            fontSize={textSize}
-            fill="#111111"
-            stroke="none"
-          >
-            95
+        <g fill="#111111" stroke="none" fontSize={textSize}>
+          <text x="2" y="6.81" textAnchor="start">
+            {resolvedTerminalA}
           </text>
-          <text
-            x="48"
-            y="6.81"
-            textAnchor="end"
-            fontSize={textSize}
-            fill="#111111"
-            stroke="none"
-          >
-            96
+          <text x="48" y="6.81" textAnchor="end">
+            {resolvedTerminalB}
           </text>
-        </>
+        </g>
       ) : null}
     </g>
   );
@@ -93,24 +116,18 @@ export default function ThermalOverloadNC({
     return symbol;
   }
 
+  const viewBox = orientation === "vertical" ? "-12 -15 74 56" : "-10 -10 71 55";
+
   return (
     <svg
-      viewBox={standaloneViewBox}
-      className={`h-32 w-24 rounded-xl bg-white p-2 shadow ${className}`}
+      width={width}
+      height={height}
+      viewBox={viewBox}
+      className={className}
+      role="img"
+      aria-label={label || "Thermal Overload NC"}
     >
       {symbol}
-      {label ? (
-        <text
-          x={orientation === "vertical" ? 0 : 25}
-          y={orientation === "vertical" ? 16 : 39}
-          textAnchor={orientation === "vertical" ? "start" : "middle"}
-          fontSize={textSize}
-          fontWeight="700"
-          fill={textColor}
-        >
-          {label}
-        </text>
-      ) : null}
     </svg>
   );
 }

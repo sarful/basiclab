@@ -13,6 +13,7 @@ export type LessonTrackId =
   | "diode"
   | "transformer"
   | "fuse"
+  | "magnetic-contactor"
   | "optocoupler"
   | "pushbutton"
   | "relay"
@@ -63,6 +64,7 @@ export const lessonRegistry: Record<LessonTrackId, LessonTrackConfig> = {
       { id: 6, title: "Breadboard Basics", href: "/measurement-practical-basics/6" },
       { id: 7, title: "Wire, Jumper, and Terminal Basics", href: "/measurement-practical-basics/7" },
       { id: 8, title: "Basic Circuit Safety", href: "/measurement-practical-basics/8" },
+      { id: 9, title: "AC Voltage Socket", href: "/measurement-practical-basics/9" },
     ],
   },
   resistor: {
@@ -149,13 +151,32 @@ export const lessonRegistry: Record<LessonTrackId, LessonTrackConfig> = {
       { id: 3, title: "Fuse in Overcurrent Protection", href: "/fuse-learning/3" },
     ],
   },
+  "magnetic-contactor": {
+    label: "Magnetic Contactor Learning",
+    routeBase: "/magnetic-contactor-learning",
+    summary: "Move through the magnetic contactor lessons in order and keep anatomy, construction, operation, and wiring views connected to one shared nav.",
+    lessons: [
+      { id: 1, serial: 1, title: "Anatomy Components", href: "/magnetic-contactor-learning/1" },
+      { id: 2, serial: 2, title: "Magnetic Contactor Operation Diagram", href: "/magnetic-contactor-learning/4" },
+      { id: 3, serial: 3, title: "Magnetic Contactor Internal Operation", href: "/magnetic-contactor-learning/internal-operation" },
+      { id: 4, serial: 4, title: "Operation Diagram With Motor", href: "/magnetic-contactor-learning/operation-diagram-with-motor" },
+      { id: 5, serial: 5, title: "DOL Starter Project", href: "/magnetic-contactor-learning/dol-project" },
+      { id: 6, serial: 5, title: "Star Delta Control Diagram", href: "/magnetic-contactor-learning/star-delta-control-diagram" },
+      { id: 7, serial: 6, title: "Reverse Forward Project", href: "/magnetic-contactor-learning/reverse-forward-project" },
+    ],
+  },
   optocoupler: {
     label: "Optocoupler Learning",
     routeBase: "/optocoupler-learning",
     summary: "Move through the optocoupler lessons in order and keep isolation examples connected to one shared nav.",
     lessons: [
-      { id: 1, title: "Optocoupler Basics", href: "/optocoupler-learning/1" },
-      { id: 2, title: "Optocoupler Isolation Use Case", href: "/optocoupler-learning/2" },
+      { id: 1, title: "What Is Optocoupler", href: "/optocoupler-learning/1" },
+      { id: 2, title: "Optocoupler Pins", href: "/optocoupler-learning/2" },
+      { id: 3, title: "Photodiode", href: "/optocoupler-learning/3" },
+      { id: 4, title: "Phototransistor", href: "/optocoupler-learning/4" },
+      { id: 5, title: "PhotoTRIAC", href: "/optocoupler-learning/5" },
+      { id: 6, title: "Optotransistor DC Switch", href: "/optocoupler-learning/6" },
+      { id: 7, title: "AC Photo-Triac Switching", href: "/optocoupler-learning/7" },
     ],
   },
   pushbutton: {
@@ -212,16 +233,11 @@ export const lessonRegistry: Record<LessonTrackId, LessonTrackConfig> = {
     routeBase: "/voltage-regulator-learning",
     summary: "Move through the regulator lessons in order and keep theory, examples, and next lessons under one nav.",
     lessons: [
-      { id: 1, title: "What is a Voltage Regulator", href: "/voltage-regulator-learning/1" },
-      { id: 2, title: "Why Regulation is Needed", href: "/voltage-regulator-learning/2" },
-      { id: 3, title: "78xx Series", href: "/voltage-regulator-learning/3" },
-      { id: 4, title: "79xx Series", href: "/voltage-regulator-learning/4" },
-      { id: 5, title: "LM317 Adjustable Regulator", href: "/voltage-regulator-learning/5" },
-      { id: 6, title: "Output Voltage Calculation", href: "/voltage-regulator-learning/6" },
-      { id: 7, title: "Dropout Voltage", href: "/voltage-regulator-learning/7" },
-      { id: 8, title: "Heat Dissipation", href: "/voltage-regulator-learning/8" },
-      { id: 9, title: "Regulator with Rectifier and Filter", href: "/voltage-regulator-learning/9" },
-      { id: 10, title: "Linear vs Switching Regulator", href: "/voltage-regulator-learning/10" },
+      { id: 1, title: "What is Voltage Regulator", href: "/voltage-regulator-learning/1" },
+      { id: 2, title: "Linear Regulator Working", href: "/voltage-regulator-learning/2" },
+      { id: 3, title: "Voltage Regulator Circuit Physical SVG", href: "/voltage-regulator-learning/3" },
+      { id: 4, title: "Linear Voltage Regulator Circuit", href: "/voltage-regulator-learning/4" },
+      { id: 5, title: "Adjustable Regulator LM317 Circuit", href: "/voltage-regulator-learning/5" },
     ],
   },
 };
@@ -234,9 +250,24 @@ export function getLessonTrackConfig(track: LessonTrackId) {
   return lessonRegistry[track];
 }
 
+export function getAllLessons() {
+  return (Object.entries(lessonRegistry) as [LessonTrackId, LessonTrackConfig][])
+    .flatMap(([trackId, config]) =>
+      config.lessons.map((lesson) => ({
+        ...lesson,
+        trackId,
+        trackLabel: config.label,
+      })),
+    );
+}
+
 export function getLessonTrackFromPathname(pathname: string): LessonTrackId | null {
   const match = (Object.entries(lessonRegistry) as [LessonTrackId, LessonTrackConfig][])
     .find(([, config]) => pathname.startsWith(config.routeBase + "/"));
 
   return match?.[0] ?? null;
+}
+
+export function findLessonByPathname(pathname: string) {
+  return getAllLessons().find((lesson) => lesson.href === pathname) ?? null;
 }

@@ -87,21 +87,21 @@ export default function ControlsPanel({
           title="Base / Gate Signal"
           value={effectiveSignal}
           color={status.color}
-          // sub="Small control input"
+          sub="Small control input"
         />
 
         <MeterCard
           title="Valve Opening"
           value={valveOpening}
           color={status.color}
-          // sub="Mechanical restriction"
+          sub="Mechanical restriction"
         />
 
         <MeterCard
           title="Output Current Flow"
           value={effectiveSignal}
           color={status.color}
-          // sub="Collector current analogy"
+          sub="Collector current analogy"
         />
 
         <MeterCard

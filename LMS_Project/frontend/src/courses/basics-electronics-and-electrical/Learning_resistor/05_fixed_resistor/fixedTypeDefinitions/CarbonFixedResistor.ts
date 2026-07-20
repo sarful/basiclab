@@ -1,3 +1,5 @@
+import type { FixedType } from "../types";
+
 export const carbonFixedResistor: FixedType = {
   key: "carbon",
   name: "Carbon Composition",

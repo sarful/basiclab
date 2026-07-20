@@ -45,7 +45,7 @@ export default function WhatIsSeriesVsParallelComparisonInteractiveSimulation() 
   return (
     <div className="w-full text-slate-900">
       <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
+        {/* <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700">
@@ -84,20 +84,23 @@ export default function WhatIsSeriesVsParallelComparisonInteractiveSimulation() 
               </div>
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-3xl border border-blue-200 bg-blue-50/80 p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold text-blue-900">Core idea</p>
               <p className="mt-1 text-sm leading-6 text-blue-800">
-                Series adds resistance and keeps one current path. Parallel lowers
-                equivalent resistance and lets current divide into branches.
+                Series adds resistance and keeps one current path. Parallel
+                lowers equivalent resistance and lets current divide into
+                branches.
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 lg:max-w-[440px]">
-              <p className="text-sm font-semibold text-slate-900">Simple idea</p>
+              <p className="text-sm font-semibold text-slate-900">
+                Simple idea
+              </p>
               <p className="mt-1 text-sm leading-6 text-slate-700">
                 Same parts do not always behave the same way. The circuit layout
                 changes the result.
@@ -148,47 +151,58 @@ export default function WhatIsSeriesVsParallelComparisonInteractiveSimulation() 
                 Watch the behavior change with layout
               </h2>
               <p className="mt-3 max-w-3xl text-[0.98rem] leading-7 text-slate-600 md:text-[1rem]">
-                This simulation compares the same source and the same two resistors
-                in both layouts, so you can see how series and parallel rules
-                produce different results.
+                This simulation compares the same source and the same two
+                resistors in both layouts, so you can see how series and
+                parallel rules produce different results.
               </p>
 
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-700">Series total resistance</p>
+                  <p className="text-sm font-semibold text-slate-700">
+                    Series total resistance
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-slate-900">
                     {solved.seriesTotalResistance.toFixed(1)} Ohm
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
-                    In series, resistor values add directly because the current follows one path.
+                    In series, resistor values add directly because the current
+                    follows one path.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                  <p className="text-sm font-semibold text-blue-700">Parallel equivalent resistance</p>
+                  <p className="text-sm font-semibold text-blue-700">
+                    Parallel equivalent resistance
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-blue-800">
                     {solved.parallelEquivalentResistance.toFixed(2)} Ohm
                   </p>
                   <p className="mt-2 text-sm leading-6 text-blue-700/80">
-                    Parallel branches lower the overall resistance seen by the source.
+                    Parallel branches lower the overall resistance seen by the
+                    source.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
-                  <p className="text-sm font-semibold text-green-700">Key result</p>
+                  <p className="text-sm font-semibold text-green-700">
+                    Key result
+                  </p>
                   <p className="mt-2 text-[1.4rem] font-semibold text-green-800">
                     {solved.parallelTotalCurrent > solved.seriesCurrent
                       ? "Parallel draws more current"
                       : "Series draws more current"}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-green-700/80">
-                    With the same voltage and resistor values, parallel usually allows more total current.
+                    With the same voltage and resistor values, parallel usually
+                    allows more total current.
                   </p>
                 </div>
               </div>
 
               <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
-                <p className="text-sm font-semibold text-slate-900">What to notice</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  What to notice
+                </p>
                 <p className="mt-2 text-[0.98rem] leading-7 text-slate-600">
                   Series and parallel can use the same parts, but their path
                   structure changes the rules. Series keeps one current path.

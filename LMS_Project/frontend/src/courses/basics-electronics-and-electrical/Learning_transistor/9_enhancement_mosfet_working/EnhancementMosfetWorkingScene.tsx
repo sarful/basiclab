@@ -28,7 +28,7 @@ import type { FlowMode, LearningMode } from "./enhancementMosfetTypes";
 export default function EnhancementMosfetWorkingScene() {
   const [gateVoltage, setGateVoltage] = useState(5);
   const [drainVoltage, setDrainVoltage] = useState(8);
-  const [thresholdVoltage, setThresholdVoltage] = useState(
+  const [thresholdVoltage, setThresholdVoltage] = useState<number>(
     MOSFET_LOGIC.defaultThresholdVoltage
   );
   const [temperature, setTemperature] = useState(25);

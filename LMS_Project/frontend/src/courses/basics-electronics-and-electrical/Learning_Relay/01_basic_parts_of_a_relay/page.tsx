@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 
 import UniversalSimulationLessonShell from "../../shared/UniversalSimulationLessonShell";
 import ACPowerRelaySketch from "./ACPowerRelaySketch";
+import LogicTheoryBanglaTab from "./LogicTheoryBanglaTab";
+import LogicTheoryTab from "./LogicTheoryTab";
 import Relay3D from "./Relay3D";
 import SongleRelaySketchSvg from "./SongleRelaySketchSvg";
 
@@ -60,8 +62,7 @@ export default function RelayLessonOneEmbeddedPage() {
     showDebugTerminals,
   };
 
-  return (
-    <UniversalSimulationLessonShell lessonLabel="Lesson 01" currentLessonId={1} track="relay">
+  const lessonPanel = (
       <section className="w-full text-slate-900">
         <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl md:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -264,6 +265,25 @@ export default function RelayLessonOneEmbeddedPage() {
           </section>
         </main>
       </section>
+  );
+
+  return (
+    <UniversalSimulationLessonShell
+      lessonLabel="Lesson 01"
+      currentLessonId={1}
+      track="relay"
+      lessonContent={{
+        logic: <LogicTheoryTab />,
+        logic_bn: <LogicTheoryBanglaTab />,
+        lesson: lessonPanel,
+      }}
+      tabs={[
+        { id: "logic", label: "Logic & Theory" },
+        { id: "logic_bn", label: "Logic & Theory (Bangla)" },
+        { id: "lesson", label: "Simulation" },
+      ]}
+    >
+      {lessonPanel}
     </UniversalSimulationLessonShell>
   );
 }

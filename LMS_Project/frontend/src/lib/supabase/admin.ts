@@ -4,7 +4,7 @@ import { getSupabaseSecretKey, getSupabaseUrl } from "./config";
 
 let adminClient: ReturnType<typeof createClient> | null = null;
 
-export function getSupabaseAdminClient() {
+export function getSupabaseAdminClient(): any {
   if (!adminClient) {
     adminClient = createClient(getSupabaseUrl(), getSupabaseSecretKey(), {
       auth: {

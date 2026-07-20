@@ -38,7 +38,7 @@ export default function WhatIsOhmsLawBasicsInteractiveSimulation() {
   return (
     <div className="w-full text-slate-900">
       <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
+        {/* <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700">
@@ -81,7 +81,7 @@ export default function WhatIsOhmsLawBasicsInteractiveSimulation() {
               </div>
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-3xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -89,14 +89,18 @@ export default function WhatIsOhmsLawBasicsInteractiveSimulation() {
               <p className="text-sm font-semibold text-amber-900">Core idea</p>
               <p className="mt-1 text-sm leading-6 text-amber-800">
                 Voltage is the push, current is the flow, and resistance is the
-                opposition. Ohm&apos;s Law shows exactly how they affect one another.
+                opposition. Ohm&apos;s Law shows exactly how they affect one
+                another.
               </p>
             </div>
 
             <div className="rounded-2xl border border-amber-200 bg-white px-4 py-3 lg:max-w-[420px]">
-              <p className="text-sm font-semibold text-slate-900">Simple idea</p>
+              <p className="text-sm font-semibold text-slate-900">
+                Simple idea
+              </p>
               <p className="mt-1 text-sm leading-6 text-slate-700">
-                More voltage gives more push. More resistance gives more opposition. Ohm&apos;s Law helps you see the result.
+                More voltage gives more push. More resistance gives more
+                opposition. Ohm&apos;s Law helps you see the result.
               </p>
             </div>
           </div>
@@ -136,43 +140,70 @@ export default function WhatIsOhmsLawBasicsInteractiveSimulation() {
                 Watch Ohm&apos;s Law solve the missing value
               </h2>
               <p className="mt-3 max-w-3xl text-[0.98rem] leading-7 text-slate-600 md:text-[1rem]">
-                This simulation shows how one law connects all three circuit values. When two known values change, the third one updates automatically.
+                This simulation shows how one law connects all three circuit
+                values. When two known values change, the third one updates
+                automatically.
               </p>
 
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                  <p className="text-sm font-semibold text-blue-700">Solve mode</p>
+                  <p className="text-sm font-semibold text-blue-700">
+                    Solve mode
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-blue-800">
-                    {mode === "current" ? "Solve I" : mode === "voltage" ? "Solve V" : "Solve R"}
+                    {mode === "current"
+                      ? "Solve I"
+                      : mode === "voltage"
+                        ? "Solve V"
+                        : "Solve R"}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-blue-700/80">
-                    Choose the unknown value and let the other two values determine the answer.
+                    Choose the unknown value and let the other two values
+                    determine the answer.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-700">Formula</p>
-                  <p className="mt-2 text-[1.8rem] font-semibold text-slate-900">
-                    {mode === "current" ? "I = V / R" : mode === "voltage" ? "V = I x R" : "R = V / I"}
+                  <p className="text-sm font-semibold text-slate-700">
+                    Formula
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{solved.formula}</p>
+                  <p className="mt-2 text-[1.8rem] font-semibold text-slate-900">
+                    {mode === "current"
+                      ? "I = V / R"
+                      : mode === "voltage"
+                        ? "V = I x R"
+                        : "R = V / I"}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {solved.formula}
+                  </p>
                 </div>
 
                 <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
-                  <p className="text-sm font-semibold text-green-700">Circuit effect</p>
+                  <p className="text-sm font-semibold text-green-700">
+                    Circuit effect
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-green-800">
-                    {solved.current >= 2 ? "Fast Flow" : solved.current >= 1 ? "Steady Flow" : "Slow Flow"}
+                    {solved.current >= 2
+                      ? "Fast Flow"
+                      : solved.current >= 1
+                        ? "Steady Flow"
+                        : "Slow Flow"}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-green-700/80">
-                    Higher current makes the LED brighter. Higher resistance pushes the current down.
+                    Higher current makes the LED brighter. Higher resistance
+                    pushes the current down.
                   </p>
                 </div>
               </div>
 
               <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
-                <p className="text-sm font-semibold text-slate-900">What to notice</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  What to notice
+                </p>
                 <p className="mt-2 text-[0.98rem] leading-7 text-slate-600">
-                  The formula is not separate from the circuit. It is simply a short way to describe what the circuit is already doing.
+                  The formula is not separate from the circuit. It is simply a
+                  short way to describe what the circuit is already doing.
                 </p>
               </div>
             </section>

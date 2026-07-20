@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 
+import UniversalSimulationLessonShell from "../../shared/UniversalSimulationLessonShell";
 import LiveEquationsPanel from "./LiveEquationsPanel";
+import LogicTheoryBanglaTab from "./LogicTheoryBanglaTab";
+import LogicTheoryTab from "./LogicTheoryTab";
 import PnpTransistorSwitchingCircuit from "./PnpTransistorSwitchingCircuit";
 import PnpWorkingControlPanel from "./PnpWorkingControlPanel";
 import { calculatePnpWorkingState } from "./simulationLogic";
@@ -18,7 +21,7 @@ const DEFAULT_CONTROLS: PnpWorkingControls = {
   flowMode: "conventional",
 };
 
-export default function Lesson06PnpTransistorWorkingEmbeddedPage() {
+function Lesson06PnpTransistorWorkingSimulation() {
   const [controls, setControls] = useState<PnpWorkingControls>(DEFAULT_CONTROLS);
   const state = calculatePnpWorkingState(controls);
 
@@ -90,5 +93,29 @@ export default function Lesson06PnpTransistorWorkingEmbeddedPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Lesson06PnpTransistorWorkingEmbeddedPage() {
+  const lessonPanel = <Lesson06PnpTransistorWorkingSimulation />;
+
+  return (
+    <UniversalSimulationLessonShell
+      lessonLabel="Lesson 06"
+      currentLessonId={6}
+      track="transistor"
+      lessonContent={{
+        logic: <LogicTheoryTab />,
+        logic_bn: <LogicTheoryBanglaTab />,
+        lesson: lessonPanel,
+      }}
+      tabs={[
+        { id: "logic", label: "Logic & Theory" },
+        { id: "logic_bn", label: "Logic & Theory (Bangla)" },
+        { id: "lesson", label: "Simulation" },
+      ]}
+    >
+      {lessonPanel}
+    </UniversalSimulationLessonShell>
   );
 }

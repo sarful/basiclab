@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+import { BeginnerExplanationSection } from "./BeginnerExplanationSection";
+import { ControlPanelSection } from "./ControlPanelSection";
 import { InfoIcon } from "./icons";
 import {
   DEFAULT_VOLTAGE,
@@ -10,10 +12,7 @@ import {
   getPressurePercent,
   getRelationText,
 } from "./logic";
-import { BeginnerExplanationSection } from "./BeginnerExplanationSection";
-import { ControlPanelSection } from "./ControlPanelSection";
 import type { PressureLevel } from "./types";
-import { IndustrialLabel, StatusBox } from "./ui";
 import { VoltageCircuit } from "./voltageCircuit";
 
 export default function WhatIsVoltageInteractiveSimulation() {
@@ -21,7 +20,10 @@ export default function WhatIsVoltageInteractiveSimulation() {
   const [showExplanation, setShowExplanation] = useState<boolean>(true);
 
   const voltageText = voltage.toFixed(1);
-  const pressureLevel = useMemo<PressureLevel>(() => getPressureLevel(voltage), [voltage]);
+  const pressureLevel = useMemo<PressureLevel>(
+    () => getPressureLevel(voltage),
+    [voltage],
+  );
   const pressurePercent = useMemo(() => getPressurePercent(voltage), [voltage]);
   const relationText = useMemo(() => getRelationText(voltage), [voltage]);
   const bulbState = useMemo(() => getBulbState(voltage), [voltage]);
@@ -31,7 +33,7 @@ export default function WhatIsVoltageInteractiveSimulation() {
   return (
     <div className="w-full text-slate-900">
       <div className="mx-auto max-w-7xl space-y-5">
-        <header className="rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur md:p-6">
+        {/* <header className="rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] backdrop-blur md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <IndustrialLabel code="Simulation" label="" />
@@ -49,7 +51,7 @@ export default function WhatIsVoltageInteractiveSimulation() {
               <StatusBox label="Flow Strength" value={`${pressurePercent}%`} />
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-3xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -58,17 +60,23 @@ export default function WhatIsVoltageInteractiveSimulation() {
                 <InfoIcon className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-amber-900">Core idea</p>
+                <p className="text-sm font-semibold text-amber-900">
+                  Core idea
+                </p>
                 <p className="mt-1 text-sm leading-6 text-amber-800">
-                  Voltage is the electrical pressure that pushes charge through a circuit. More voltage means stronger push.
+                  Voltage is the electrical pressure that pushes charge through
+                  a circuit. More voltage means stronger push.
                 </p>
               </div>
             </div>
 
             <div className="rounded-2xl border border-amber-300 bg-white px-4 py-3 lg:max-w-[420px]">
-              <p className="text-sm font-semibold text-slate-900">Simple idea</p>
+              <p className="text-sm font-semibold text-slate-900">
+                Simple idea
+              </p>
               <p className="mt-1 text-sm leading-6 text-slate-700">
-                More voltage means more push. If resistance stays the same, that stronger push usually creates more current.
+                More voltage means more push. If resistance stays the same, that
+                stronger push usually creates more current.
               </p>
             </div>
           </div>
@@ -122,7 +130,9 @@ export default function WhatIsVoltageInteractiveSimulation() {
                 </div>
 
                 <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4">
-                  <p className="text-sm font-semibold text-cyan-700">Pressure Level</p>
+                  <p className="text-sm font-semibold text-cyan-700">
+                    Pressure Level
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-cyan-800">
                     {pressureLevel}
                   </p>
@@ -132,7 +142,9 @@ export default function WhatIsVoltageInteractiveSimulation() {
                 </div>
 
                 <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                  <p className="text-sm font-semibold text-blue-700">Flow Strength</p>
+                  <p className="text-sm font-semibold text-blue-700">
+                    Flow Strength
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-blue-800">
                     {pressurePercent}%
                   </p>
@@ -143,7 +155,9 @@ export default function WhatIsVoltageInteractiveSimulation() {
               </div>
 
               <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
-                <p className="text-sm font-semibold text-slate-900">What to notice</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  What to notice
+                </p>
                 <p className="mt-2 text-[0.98rem] leading-7 text-slate-600">
                   {relationText}
                 </p>

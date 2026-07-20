@@ -17,6 +17,18 @@ type TransformControl = {
   rotation: number;
 };
 
+type ComponentControls = {
+  body: TransformControl;
+  topFace: TransformControl;
+  frontFace: TransformControl;
+  leftFace: TransformControl;
+  labelGroup: TransformControl;
+  schematic: TransformControl;
+  leftPin: TransformControl;
+  rightPin: TransformControl;
+  planes: Record<string, PolygonData>;
+};
+
 type WireSegment = {
   id: string;
   from: Point;
@@ -156,9 +168,7 @@ const BASE_COMPONENT = {
    COMPONENT
    All major parts have x/y/width/height/scale/rotation controls
 ========================= */
-const COMPONENT: Record<string, TransformControl> & {
-  planes: Record<string, PolygonData>;
-} = {
+const COMPONENT: ComponentControls = {
   body: {
     x: 0,
     y: 0,

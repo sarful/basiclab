@@ -655,6 +655,196 @@ function WiringSvg({ outputType, outputOn, analogCurrent }: any) {
   );
 }
 
+function Panel({ title, icon, children, className = "" }: any) {
+  return (
+    <section className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ${className}`}>
+      <div className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-wide text-slate-800">
+        {icon}
+        <span>{title}</span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function Control({ label, children }: any) {
+  return (
+    <label className="mb-4 block">
+      <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">
+        {label}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+function Select({ value, onChange, children }: any) {
+  return (
+    <select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      className="input"
+    >
+      {children}
+    </select>
+  );
+}
+
+function Status({ label, value, dot, badge, distance }: any) {
+  return (
+    <div className="mb-3 flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+      <span className="text-sm font-semibold text-slate-600">{label}</span>
+      <span className="inline-flex items-center gap-2 text-sm font-black text-slate-950">
+        {dot !== undefined ? (
+          <span className={`h-2.5 w-2.5 rounded-full ${dot ? "bg-emerald-500" : "bg-slate-300"}`} />
+        ) : null}
+        {badge !== undefined ? (
+          <span className={`h-2.5 w-2.5 rounded-full ${badge ? "bg-blue-500" : "bg-slate-300"}`} />
+        ) : null}
+        <span className={distance ? "text-blue-600" : ""}>{value}</span>
+      </span>
+    </div>
+  );
+}
+
+function Lamp({ label, on }: any) {
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div
+        className={`h-16 w-16 rounded-full border-4 ${
+          on
+            ? "border-emerald-300 bg-emerald-500 shadow-[0_0_26px_rgba(16,185,129,0.55)]"
+            : "border-slate-200 bg-slate-200"
+        }`}
+      />
+      <span className="text-xs font-black uppercase tracking-wide text-slate-600">{label}</span>
+    </div>
+  );
+}
+
+function LiveReadout({
+  distance,
+  detected,
+  outputOn,
+  outputType,
+  mode,
+  setRange,
+  echoStrength,
+  analogCurrent,
+}: any) {
+  return (
+    <div className="absolute right-4 top-4 grid w-[230px] gap-2 rounded-xl border bg-white/95 p-3 text-xs shadow-sm">
+      <div className="flex justify-between">
+        <span className="text-slate-500">Mode</span>
+        <b>{mode}</b>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-slate-500">Distance</span>
+        <b>{distance.toFixed(1)} cm</b>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-slate-500">Set range</span>
+        <b>{setRange} cm</b>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-slate-500">Echo</span>
+        <b>{detected ? `${echoStrength.toFixed(0)}%` : "No echo"}</b>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-slate-500">Output</span>
+        <b>{outputType === "Analog 4-20mA" ? `${analogCurrent.toFixed(1)} mA` : outputOn ? "ON" : "OFF"}</b>
+      </div>
+    </div>
+  );
+}
+
+function Header({ tab, setTab }: { tab: Tab; setTab: (tab: Tab) => void }) {
+  const tabs: { id: Tab; icon: React.ReactNode }[] = [
+    { id: "Simulator", icon: <Monitor size={16} /> },
+    { id: "Theory", icon: <Info size={16} /> },
+    { id: "Wiring Diagram", icon: <Settings size={16} /> },
+    { id: "Quiz", icon: <ClipboardList size={16} /> },
+    { id: "Report", icon: <ClipboardList size={16} /> },
+  ];
+
+  return (
+    <header className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
+            Industrial Sensor Lab
+          </p>
+          <h1 className="mt-1 text-2xl font-black text-slate-950">
+            Ultrasonic Sensor Training
+          </h1>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setTab(item.id)}
+              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-bold ${
+                tab === item.id
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-slate-200 bg-white text-slate-700"
+              }`}
+            >
+              {item.icon}
+              {item.id}
+            </button>
+          ))}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function LearningTab({ tab, mode, outputType }: any) {
+  const title =
+    tab === "Theory"
+      ? "Ultrasonic sensor theory"
+      : tab === "Wiring Diagram"
+        ? "Wiring diagram notes"
+        : tab === "Quiz"
+          ? "Quick quiz"
+          : "Lab report";
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
+        {tab}
+      </p>
+      <h2 className="mt-2 text-2xl font-black text-slate-950">{title}</h2>
+      <div className="mt-5 grid gap-4 text-sm leading-7 text-slate-700 md:grid-cols-3">
+        <LearningNote title="Concept">
+          Ultrasonic sensors emit sound pulses and calculate distance from the returning echo time.
+          Current mode: <b>{mode}</b>.
+        </LearningNote>
+        <LearningNote title="Output">
+          The selected output is <b>{outputType}</b>. Digital modes switch at the set range, while
+          analog mode scales the measured distance.
+        </LearningNote>
+        <LearningNote title="Practice">
+          Return to the simulator, move the target, compare materials, and note how echo strength
+          affects detection reliability.
+        </LearningNote>
+      </div>
+    </section>
+  );
+}
+
+function LearningNote({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <h3 className="mb-2 text-sm font-black uppercase tracking-wide text-slate-800">
+        {title}
+      </h3>
+      <p className="m-0">{children}</p>
+    </article>
+  );
+}
+
 export default function UltrasonicSensorIndustrialLab() {
   const [tab, setTab] = useState<Tab>("Simulator");
   const [power, setPower] = useState(true);

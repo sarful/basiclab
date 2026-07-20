@@ -657,7 +657,7 @@ function InternalRelayPaths({
 function StructuredWireSegments() {
   return (
     <g opacity={0}>
-      {WIRE.bodySegments.map((s) => (
+      {WIRE.bodySegments.map((s: Segment) => (
         <WireSegment
           key={s.id}
           from={move(s.from, WIRE_OFFSET.body)}

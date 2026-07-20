@@ -1,17 +1,12 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { BeginnerSummarySection } from "./BeginnerSummarySection";
 import { ControlPanelSection } from "./ControlPanelSection";
 import { ElectricityCircuit } from "./ElectricityCircuit";
 import { ElectricityMeterSection } from "./ElectricityMeterSection";
-import {
-  InfoIcon,
-  PauseIcon,
-  PlayIcon,
-  RotateCcwIcon,
-} from "./icons";
+import { InfoIcon, PauseIcon, PlayIcon, RotateCcwIcon } from "./icons";
 import {
   calculateCurrent,
   DEFAULT_RESISTANCE,
@@ -21,7 +16,7 @@ import {
   getFlowPercent,
 } from "./logic";
 import type { SimulationMode } from "./types";
-import { MetricCard, StatusCard } from "./ui";
+import { MetricCard } from "./ui";
 
 export default function WhatIsElectricityInteractiveSimulation() {
   const [mode, setMode] = useState<SimulationMode>("playing");
@@ -49,35 +44,6 @@ export default function WhatIsElectricityInteractiveSimulation() {
   return (
     <div className="w-full text-slate-900">
       <div className="mx-auto max-w-7xl space-y-3 md:space-y-4">
-        <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-[1rem] font-semibold tracking-tight text-slate-950 md:text-[1rem]">
-                What is Electricity?
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">
-                Electricity is the movement of electric charge through a closed
-                circuit. Voltage pushes charge, and resistance controls how
-                easily that charge can move.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:min-w-[440px]">
-              <StatusCard
-                label="Voltage Push"
-                value={`${voltage.toFixed(1)} V`}
-                tone="red"
-              />
-              <StatusCard
-                label="Charge Flow"
-                value={`${current.toFixed(2)} A`}
-                tone="blue"
-              />
-              <StatusCard label="Flow Level" value={flowLevel} tone="cyan" />
-            </div>
-          </div>
-        </header>
-
         <section className="rounded-3xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-3">

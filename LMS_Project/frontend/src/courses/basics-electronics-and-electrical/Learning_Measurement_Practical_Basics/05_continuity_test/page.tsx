@@ -1,17 +1,25 @@
 "use client";
 
+import ContinuityMeterSketch from "./ContinuityMeterSketch";
+import LogicTheoryBanglaTab from "./LogicTheoryBanglaTab";
+import LogicTheoryTab from "./LogicTheoryTab";
+import UdemyScriptNoteBanglaTab from "./UdemyScriptNoteBanglaTab";
+import UdemyScriptNoteEnglishTab from "./UdemyScriptNoteEnglishTab";
 import MeasurementPracticalLessonScaffold from "../shared/MeasurementPracticalLessonScaffold";
-import MeasurementPracticalLessonFiveSimulation from "./MeasurementPracticalLessonFiveSimulation";
 
 export default function MeasurementPracticalLessonFivePage() {
   return (
     <MeasurementPracticalLessonScaffold
       lessonId={5}
       lessonLabel="Lesson 05"
-      lessonContent={{
-        lesson: <MeasurementPracticalLessonFiveSimulation />,
-      }}
       lessonTitle="Continuity Test"
+      lessonContent={{
+        logic: <LogicTheoryTab />,
+        logic_bn: <LogicTheoryBanglaTab />,
+        english: <UdemyScriptNoteEnglishTab />,
+        bangla: <UdemyScriptNoteBanglaTab />,
+        lesson: <ContinuityMeterSketch />,
+      }}
     />
   );
 }

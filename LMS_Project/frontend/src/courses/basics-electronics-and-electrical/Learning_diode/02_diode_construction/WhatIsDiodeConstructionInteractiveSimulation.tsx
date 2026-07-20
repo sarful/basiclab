@@ -1,11 +1,11 @@
 "use client";
 
-import { DiodeConstructionDiagram } from "./ConstructionDiagram.tsx";
-import DiodeConstructionControlPanel from "./DiodeConstructionControlPanel.tsx";
-import { DiodeConstructionHeader } from "./DiodeConstructionHeader.tsx";
-import DiodeProbeReadout from "./DiodeProbeReadout.tsx";
-import { useDiodeConstructionSimulation } from "./useDiodeConstructionSimulation.ts";
-import { ViewExplanationSection } from "./ViewExplanationSection.tsx";
+import { DiodeConstructionDiagram } from "./ConstructionDiagram";
+import DiodeConstructionControlPanel from "./DiodeConstructionControlPanel";
+import { DiodeConstructionHeader } from "./DiodeConstructionHeader";
+import DiodeProbeReadout from "./DiodeProbeReadout";
+import { useDiodeConstructionSimulation } from "./useDiodeConstructionSimulation";
+import { ViewExplanationSection } from "./ViewExplanationSection";
 
 export default function WhatIsDiodeConstructionInteractiveSimulation() {
   const simulation = useDiodeConstructionSimulation();

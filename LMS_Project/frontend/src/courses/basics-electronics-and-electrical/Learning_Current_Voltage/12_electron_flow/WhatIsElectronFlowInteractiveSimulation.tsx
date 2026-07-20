@@ -1,7 +1,12 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+import { BeginnerSummarySection } from "./BeginnerSummarySection";
+import { ControlPanelSection } from "./ControlPanelSection";
+import { ElectronCircuit } from "./ElectronCircuit";
+import { FlowMeterSection } from "./FlowMeterSection";
+import { Atom, Info, Pause, Play, RotateCcw } from "./icons";
 import {
   DEFAULT_DIRECTION,
   DEFAULT_RESISTANCE,
@@ -11,13 +16,8 @@ import {
   getFlowLevel,
   getFlowPercent,
 } from "./logic";
-import { BeginnerSummarySection } from "./BeginnerSummarySection";
-import { ControlPanelSection } from "./ControlPanelSection";
-import { ElectronCircuit } from "./ElectronCircuit";
-import { FlowMeterSection } from "./FlowMeterSection";
-import { Atom, Info, Pause, Play, RotateCcw } from "./icons";
-import { MetricCard, StatusCard } from "./ui";
 import type { DirectionMode, SimulationMode } from "./types";
+import { MetricCard } from "./ui";
 
 export default function WhatIsElectronFlowInteractiveSimulation() {
   const [mode, setMode] = useState<SimulationMode>("playing");
@@ -48,7 +48,7 @@ export default function WhatIsElectronFlowInteractiveSimulation() {
   return (
     <div className="min-h-screen bg-[linear-gradient(90deg,#f8fafc_1px,transparent_1px),linear-gradient(180deg,#f8fafc_1px,transparent_1px)] bg-[size:24px_24px] bg-slate-100 p-3 text-slate-900 md:p-8">
       <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
+        {/* <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-700">
@@ -80,7 +80,7 @@ export default function WhatIsElectronFlowInteractiveSimulation() {
               <StatusCard label="Flow" value={flowLevel} tone="cyan" />
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-3xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -90,7 +90,9 @@ export default function WhatIsElectronFlowInteractiveSimulation() {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-amber-900">Core idea</p>
+                <p className="text-sm font-semibold text-amber-900">
+                  Core idea
+                </p>
                 <p className="mt-1 text-sm leading-6 text-amber-800">
                   Electrons are negatively charged particles. In metal wires,
                   current happens when those electrons drift through the
@@ -145,7 +147,9 @@ export default function WhatIsElectronFlowInteractiveSimulation() {
 
                 <div className="rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm">
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-slate-700">State</p>
+                    <p className="text-sm font-semibold text-slate-700">
+                      State
+                    </p>
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
                         mode === "playing"
@@ -215,7 +219,9 @@ export default function WhatIsElectronFlowInteractiveSimulation() {
                 />
                 <MetricCard
                   title="Direction Mode"
-                  value={directionMode === "electron" ? "Electron" : "Conventional"}
+                  value={
+                    directionMode === "electron" ? "Electron" : "Conventional"
+                  }
                   detail={directionDescription}
                   tone="slate"
                 />
@@ -244,21 +250,27 @@ export default function WhatIsElectronFlowInteractiveSimulation() {
 
               <div className="mt-4 grid gap-3 md:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-semibold text-slate-900">Negative charges move</p>
+                  <p className="font-semibold text-slate-900">
+                    Negative charges move
+                  </p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     In electron mode, particles travel from the negative
                     terminal toward the positive terminal.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-semibold text-slate-900">More push, faster drift</p>
+                  <p className="font-semibold text-slate-900">
+                    More push, faster drift
+                  </p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     Increasing voltage gives the charges more push, so the flow
                     becomes stronger.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-semibold text-slate-900">More resistance, slower flow</p>
+                  <p className="font-semibold text-slate-900">
+                    More resistance, slower flow
+                  </p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     Increasing resistance makes it harder for charges to move
                     through the same circuit.

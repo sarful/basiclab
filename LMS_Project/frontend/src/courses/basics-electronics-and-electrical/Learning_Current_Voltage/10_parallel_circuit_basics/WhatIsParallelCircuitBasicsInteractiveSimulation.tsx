@@ -17,9 +17,12 @@ import { ParallelCircuitBasicsCircuit } from "./ParallelCircuitBasicsCircuit";
 
 export default function WhatIsParallelCircuitBasicsInteractiveSimulation() {
   const [voltage, setVoltage] = useState(DEFAULT_VOLTAGE);
-  const [branchOneResistance, setBranchOneResistance] = useState(DEFAULT_BRANCH_ONE);
-  const [branchTwoResistance, setBranchTwoResistance] = useState(DEFAULT_BRANCH_TWO);
-  const [branchThreeResistance, setBranchThreeResistance] = useState(DEFAULT_BRANCH_THREE);
+  const [branchOneResistance, setBranchOneResistance] =
+    useState(DEFAULT_BRANCH_ONE);
+  const [branchTwoResistance, setBranchTwoResistance] =
+    useState(DEFAULT_BRANCH_TWO);
+  const [branchThreeResistance, setBranchThreeResistance] =
+    useState(DEFAULT_BRANCH_THREE);
 
   const solved = useMemo(
     () =>
@@ -32,13 +35,19 @@ export default function WhatIsParallelCircuitBasicsInteractiveSimulation() {
     [voltage, branchOneResistance, branchTwoResistance, branchThreeResistance],
   );
 
-  const flowPercent = useMemo(() => getFlowPercent(solved.totalCurrent), [solved.totalCurrent]);
-  const flowLevel = useMemo(() => getFlowLevel(solved.totalCurrent), [solved.totalCurrent]);
+  const flowPercent = useMemo(
+    () => getFlowPercent(solved.totalCurrent),
+    [solved.totalCurrent],
+  );
+  const flowLevel = useMemo(
+    () => getFlowLevel(solved.totalCurrent),
+    [solved.totalCurrent],
+  );
 
   return (
     <div className="w-full text-slate-900">
       <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
+        {/* <header className="rounded-3xl border border-slate-300 bg-white/95 p-4 shadow-xl backdrop-blur md:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700">
@@ -77,23 +86,25 @@ export default function WhatIsParallelCircuitBasicsInteractiveSimulation() {
               </div>
             </div>
           </div>
-        </header>
+        </header> */}
 
         <section className="rounded-3xl border border-blue-200 bg-blue-50/80 p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm font-semibold text-blue-900">Core idea</p>
               <p className="mt-1 text-sm leading-6 text-blue-800">
-                In parallel, each branch gets the full source voltage, and the total
-                current is the sum of the branch currents.
+                In parallel, each branch gets the full source voltage, and the
+                total current is the sum of the branch currents.
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 lg:max-w-[440px]">
-              <p className="text-sm font-semibold text-slate-900">Simple idea</p>
+              <p className="text-sm font-semibold text-slate-900">
+                Simple idea
+              </p>
               <p className="mt-1 text-sm leading-6 text-slate-700">
-                Same source voltage appears across every branch, while the current
-                divides between the available paths.
+                Same source voltage appears across every branch, while the
+                current divides between the available paths.
               </p>
             </div>
           </div>
@@ -142,30 +153,34 @@ export default function WhatIsParallelCircuitBasicsInteractiveSimulation() {
               </h2>
               <p className="mt-3 max-w-3xl text-[0.98rem] leading-7 text-slate-600 md:text-[1rem]">
                 This simulation shows how the same source voltage appears across
-                every branch while the total current divides between the available
-                paths.
+                every branch while the total current divides between the
+                available paths.
               </p>
 
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                  <p className="text-sm font-semibold text-blue-700">Same voltage</p>
+                  <p className="text-sm font-semibold text-blue-700">
+                    Same voltage
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-blue-800">
                     {solved.voltage.toFixed(1)} V
                   </p>
                   <p className="mt-2 text-sm leading-6 text-blue-700/80">
-                    Every branch is connected across the same source, so each branch
-                    receives the full supply voltage.
+                    Every branch is connected across the same source, so each
+                    branch receives the full supply voltage.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-700">Total current</p>
+                  <p className="text-sm font-semibold text-slate-700">
+                    Total current
+                  </p>
                   <p className="mt-2 text-[1.8rem] font-semibold text-slate-900">
                     {solved.totalCurrent.toFixed(2)} A
                   </p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
-                    Branch currents add together, so the source current becomes the
-                    total of all branch currents.
+                    Branch currents add together, so the source current becomes
+                    the total of all branch currents.
                   </p>
                 </div>
 
@@ -184,7 +199,9 @@ export default function WhatIsParallelCircuitBasicsInteractiveSimulation() {
               </div>
 
               <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
-                <p className="text-sm font-semibold text-slate-900">What to notice</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  What to notice
+                </p>
                 <p className="mt-2 text-[0.98rem] leading-7 text-slate-600">
                   In a parallel circuit, the voltage stays the same across each
                   branch. What changes is the branch current, and those branch

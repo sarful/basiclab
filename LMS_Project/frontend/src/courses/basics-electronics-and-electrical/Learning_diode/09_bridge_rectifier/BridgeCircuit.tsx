@@ -567,7 +567,7 @@ export function BridgeCircuit({
             path={POSITIVE_CYCLE_PATH}
             color={STYLE.electron}
             count={electronCount}
-            flowRate={flowRate}
+            speed={flowRate}
           />
 
           <ElectronFlow
@@ -575,7 +575,7 @@ export function BridgeCircuit({
             path={NEGATIVE_CYCLE_PATH}
             color={STYLE.electron}
             count={electronCount}
-            flowRate={flowRate}
+            speed={flowRate}
           />
         </g>
       </svg>

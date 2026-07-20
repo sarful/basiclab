@@ -1,10 +1,21 @@
 "use client";
 
+export type BreadboardGroupType =
+  | "terminal-top"
+  | "terminal-bottom"
+  | "power-top-positive"
+  | "power-top-negative"
+  | "power-bottom-positive"
+  | "power-bottom-negative";
+
 export type BreadboardHole = {
+  column: number;
   group: string;
+  groupType: BreadboardGroupType;
   id: string;
   kind: "power" | "terminal";
   label: string;
+  row: string;
   x: number;
   y: number;
 };
@@ -12,6 +23,8 @@ export type BreadboardHole = {
 export type BreadboardWire = {
   color: string;
   from: string;
+  id: string;
+  taskId?: string;
   to: string;
 };
 
@@ -22,6 +35,7 @@ export const breadboardCanvasSize = {
 
 export const simulatorOneRowsTop = ["A", "B", "C", "D", "E"] as const;
 export const simulatorOneRowsBottom = ["F", "G", "H", "I", "J"] as const;
+
 export const breadboardWireColors = [
   "#ef4444",
   "#2563eb",
@@ -40,10 +54,13 @@ export function createSimulatorOneHoles(): BreadboardHole[] {
   for (let col = 1; col <= 60; col++) {
     simulatorOneRowsTop.forEach((row, rowIndex) => {
       holes.push({
+        column: col,
         group: `top-${col}`,
+        groupType: "terminal-top",
         id: `${row}${col}`,
         kind: "terminal",
         label: `${row}${col}`,
+        row,
         x: simulatorOneColX(col),
         y: 180 + rowIndex * 24,
       });
@@ -51,10 +68,13 @@ export function createSimulatorOneHoles(): BreadboardHole[] {
 
     simulatorOneRowsBottom.forEach((row, rowIndex) => {
       holes.push({
+        column: col,
         group: `bottom-${col}`,
+        groupType: "terminal-bottom",
         id: `${row}${col}`,
         kind: "terminal",
         label: `${row}${col}`,
+        row,
         x: simulatorOneColX(col),
         y: 370 + rowIndex * 24,
       });
@@ -67,37 +87,49 @@ export function createSimulatorOneHoles(): BreadboardHole[] {
     const x = 95 + (index - 1) * 20.5;
 
     holes.push({
-      group: `top-plus-${Math.floor((index - 1) / 5)}`,
+      column: index,
+      group: "top-plus",
+      groupType: "power-top-positive",
       id: `TP${index}`,
       kind: "power",
-      label: `Top + Rail ${index}`,
+      label: `Top + rail ${index}`,
+      row: "TP+",
       x,
       y: 85,
     });
 
     holes.push({
-      group: `top-minus-${Math.floor((index - 1) / 5)}`,
+      column: index,
+      group: "top-minus",
+      groupType: "power-top-negative",
       id: `TN${index}`,
       kind: "power",
-      label: `Top - Rail ${index}`,
+      label: `Top - rail ${index}`,
+      row: "TP-",
       x,
       y: 110,
     });
 
     holes.push({
-      group: `bottom-minus-${Math.floor((index - 1) / 5)}`,
+      column: index,
+      group: "bottom-minus",
+      groupType: "power-bottom-negative",
       id: `BN${index}`,
       kind: "power",
-      label: `Bottom - Rail ${index}`,
+      label: `Bottom - rail ${index}`,
+      row: "BP-",
       x,
       y: 535,
     });
 
     holes.push({
-      group: `bottom-plus-${Math.floor((index - 1) / 5)}`,
+      column: index,
+      group: "bottom-plus",
+      groupType: "power-bottom-positive",
       id: `BP${index}`,
       kind: "power",
-      label: `Bottom + Rail ${index}`,
+      label: `Bottom + rail ${index}`,
+      row: "BP+",
       x,
       y: 560,
     });

@@ -591,7 +591,7 @@ function ControlSection({
 }) {
   return (
     <details
-      defaultOpen={open}
+      open={open}
       className="group rounded-xl border border-slate-200 bg-white"
     >
       <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">

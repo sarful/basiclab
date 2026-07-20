@@ -38,14 +38,7 @@ export function ResistorPowerRatingVisualStack({
         selectedPackage={selectedPackage}
       />
       <KnowledgeSection
-        voltage={voltage}
-        resistance={resistance}
-        current={current}
         power={power}
-        powerByI2R={powerByI2R}
-        powerByV2R={powerByV2R}
-        safetyMargin={safetyMargin}
-        recommendedLabel={recommendedLabel}
         rating={rating}
         onRatingChange={onRatingChange}
       />

@@ -18,13 +18,13 @@ const DEFAULTS = {
 } as const;
 
 export function usePhotodiodeSimulation() {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [lux, setLux] = useState(DEFAULTS.lux);
-  const [reverseVoltage, setReverseVoltage] = useState(DEFAULTS.reverseVoltage);
-  const [loadKOhm, setLoadKOhm] = useState(DEFAULTS.loadKOhm);
-  const [responsivityAW, setResponsivityAW] = useState(DEFAULTS.responsivityAW);
-  const [activeAreaMM2, setActiveAreaMM2] = useState(DEFAULTS.activeAreaMM2);
-  const [isReverseBias, setIsReverseBias] = useState(DEFAULTS.isReverseBias);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [lux, setLux] = useState<number>(DEFAULTS.lux);
+  const [reverseVoltage, setReverseVoltage] = useState<number>(DEFAULTS.reverseVoltage);
+  const [loadKOhm, setLoadKOhm] = useState<number>(DEFAULTS.loadKOhm);
+  const [responsivityAW, setResponsivityAW] = useState<number>(DEFAULTS.responsivityAW);
+  const [activeAreaMM2, setActiveAreaMM2] = useState<number>(DEFAULTS.activeAreaMM2);
+  const [isReverseBias, setIsReverseBias] = useState<boolean>(DEFAULTS.isReverseBias);
 
   useEffect(() => {
     runSimulationTests();

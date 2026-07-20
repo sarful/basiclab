@@ -3,8 +3,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
-const backendBaseUrl =
-  (process.env.NEXT_PUBLIC_LMS_API_BASE_URL ?? "http://localhost:3001").replace(/\/$/, "");
+const backendBaseUrl = process.env.NEXT_PUBLIC_LMS_API_BASE_URL?.replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -12,6 +11,10 @@ const nextConfig: NextConfig = {
     root: projectRoot,
   },
   async rewrites() {
+    if (!backendBaseUrl) {
+      return [];
+    }
+
     return [
       {
         source: "/api/:path*",

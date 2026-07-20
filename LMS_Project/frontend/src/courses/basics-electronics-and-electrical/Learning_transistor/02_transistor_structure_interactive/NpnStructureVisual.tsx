@@ -1020,8 +1020,8 @@ export default function NpnStructureVisual({
             showElectronFlow={showElectronFlow}
           />
           <BaseCurrentFlow
-          // active={calc.conducting}
-          // intensity={calc.intensity}
+            active={calc.conducting}
+            intensity={calc.intensity}
           />
           <CurrentArrows active={calc.conducting} show={showCurrent} />
 

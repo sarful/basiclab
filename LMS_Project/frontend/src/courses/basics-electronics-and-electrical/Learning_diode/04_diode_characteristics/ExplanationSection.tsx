@@ -16,45 +16,45 @@ export function ExplanationSection({
   const chart = getCharacteristicPoint(voltage);
 
   if (section === "characteristics") {
-    // return (
-    //   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-    //     <h2 className="text-xl font-bold">Characteristics: সহজ ব্যাখ্যা</h2>
-    //     <ul className="ml-5 mt-2 list-disc space-y-2 text-slate-700">
-    //       <li>0.7V-এর নিচে diode প্রায় current flow করতে দেয় না।</li>
-    //       <li>0.7V পার হলে current দ্রুত বাড়তে শুরু করে।</li>
-    //       <li>লাল dot এখনকার voltage/current point দেখায়।</li>
-    //       <li>
-    //         এখন voltage {voltage.toFixed(1)}V এবং approximate current{" "}
-    //         {chart.currentMA.toFixed(1)}mA।
-    //       </li>
-    //     </ul>
-    //   </div>
-    // );
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <h2 className="text-xl font-bold text-slate-900">Characteristics</h2>
+        <ul className="ml-5 mt-2 list-disc space-y-2 text-slate-700">
+          <li>Below about 0.7V, the forward-biased diode still blocks most current.</li>
+          <li>After the threshold, current rises quickly with only a small voltage increase.</li>
+          <li>The highlighted point marks the current voltage and current on the VI graph.</li>
+          <li>
+            Current sample: {voltage.toFixed(1)}V and approximately{" "}
+            {chart.currentMA.toFixed(1)}mA.
+          </li>
+        </ul>
+      </div>
+    );
   }
 
-  // return (
-  //   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-  //     {bias === "forward" ? (
-  //       <>
-  //         <h2 className="text-xl font-bold">Working: Forward Bias</h2>
-  //         <ul className="ml-5 mt-2 list-disc space-y-2 text-slate-700">
-  //           <li>Battery-এর + diode-এর Anode side-এ যুক্ত হয়।</li>
-  //           <li>Voltage 0.7V-এর বেশি হলে barrier কমে যায়, তাই current flow করে।</li>
-  //           <li>বর্তমান voltage: {voltage.toFixed(1)}V</li>
-  //           <li>Current level: {(working.intensity * 100).toFixed(0)}%</li>
-  //           <li>Current থাকলে LED জ্বলে।</li>
-  //         </ul>
-  //       </>
-  //     ) : (
-  //       <>
-  //         <h2 className="text-xl font-bold">Working: Reverse Bias</h2>
-  //         <ul className="ml-5 mt-2 list-disc space-y-2 text-slate-700">
-  //           <li>Battery polarity উল্টোভাবে diode-এর সাথে যুক্ত হয়।</li>
-  //           <li>Barrier বেড়ে যায়, তাই current block হয়।</li>
-  //           <li>Voltage {voltage.toFixed(1)}V হলেও reverse bias-এ LED OFF থাকে।</li>
-  //         </ul>
-  //       </>
-  //     )}
-  //   </div>
-  // );
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      {bias === "forward" ? (
+        <>
+          <h2 className="text-xl font-bold text-slate-900">Working: Forward Bias</h2>
+          <ul className="ml-5 mt-2 list-disc space-y-2 text-slate-700">
+            <li>The source positive terminal drives the diode from anode to cathode.</li>
+            <li>After about 0.7V, the barrier shrinks and current begins to flow.</li>
+            <li>Current voltage: {voltage.toFixed(1)}V</li>
+            <li>Conduction level: {(working.intensity * 100).toFixed(0)}%</li>
+            <li>When current flows, the diode path becomes active and the load turns on.</li>
+          </ul>
+        </>
+      ) : (
+        <>
+          <h2 className="text-xl font-bold text-slate-900">Working: Reverse Bias</h2>
+          <ul className="ml-5 mt-2 list-disc space-y-2 text-slate-700">
+            <li>The source polarity is reversed across the diode.</li>
+            <li>The depletion barrier grows and blocks the main current path.</li>
+            <li>At {voltage.toFixed(1)}V reverse bias, conduction stays effectively off.</li>
+          </ul>
+        </>
+      )}
+    </div>
+  );
 }

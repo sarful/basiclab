@@ -13,7 +13,7 @@ export default function PlanningProjectWorkspace({
   status: string;
   folderName: string;
   description: string;
-  plannedFiles: string[];
+  plannedFiles: readonly string[];
 }) {
   return (
     <main className="dashboard-page">

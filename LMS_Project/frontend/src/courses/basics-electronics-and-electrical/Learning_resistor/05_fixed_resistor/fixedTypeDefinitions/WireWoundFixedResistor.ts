@@ -1,3 +1,5 @@
+import type { FixedType } from "../types";
+
 export const wireWoundFixedResistor: FixedType = {
   key: "wireWound",
   name: "Wire Wound",

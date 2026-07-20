@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import LessonProgressButton from "@/src/auth/LessonProgressButton";
 import {
   getLessonTrackConfig,
   type LessonTrackId,
@@ -182,6 +183,7 @@ export default function UniversalLessonCourseNav({
           disabled={!previousLesson}
         />
         <NavLink href={nextLesson?.href} label="Next Lesson" disabled={!nextLesson} />
+        <LessonProgressButton lessonPath={currentLesson.href} />
       </div>
 
       {showLessons ? (

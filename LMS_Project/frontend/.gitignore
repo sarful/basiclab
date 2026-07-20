@@ -29,3 +29,5 @@ tmp-magnetic-contactor-*.svg
 *.njsproj
 *.sln
 *.sw?
+
+/generated/prisma

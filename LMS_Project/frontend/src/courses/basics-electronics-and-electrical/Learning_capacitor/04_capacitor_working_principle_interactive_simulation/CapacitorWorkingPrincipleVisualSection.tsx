@@ -355,7 +355,7 @@ function BatteryBlock({
   mode: WorkingMode;
 }) {
   return (
-    <g opacity={mode === "charge" ? 1 : 0.35}>
+    <g opacity={mode === "charging" ? 1 : 0.35}>
       <rect
         x={COMPONENT.battery.x}
         y={COMPONENT.battery.y}
@@ -697,7 +697,7 @@ function ParticleFlow({
 }) {
   return (
     <g>
-      {mode === "charge" &&
+      {mode === "charging" &&
         particles.map((index) => (
           <circle
             key={`charge-electron-to-negative-${index}`}
@@ -715,7 +715,7 @@ function ParticleFlow({
           </circle>
         ))}
 
-      {mode === "charge" &&
+      {mode === "charging" &&
         halfParticles.map((index) => (
           <circle
             key={`charge-electron-from-positive-${index}`}
@@ -733,7 +733,7 @@ function ParticleFlow({
           </circle>
         ))}
 
-      {mode === "discharge" &&
+      {mode === "discharging" &&
         particles.map((index) => (
           <circle
             key={`discharge-electron-${index}`}
@@ -980,12 +980,12 @@ function CapacitorWorkingVisual({
 
         <span
           className={`rounded-full px-3 py-1 text-xs font-bold ${
-            mode === "charge"
+            mode === "charging"
               ? "bg-blue-100 text-blue-700"
               : "bg-orange-100 text-orange-700"
           }`}
         >
-          {mode === "charge" ? "CHARGING" : "DISCHARGING"}
+          {mode === "charging" ? "CHARGING" : "DISCHARGING"}
         </span>
       </div>
 
@@ -1051,7 +1051,7 @@ function CapacitorWorkingVisual({
               fontSize="14"
               fontWeight="900"
             >
-              {mode === "charge"
+              {mode === "charging"
                 ? "Charging: e− from battery − to − plate, and e− from + plate to battery +"
                 : "Discharging: e− from − plate → resistor → + plate; battery path is inactive"}
             </text>
@@ -1059,7 +1059,7 @@ function CapacitorWorkingVisual({
             <WirePath
               points={WIRE.chargeBatteryPositiveToResistor}
               wireWidth={wireWidth}
-              opacity={mode === "charge" ? 1 : 0.25}
+              opacity={mode === "charging" ? 1 : 0.25}
             />
 
             <WirePath
@@ -1070,10 +1070,10 @@ function CapacitorWorkingVisual({
             <WirePath
               points={WIRE.chargeNegativePlateToBatteryNegative}
               wireWidth={wireWidth}
-              opacity={mode === "charge" ? 1 : 0.25}
+              opacity={mode === "charging" ? 1 : 0.25}
             />
 
-            {mode === "discharge" && (
+            {mode === "discharging" && (
               <WirePath
                 points={WIRE.dischargeLoop}
                 wireWidth={wireWidth}

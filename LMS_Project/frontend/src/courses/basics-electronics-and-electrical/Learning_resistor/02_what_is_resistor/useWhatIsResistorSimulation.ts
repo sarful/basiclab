@@ -17,7 +17,7 @@ import {
   safeResistance,
   safeVoltage,
 } from "./logic";
-import type { ResistorLessonMode } from "./types";
+import type { ResistorLessonMode, WhatIsResistorSimulationState } from "./types";
 
 type CurrentLevel = "low" | "medium" | "high";
 type ResistanceLevel = "low" | "medium" | "high";
@@ -57,7 +57,7 @@ function getHeatLevel(powerUsagePercent: number): HeatLevel {
   return "safe";
 }
 
-export function useWhatIsResistorSimulation() {
+export function useWhatIsResistorSimulation(): WhatIsResistorSimulationState {
   const [modeState, setModeState] = useState<ResistorLessonMode>("basic");
   const [voltageState, setVoltageState] = useState(5);
   const [resistanceState, setResistanceState] = useState(220);
@@ -138,6 +138,37 @@ export function useWhatIsResistorSimulation() {
 
     const status = getHeatStatus(power, rating);
     const recommendedPackage = getRecommendedPackage(power);
+    const flowState = {
+      flowSpeed,
+      flowDensity,
+      wireGlow: flowDensity,
+      particleCount: Math.max(4, Math.round(flowDensity * 18)),
+      currentLimitingPercent,
+    };
+    const energyState = {
+      electricalEnergy: clamp(roundTo(current * voltage, 4), 0, 999),
+      heatEnergy: power,
+      powerUsagePercent,
+      heatIntensity,
+    };
+    const measurementState = {
+      voltage,
+      resistance,
+      current,
+      power,
+      voltageDrop,
+      ledVoltageDrop,
+      outputVoltage,
+    };
+    const displayState = {
+      voltageText: `${voltage.toFixed(1)} V`,
+      resistanceText: `${resistance.toLocaleString()} Ω`,
+      currentText: `${(current * 1000).toFixed(1)} mA`,
+      powerText: `${power.toFixed(3)} W`,
+      voltageDropText: `${voltageDrop.toFixed(1)} V`,
+      ledVoltageDropText: `${ledVoltageDrop.toFixed(1)} V`,
+      outputVoltageText: `${outputVoltage.toFixed(1)} V`,
+    };
 
     return {
       mode,
@@ -163,6 +194,10 @@ export function useWhatIsResistorSimulation() {
       heatIntensity,
       currentLimitingPercent,
       powerUsagePercent,
+      flowState,
+      energyState,
+      measurementState,
+      displayState,
     };
   }, [ledIdState, modeState, ratingState, resistanceState, voltageState]);
 
